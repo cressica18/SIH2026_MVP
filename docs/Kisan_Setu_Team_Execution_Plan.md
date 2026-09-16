@@ -12,21 +12,7 @@ This plan turns the PPT + Implementation Blueprint into a **day-to-day execution
 
 ## 1. Shared Decisions — Lock These Before Building
 
-
-| Decision | Who Owns / Finalizes It | Finalized By |
-|---|---|---|
-| Overall architecture & repo structure | | Phase 0 |
-| Database entities & schema (ERD) | **Subhangi** and **Samaira** drafts and reviews modules | Phase 0–1 |
-| API endpoint list & naming convention | **Subhangi + Samaira** | Phase 0 |
-| Request/response formats (what JSON goes where) | **Subhangi** | Phase 1 |
-| User roles & authentication flow (OTP + JWT) | **Subhangi** | Phase 1 |
-| Listing & order data structures | **Subhangi** | Phase 1–2 |
-| AI output formats (price band, quality grade, risk score) | **Subhangi** (price/quality), **Samaira** (risk score) | Phase 3 / Phase 5 |
-| Voice → structured data contract (what the transcript turns into) | **Yoda** (defines transcript format) + **Samaira** (consumes it) | Phase 1–2 |
-| External API interfaces (Bhashini, Maps/OR-Tools, AEPS, Gov schemes, Claude) | **Yoda** (voice, maps/logistics), **Samhitha** (AEPS, schemes, Claude) | Phase 0–1 |
-
-Once these are locked, nobody changes a field name, route, or response shape without telling the team — later phases depend on them staying exactly as agreed.
-
+Will be finalized later
 ---
 
 ## 2. Backend Split (Subhangi & Samaira)

@@ -1,0 +1,7 @@
+{
+  "name": "Vasundhara",
+  "description": "Direct Farmer-to-Buyer digital marketplace featuring voice-assisted listing, AI price bands, produce quality grading, anonymous seller protection, logistics pooling, and financial inclusion.",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+

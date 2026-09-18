@@ -39,7 +39,7 @@ export const AepsModal: React.FC<AepsModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-stone-950/70 backdrop-blur-sm animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-stone-950/70 backdrop-blur-sm animate-fade-in">
       <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl border border-stone-200 overflow-hidden flex flex-col">
         
         {/* Header */}
@@ -102,7 +102,7 @@ export const AepsModal: React.FC<AepsModalProps> = ({
                     maxLength={4}
                     value={aadhaarLast4}
                     onChange={(e) => setAadhaarLast4(e.target.value.replace(/\D/g, ''))}
-                    className="w-24 px-3 py-2 text-sm font-mono text-center tracking-widest border border-teal-300 rounded-xl focus:outline-hidden focus:ring-2 focus:ring-teal-500 font-bold text-stone-800"
+                    className="w-24 px-3 py-2 text-sm font-mono text-center tracking-widest border border-teal-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 font-bold text-stone-800"
                   />
                 </div>
               </div>
@@ -122,7 +122,7 @@ export const AepsModal: React.FC<AepsModalProps> = ({
                     step={1000}
                     min={1000}
                     max={50000}
-                    className="w-full pl-8 pr-3 py-2 text-sm font-bold text-stone-900 border border-stone-300 rounded-xl focus:outline-hidden focus:ring-2 focus:ring-teal-500"
+                    className="w-full pl-8 pr-3 py-2 text-sm font-bold text-stone-900 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
                   />
                 </div>
               </div>

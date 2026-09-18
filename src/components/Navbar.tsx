@@ -147,7 +147,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <select
                   value={currentLanguage}
                   onChange={(e) => onLanguageChange(e.target.value as Language)}
-                  className="bg-transparent font-medium text-stone-800 focus:outline-hidden cursor-pointer"
+                  className="bg-transparent font-medium text-stone-800 focus:outline-none cursor-pointer"
                 >
                   <option value="en">English (EN)</option>
                   <option value="hi">हिंदी (HI)</option>

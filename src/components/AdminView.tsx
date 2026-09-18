@@ -291,7 +291,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
 
       {/* TRIAGE MODAL */}
       {selectedReport && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-stone-950/70 backdrop-blur-sm animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-stone-950/70 backdrop-blur-sm animate-fade-in">
           <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl border border-stone-200 p-6 space-y-4 text-xs">
             <h3 className="font-bold text-base text-stone-900">
               Triage Whistleblower Report {selectedReport.id}

@@ -748,7 +748,7 @@ export const FarmerView: React.FC<FarmerViewProps> = ({
                 <select
                   value={safetyCategory}
                   onChange={(e) => setSafetyCategory(e.target.value)}
-                  className="w-full px-3 py-2 text-xs font-semibold bg-stone-50 border border-stone-300 rounded-xl focus:outline-hidden focus:ring-2 focus:ring-rose-500"
+                  className="w-full px-3 py-2 text-xs font-semibold bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500"
                 >
                   <option value="Underpricing & Cartel">Mandi Cartel Underpricing / Collusion</option>
                   <option value="Broker Exploitation">Sub-broker Extortion or Unauthorized Deductions</option>
@@ -767,7 +767,7 @@ export const FarmerView: React.FC<FarmerViewProps> = ({
                   placeholder="e.g. Sub-agent at Pimpalgaon gate, Trader X"
                   value={safetyEntity}
                   onChange={(e) => setSafetyEntity(e.target.value)}
-                  className="w-full px-3 py-2 text-xs border border-stone-300 rounded-xl focus:outline-hidden focus:ring-2 focus:ring-rose-500"
+                  className="w-full px-3 py-2 text-xs border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500"
                 />
               </div>
 
@@ -781,7 +781,7 @@ export const FarmerView: React.FC<FarmerViewProps> = ({
                   placeholder="Provide brief details. E.g. They insisted on offering ₹8/kg when official mandi price was ₹18/kg and threatened to turn away vehicles."
                   value={safetyDescription}
                   onChange={(e) => setSafetyDescription(e.target.value)}
-                  className="w-full px-3 py-2 text-xs border border-stone-300 rounded-xl focus:outline-hidden focus:ring-2 focus:ring-rose-500"
+                  className="w-full px-3 py-2 text-xs border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500"
                 />
               </div>
 
@@ -811,7 +811,7 @@ export const FarmerView: React.FC<FarmerViewProps> = ({
 
       {/* VOICE LISTING CREATION MODAL */}
       {showCreateModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-stone-950/70 backdrop-blur-sm animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-stone-950/70 backdrop-blur-sm animate-fade-in">
           <div className="relative w-full max-w-xl bg-white rounded-3xl shadow-2xl border border-stone-200 overflow-hidden flex flex-col max-h-[90vh]">
             
             <div className="flex items-center justify-between px-6 py-4 bg-gradient-to-r from-emerald-800 to-teal-900 text-white">
@@ -881,7 +881,7 @@ export const FarmerView: React.FC<FarmerViewProps> = ({
                   <select
                     value={cropInput}
                     onChange={(e) => setCropInput(e.target.value)}
-                    className="w-full px-3 py-2 font-semibold bg-stone-50 border border-stone-300 rounded-xl focus:outline-hidden focus:ring-2 focus:ring-emerald-500"
+                    className="w-full px-3 py-2 font-semibold bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   >
                     <option value="Tomato">Tomato (टमाटर)</option>
                     <option value="Onion">Onion (प्याज)</option>
@@ -900,7 +900,7 @@ export const FarmerView: React.FC<FarmerViewProps> = ({
                     type="text"
                     value={varietyInput}
                     onChange={(e) => setVarietyInput(e.target.value)}
-                    className="w-full px-3 py-2 font-semibold border border-stone-300 rounded-xl focus:outline-hidden focus:ring-2 focus:ring-emerald-500"
+                    className="w-full px-3 py-2 font-semibold border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   />
                 </div>
 
@@ -914,7 +914,7 @@ export const FarmerView: React.FC<FarmerViewProps> = ({
                     onChange={(e) => setQuantityInput(Number(e.target.value))}
                     step={50}
                     min={50}
-                    className="w-full px-3 py-2 font-bold text-stone-900 border border-stone-300 rounded-xl focus:outline-hidden focus:ring-2 focus:ring-emerald-500"
+                    className="w-full px-3 py-2 font-bold text-stone-900 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   />
                   <span className="text-[10px] text-stone-400 mt-0.5 block">
                     = {quantityInput / 100} Quintal
@@ -931,7 +931,7 @@ export const FarmerView: React.FC<FarmerViewProps> = ({
                     onChange={(e) => setPriceInput(Number(e.target.value))}
                     step={0.5}
                     min={5}
-                    className="w-full px-3 py-2 font-bold text-emerald-800 border border-stone-300 rounded-xl focus:outline-hidden focus:ring-2 focus:ring-emerald-500"
+                    className="w-full px-3 py-2 font-bold text-emerald-800 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   />
                 </div>
               </div>

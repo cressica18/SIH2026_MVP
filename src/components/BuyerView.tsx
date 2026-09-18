@@ -261,7 +261,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                   placeholder="Search by crop, variety, or district..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2 text-xs font-semibold bg-stone-50 border border-stone-200 rounded-xl focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+                  className="w-full pl-9 pr-3 py-2 text-xs font-semibold bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
@@ -269,7 +269,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                 <select
                   value={selectedCrop}
                   onChange={(e) => setSelectedCrop(e.target.value)}
-                  className="px-3 py-2 text-xs font-semibold bg-stone-50 border border-stone-200 rounded-xl focus:outline-hidden"
+                  className="px-3 py-2 text-xs font-semibold bg-stone-50 border border-stone-200 rounded-xl focus:outline-none"
                 >
                   <option value="All">All Crops</option>
                   <option value="Tomato">Tomato</option>
@@ -282,7 +282,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                 <select
                   value={selectedGrade}
                   onChange={(e) => setSelectedGrade(e.target.value)}
-                  className="px-3 py-2 text-xs font-semibold bg-stone-50 border border-stone-200 rounded-xl focus:outline-hidden"
+                  className="px-3 py-2 text-xs font-semibold bg-stone-50 border border-stone-200 rounded-xl focus:outline-none"
                 >
                   <option value="All">All Quality Grades</option>
                   <option value="A">Grade A Only</option>
@@ -510,7 +510,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
 
       {/* PLACE ORDER MODAL */}
       {selectedListing && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-stone-950/70 backdrop-blur-sm animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-stone-950/70 backdrop-blur-sm animate-fade-in">
           <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl border border-stone-200 overflow-hidden flex flex-col">
             
             <div className="flex items-center justify-between px-6 py-4 bg-gradient-to-r from-blue-900 to-indigo-950 text-white">
@@ -557,7 +557,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                   step={50}
                   value={orderQuantity}
                   onChange={(e) => setOrderQuantity(Number(e.target.value))}
-                  className="w-full px-3 py-2 text-sm font-bold border border-stone-300 rounded-xl focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 text-sm font-bold border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <span className="text-[10px] text-stone-400 mt-0.5 block">
                   Max Available in Lot: {selectedListing.quantityKg} kg
@@ -572,7 +572,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                   type="text"
                   value={deliveryAddress}
                   onChange={(e) => setDeliveryAddress(e.target.value)}
-                  className="w-full px-3 py-2 border border-stone-300 rounded-xl focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
@@ -606,7 +606,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
 
       {/* RATING MODAL */}
       {ratingOrderId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-stone-950/70 backdrop-blur-sm animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-stone-950/70 backdrop-blur-sm animate-fade-in">
           <div className="relative w-full max-w-sm bg-white rounded-3xl shadow-2xl border border-stone-200 p-6 space-y-4 text-center">
             <h3 className="font-bold text-base text-stone-900">
               Rate Farmer Fulfillment

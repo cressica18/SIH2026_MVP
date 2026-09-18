@@ -1,4 +1,4 @@
-import { PriceBand, QualityAssessment, VoiceExtractionResult } from '../types';
+import { PriceBand, QualityAssessment, VoiceExtractionResult, Listing, LogisticsPool } from '../types';
 
 // Dictionary of crop terms across Hindi, Marathi, Telugu, Punjabi, and English
 const CROP_DICTIONARY: Record<string, { standardName: string; defaultVariety: string }> = {
@@ -217,4 +217,159 @@ export async function assessProduceQuality(
     freshnessLabel: 'Fresh Farmgate Harvest',
     notes: 'Meets FSSAI table and commercial processing quality benchmarks with minimal foreign matter.',
   };
+}
+// Phase 12: Reputation API helpers
+
+export async function getReputationScore(userId: string): Promise<{
+  score: number; totalFulfilled: number; disputeCount: number; averageRating: number | null; tier: string;
+} | null> {
+  try {
+    const token = localStorage.getItem('vasundhara_token');
+    const res = await fetch(`/api/reputation/${userId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
+export async function postBuyerRating(
+  orderId: string,
+  targetUserId: string,
+  rating: number,
+  notes?: string
+): Promise<{ event: any; updatedScore: any } | null> {
+  try {
+    const token = localStorage.getItem('vasundhara_token');
+    const res = await fetch('/api/reputation/events', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ orderId, targetUserId, eventType: 'buyer_rating', scoreImpact: rating, notes }),
+    });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
+// Phase 13: Matching API helpers
+export async function getRankedListingsForBuyer(buyerId: string): Promise<Listing[]> {
+  try {
+    const token = localStorage.getItem('vasundhara_token');
+    const res = await fetch(`/api/matching/buyer/${buyerId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) return [];
+    return await res.json();
+  } catch {
+    return [];
+  }
+}
+
+// Phase 14: Logistics Pooling & Route Optimization API helpers
+export async function getLogisticsPools(): Promise<{ pools: LogisticsPool[]; total: number }> {
+  try {
+    const token = localStorage.getItem('vasundhara_token');
+    const res = await fetch('/api/logistics/pools', {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) return { pools: [], total: 0 };
+    return await res.json();
+  } catch {
+    return { pools: [], total: 0 };
+  }
+}
+
+export async function createLogisticsPool(orderIds: string[]): Promise<LogisticsPool | null> {
+  try {
+    const token = localStorage.getItem('vasundhara_token');
+    const res = await fetch('/api/logistics/pools', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ orderIds }),
+    });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
+export async function autoCreateLogisticsPools(): Promise<{ pools: LogisticsPool[]; skipped: string[]; total: number } | null> {
+  try {
+    const token = localStorage.getItem('vasundhara_token');
+    const res = await fetch('/api/logistics/pools/auto', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
+export async function getPoolRoute(poolId: string): Promise<{
+  poolId: string;
+  routeStops: any[];
+  totalStops: number;
+  estimatedDistanceKm: number;
+  estimatedDurationMinutes: number;
+} | null> {
+  try {
+    const token = localStorage.getItem('vasundhara_token');
+    const res = await fetch(`/api/logistics/pools/${poolId}/route`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
+export async function joinLogisticsPool(poolId: string): Promise<{ message: string; pool: LogisticsPool } | null> {
+  try {
+    const token = localStorage.getItem('vasundhara_token');
+    const res = await fetch(`/api/logistics/pools/${poolId}/join`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
+export async function updatePoolStatusApi(poolId: string, status: 'assigned' | 'in_transit' | 'delivered'): Promise<LogisticsPool | null> {
+  try {
+    const token = localStorage.getItem('vasundhara_token');
+    const res = await fetch(`/api/logistics/pools/${poolId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ status }),
+    });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
+export async function completePoolStop(poolId: string, stopId: string): Promise<LogisticsPool | null> {
+  try {
+    const token = localStorage.getItem('vasundhara_token');
+    const res = await fetch(`/api/logistics/pools/${poolId}/stops/${stopId}`, {
+      method: 'PATCH',
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
 }

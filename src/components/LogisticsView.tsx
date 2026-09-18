@@ -3,6 +3,7 @@ import {
   LogisticsProfile,
   LogisticsPool,
   Language,
+  Order,
 } from '../types';
 import { I18N_STRINGS } from '../data/i18n';
 import {
@@ -23,22 +24,43 @@ import {
 interface LogisticsViewProps {
   logistics: LogisticsProfile;
   pools: LogisticsPool[];
+  orders?: Order[];
   currentLanguage: Language;
   onUpdatePoolStatus: (poolId: string, status: 'assigned' | 'in_transit' | 'delivered') => void;
   onCompleteStop: (poolId: string, stopId: string) => void;
+  onCreatePool?: (orderIds: string[]) => void;
 }
 
 export const LogisticsView: React.FC<LogisticsViewProps> = ({
   logistics,
   pools,
+  orders = [],
   currentLanguage,
   onUpdatePoolStatus,
   onCompleteStop,
+  onCreatePool,
 }) => {
   const [selectedPoolId, setSelectedPoolId] = useState<string>(pools[0]?.id || '');
+  const [selectedOrdersForPool, setSelectedOrdersForPool] = useState<string[]>([]);
+  
   const t = I18N_STRINGS[currentLanguage];
 
   const currentPool = pools.find((p) => p.id === selectedPoolId) || pools[0];
+  
+  const unassignedOrders = orders.filter(o => o.status === 'confirmed' && !o.poolId);
+
+  const handleCreatePoolClick = () => {
+    if (selectedOrdersForPool.length > 0 && onCreatePool) {
+      onCreatePool(selectedOrdersForPool);
+      setSelectedOrdersForPool([]);
+    }
+  };
+
+  const toggleOrderSelection = (id: string) => {
+    setSelectedOrdersForPool(prev => 
+      prev.includes(id) ? prev.filter(oid => oid !== id) : [...prev, id]
+    );
+  };
 
   return (
     <div className="space-y-6">
@@ -80,6 +102,49 @@ export const LogisticsView: React.FC<LogisticsViewProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Create Pool Section */}
+      {unassignedOrders.length > 0 && (
+        <div className="bg-white rounded-3xl p-5 border border-stone-200 shadow-sm space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-bold text-stone-900 flex items-center gap-2">
+              <Package className="w-5 h-5 text-amber-600" />
+              Unassigned Confirmed Orders
+            </h3>
+            <button
+              onClick={handleCreatePoolClick}
+              disabled={selectedOrdersForPool.length === 0}
+              className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white text-sm font-bold rounded-xl shadow-xs transition-colors"
+            >
+              Create Optimized Pool ({selectedOrdersForPool.length})
+            </button>
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            {unassignedOrders.map(order => (
+              <div
+                key={order.id}
+                onClick={() => toggleOrderSelection(order.id)}
+                className={`p-4 rounded-2xl border cursor-pointer transition-all ${
+                  selectedOrdersForPool.includes(order.id)
+                    ? 'bg-emerald-50 border-emerald-500 shadow-sm'
+                    : 'bg-stone-50 border-stone-200 hover:border-emerald-300'
+                }`}
+              >
+                <div className="flex justify-between items-start mb-2">
+                  <span className="font-bold text-stone-900 text-sm">{order.crop}</span>
+                  <span className="text-xs font-mono bg-white px-2 py-0.5 rounded border">{order.id}</span>
+                </div>
+                <div className="text-xs text-stone-600 space-y-1">
+                  <p>Load: <span className="font-semibold text-stone-900">{order.quantityKg} kg</span></p>
+                  <p className="truncate">From: {order.sellerVillage}, {order.sellerDistrict}</p>
+                  <p className="truncate">To: {order.deliveryAddress.split(',')[0]}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Pools & Route Optimizer Section */}
       {currentPool ? (

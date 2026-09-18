@@ -9,6 +9,12 @@ import listingRoutes from './routes/listingRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
 import notificationRoutes from './routes/notificationRoutes.js';
 import logisticsRoutes from './routes/logisticsRoutes.js';
+import authRoutes from './routes/authRoutes.js';
+import userRoutes from './routes/userRoutes.js';
+import financeRoutes from './routes/financeRoutes.js';
+import schemeRoutes from './routes/schemeRoutes.js';
+import reputationRoutes from './routes/reputationRoutes.js';
+import matchingRoutes from './routes/matchingRoutes.js';
 
 dotenv.config();
 
@@ -28,6 +34,8 @@ app.get('/api/health', (_req: Request, res: Response) => {
 });
 
 // Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
 app.use('/api/voice', voiceRoutes);
 app.use('/api/quality', qualityRoutes);
 app.use('/api/market', marketRoutes);
@@ -35,6 +43,10 @@ app.use('/api/listings', listingRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/logistics', logisticsRoutes);
+app.use('/api/finance', financeRoutes);
+app.use('/api/schemes', schemeRoutes);
+app.use('/api/reputation', reputationRoutes);
+app.use('/api/matching', matchingRoutes);
 
 // 404 handler
 app.use((_req: Request, res: Response) => {

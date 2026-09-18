@@ -30,7 +30,7 @@ interface BuyerViewProps {
   orders: Order[];
   currentLanguage: Language;
   onPlaceOrder: (order: Order) => void;
-  onConfirmOrder: (orderId: string) => void;
+  onUpdateOrderStatus: (orderId: string, status: string) => void;
   onRateFarmer: (orderId: string, rating: number) => void;
   initialTab?: string;
 }
@@ -41,7 +41,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
   orders,
   currentLanguage,
   onPlaceOrder,
-  onConfirmOrder,
+  onUpdateOrderStatus,
   onRateFarmer,
   initialTab = 'marketplace',
 }) => {
@@ -320,7 +320,11 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                       className="w-full h-full object-cover"
                     />
                     <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
-                      <span className="px-2 py-0.5 rounded-lg text-xs font-bold bg-white/95 text-stone-900 shadow-xs">
+                      <span className={`px-2 py-0.5 rounded-lg text-xs font-bold shadow-sm ${
+                        item.quality.grade === 'A' ? 'bg-emerald-600 text-white' :
+                        item.quality.grade === 'B' ? 'bg-amber-500 text-white' :
+                        'bg-rose-600 text-white'
+                      }`}>
                         Grade {item.quality.grade}
                       </span>
                       <span className="px-2 py-0.5 rounded-lg text-xs font-mono font-bold bg-stone-900/80 text-amber-300">
@@ -365,8 +369,12 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                         <span className="font-bold text-emerald-700">₹{item.priceAi.fair}/kg</span>
                       </div>
                       <div className="flex items-center justify-between text-stone-600">
-                        <span>Freshness:</span>
-                        <span className="font-bold text-stone-800">{item.quality.freshnessLabel}</span>
+                        <span>CNN Quality:</span>
+                        <span className={`font-bold ${
+                          item.quality.grade === 'A' ? 'text-emerald-700' :
+                          item.quality.grade === 'B' ? 'text-amber-600' :
+                          'text-rose-600'
+                        }`}>{item.quality.freshnessLabel} ({item.quality.confidence}%)</span>
                       </div>
                     </div>
 
@@ -477,7 +485,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
 
                 {/* Identity Reveal Success Alert Box */}
                 {ord.identityRevealed && (
-                  <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-900 flex items-start gap-2">
+                  <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-900 flex items-start gap-2 mt-3">
                     <CheckCircle2 className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" />
                     <div>
                       <p className="font-bold">
@@ -487,6 +495,19 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                         You can coordinate dispatch directly with farmer <span className="font-semibold text-stone-900">{ord.sellerRealName}</span> at <span className="font-semibold text-stone-900">{ord.sellerPhone}</span>.
                       </p>
                     </div>
+                  </div>
+                )}
+
+                {/* Settlement Button for Delivered Orders */}
+                {ord.status === 'delivered' && (
+                  <div className="pt-2 flex justify-end">
+                    <button
+                      onClick={() => onUpdateOrderStatus(ord.id, 'settled')}
+                      className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition-colors cursor-pointer flex items-center gap-1"
+                    >
+                      <IndianRupee className="w-3.5 h-3.5" />
+                      <span>Release Payment & Settle</span>
+                    </button>
                   </div>
                 )}
 
@@ -529,10 +550,10 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
               <div className="p-3 bg-blue-50 border border-blue-200 rounded-xl text-blue-900 space-y-1">
                 <p className="font-bold flex items-center gap-1">
                   <ShieldCheck className="w-4 h-4 text-blue-700" />
-                  Identity Reveal on Order Commitment
+                  Farmer Confirmation Required
                 </p>
                 <p className="text-stone-600">
-                  By clicking Confirm, the order status moves to <span className="font-bold text-stone-900">Confirmed</span> and farmer {selectedListing.anonSellerId}'s contact details will be automatically disclosed.
+                  By clicking Confirm, your request is sent to the farmer. The order status becomes <span className="font-bold text-stone-900">Pending</span>. Once the farmer accepts, their contact details will be disclosed.
                 </p>
               </div>
 
@@ -593,10 +614,13 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
 
               <button
                 type="button"
-                onClick={handleSubmitOrder}
+                onClick={() => {
+                  handleSubmitOrder();
+                  setSelectedListing(null);
+                }}
                 className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-xl shadow-md transition-all cursor-pointer active:scale-98"
               >
-                Commit Order & Unlock Identity
+                Request Order (Pending Farmer Approval)
               </button>
             </div>
 

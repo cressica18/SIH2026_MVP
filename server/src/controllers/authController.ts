@@ -1,10 +1,10 @@
 // Authentication controllers: OTP send/verify, JWT issuance, profile lookup, token refresh.
 // Dev mode: OTP is logged to console and auto-verified (6-digit, 5 min expiry).
 
-import { Request, Response } from 'express';
-import { store } from '../data/store.js';
+import { Response } from 'express';
 import { SEED_FARMERS, SEED_BUYERS, SEED_LOGISTICS } from '../data/seedData.js';
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../core/security.js';
+import { AuthRequest } from '../middleware/auth.js';
 
 // OTP store: maps phone -> { otp, expiresAt }
 const otpStore: Map<string, { otp: string; expiresAt: number }> = new Map();
@@ -13,8 +13,10 @@ function generateOtp(): string {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-export function sendOtp(req: Request, res: Response): void {
-  const { phone } = req.body;
+export function sendOtp(req: AuthRequest, res: Response): void {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const body = req.body as any;
+  const phone: string | undefined = body?.phone;
 
   if (!phone || typeof phone !== 'string' || !phone.startsWith('+91')) {
     res.status(400).json({ error: 'Valid Indian phone number (+91...) is required' });
@@ -32,8 +34,11 @@ export function sendOtp(req: Request, res: Response): void {
   res.json({ message: 'OTP sent successfully', phone });
 }
 
-export function verifyOtp(req: Request, res: Response): void {
-  const { phone, otp } = req.body;
+export function verifyOtp(req: AuthRequest, res: Response): void {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const body = req.body as any;
+  const phone: string | undefined = body?.phone;
+  const otp: string | undefined = body?.otp;
 
   if (!phone || !otp) {
     res.status(400).json({ error: 'Phone and OTP are required' });
@@ -58,39 +63,27 @@ export function verifyOtp(req: Request, res: Response): void {
   }
 
   // OTP verified — find user in seed data
-  const allUsers = [
-    ...store.listings.flatMap((l) => []),
-  ];
-
-  // Search all seed data for a matching user
-  const farmer = store.listings.find(() => false); // placeholder
-  const seedData = require('../data/seedData.js');
-  const allFarmers = seedData.SEED_FARMERS;
-  const allBuyers = seedData.SEED_BUYERS;
-  const allLogistics = seedData.SEED_LOGISTICS;
-
-  const user = [...allFarmers, ...allBuyers, ...allLogistics].find(
+  const user = [...SEED_FARMERS, ...SEED_BUYERS, ...SEED_LOGISTICS].find(
     (u) => u.phone === phone
   );
 
+  // Clean up used OTP
+  otpStore.delete(phone);
+
   if (!user) {
-    // User not in seed data — register as new user
+    // Phone not in seed data — register as new farmer
+    const newId = `user_${Date.now()}`;
+    const accessToken = generateAccessToken({ userId: newId, phone, role: 'farmer' });
+    const refreshToken = generateRefreshToken({ userId: newId, phone, role: 'farmer' });
     res.status(201).json({
-      message: 'Phone verified. User registered.',
-      tokens: {
-        accessToken: generateAccessToken({ userId: `user_${Date.now()}`, phone, role: 'farmer' }),
-        refreshToken: generateRefreshToken({ userId: `user_${Date.now()}`, phone, role: 'farmer' }),
-      },
-      user: { phone, role: 'farmer', name: phone, id: `user_${Date.now()}` },
+      message: 'Phone verified. New user registered.',
+      tokens: { accessToken, refreshToken },
+      user: { id: newId, phone, role: 'farmer', name: phone },
     });
     return;
   }
 
   const { id, name, role } = user;
-
-  // Clean up used OTP
-  otpStore.delete(phone);
-
   const accessToken = generateAccessToken({ userId: id, phone, role });
   const refreshToken = generateRefreshToken({ userId: id, phone, role });
 
@@ -101,7 +94,7 @@ export function verifyOtp(req: Request, res: Response): void {
   });
 }
 
-export function getMe(req: Request, res: Response): void {
+export function getMe(req: AuthRequest, res: Response): void {
   const user = req.user;
   if (!user) {
     res.status(401).json({ error: 'Authentication required' });
@@ -109,13 +102,7 @@ export function getMe(req: Request, res: Response): void {
   }
 
   // Find full profile from seed data
-  const seedData = require('../data/seedData.js');
-  const allUsers = [
-    ...seedData.SEED_FARMERS,
-    ...seedData.SEED_BUYERS,
-    ...seedData.SEED_LOGISTICS,
-  ];
-
+  const allUsers = [...SEED_FARMERS, ...SEED_BUYERS, ...SEED_LOGISTICS];
   const profile = allUsers.find((u) => u.id === user.userId || u.phone === user.phone);
 
   if (profile) {
@@ -125,15 +112,17 @@ export function getMe(req: Request, res: Response): void {
   }
 }
 
-export function refreshToken(req: Request, res: Response): void {
-  const { refreshToken } = req.body;
+export function refreshToken(req: AuthRequest, res: Response): void {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const body = req.body as any;
+  const token: string | undefined = body?.refreshToken;
 
-  if (!refreshToken) {
+  if (!token) {
     res.status(400).json({ error: 'Refresh token is required' });
     return;
   }
 
-  const claims = verifyRefreshToken(refreshToken);
+  const claims = verifyRefreshToken(token);
   if (!claims) {
     res.status(401).json({ error: 'Invalid or expired refresh token' });
     return;

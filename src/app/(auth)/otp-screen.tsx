@@ -1,119 +1,135 @@
-import React, { useState } from 'react';
-import { Mic, MicOff, ShieldCheck, X, CheckCircle2 } from 'lucide-react';
-import { I18N_STRINGS } from '../data/i18n';
-import { useAuth } from '../lib/auth-context';
-import { useTranslation } from 'react-i18next';
+import React, { useState, useEffect } from 'react';
+import { Mic, ShieldCheck, X, Loader2 } from 'lucide-react';
+import { I18N_STRINGS } from '../../data/i18n';
+import { useAuth, UserRole } from '../../lib/auth-context';
 
 interface OtpScreenProps {
   initialLanguage?: 'en' | 'hi' | 'mr' | 'te' | 'pa';
+  onSuccess?: (role: UserRole) => void;
 }
 
 export const OtpScreen: React.FC<OtpScreenProps> = ({
   initialLanguage = 'en',
+  onSuccess,
 }) => {
-  const { t } = useTranslation();
   const [language, setLanguage] = useState<'en' | 'hi' | 'mr' | 'te' | 'pa'>(initialLanguage);
-  const [phone, setPhone] = useState<string>('');
+  const [phone, setPhone] = useState<string>('+91');
   const [otp, setOtp] = useState<string>('');
   const [showOtpInput, setShowOtpInput] = useState(false);
+  const [isSending, setIsSending] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
   const [error, setError] = useState<string>('');
-  const { loginWithOtp, verifyOtp, isAuthenticated } = useAuth();
+  const [devOtpHint, setDevOtpHint] = useState<string>('');
 
-  const handleLanguageChange = (lang: 'en' | 'hi' | 'mr' | 'te' | 'pa') => {
-    setLanguage(lang);
+  const { loginWithOtp, verifyOtp, isAuthenticated, pendingPhone } = useAuth();
+  const t = I18N_STRINGS[language];
+
+  useEffect(() => {
+    const phoneInput = document.getElementById('phone-input');
+    if (phoneInput) (phoneInput as HTMLInputElement).focus();
+  }, []);
+
+  // Role → dashboard path
+  const rolePath = (role: UserRole) => {
+    switch (role) {
+      case 'buyer': return '/buyer';
+      case 'logistics': return '/logistics';
+      case 'admin': return '/admin';
+      default: return '/farmer';
+    }
   };
 
+  if (isAuthenticated) {
+    return null; // App.tsx already showing the correct role dashboard
+  }
+
   const handleSendOtp = async () => {
-    if (!phone || !phone.startsWith('+91')) {
-      setError('Valid Indian phone number (+91...) is required');
+    const trimmedPhone = phone.trim();
+    if (!trimmedPhone || !trimmedPhone.startsWith('+91') || trimmedPhone.length < 10) {
+      setError('Enter a valid Indian phone number starting with +91');
       return;
     }
     setError('');
-    setIsVerifying(true);
+    setIsSending(true);
     try {
-      await loginWithOtp(phone);
+      await loginWithOtp(trimmedPhone);
       setShowOtpInput(true);
-    } catch (e: any) {
-      setError(e.message || 'Failed to send OTP');
+      setDevOtpHint('Check server console for the OTP (dev mode)');
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'Failed to send OTP. Check server.');
     } finally {
-      setIsVerifying(false);
+      setIsSending(false);
     }
   };
 
   const handleVerifyOtp = async () => {
     if (!otp || otp.length !== 6) {
-      setError('Please enter a valid 6-digit OTP');
+      setError('Enter the 6-digit OTP');
       return;
     }
+    const phoneToVerify = pendingPhone || phone.trim();
     setIsVerifying(true);
+    setError('');
     try {
-      const verified = await verifyOtp(otp);
-      if (verified) {
-        // Redirect based on role - in a full app this would use the role from JWT
-        // For now, redirect to farmer dashboard
-        // In real implementation, we'd check the role from the JWT claims
-        window.location.href = '/farmer';
+      const result = await verifyOtp(phoneToVerify, otp);
+      if (result.success && result.role) {
+        if (onSuccess) {
+          onSuccess(result.role);
+        } else {
+          window.location.href = rolePath(result.role);
+        }
       } else {
         setError('Invalid OTP. Please try again.');
       }
-    } catch (e: any) {
-      setError(e.message || 'Verification failed');
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'Verification failed');
     } finally {
       setIsVerifying(false);
     }
   };
 
-  // Auto-focus phone input on mount
-  useEffect(() => {
-    const phoneInput = document.getElementById('phone-input');
-    if (phoneInput) phoneInput.focus();
-  }, []);
-
-  if (isAuthenticated) {
-    // Already logged in, redirect based on role
-    // This shouldn't happen on the auth screen, but just in case
-    setTimeout(() => {
-      window.location.href = '/farmer';
-    }, 100);
-    return null;
-  }
+  const handleKeyDown = (e: React.KeyboardEvent, action: () => void) => {
+    if (e.key === 'Enter') action();
+  };
 
   return (
-    <div className="min-h-screen bg-stone-100/70 flex items-center justify-center p-4 sm:p-6">
-      <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl border border-stone-200 overflow-hidden flex flex-col max-h-[90vh]">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-100 flex items-center justify-center p-4 sm:p-6">
+      <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl border border-emerald-100 overflow-hidden flex flex-col">
 
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 bg-gradient-to-r from-emerald-600 to-teal-900 text-white">
-          <div className="flex items-center gap-2">
-            <ShieldCheck className="w-5 h-5 text-emerald-300" />
+        <div className="flex items-center justify-between px-6 py-5 bg-gradient-to-r from-emerald-600 to-teal-700 text-white">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-emerald-500/30 rounded-xl">
+              <ShieldCheck className="w-5 h-5 text-emerald-200" />
+            </div>
             <div>
-              <h3 className="text-base font-bold">
-                {t.auth.title || 'Welcome to Vasundhara'}
-              </h3>
+              <h1 className="text-base font-bold tracking-tight">Vasundhara / वसुंधरा</h1>
               <p className="text-xs text-emerald-200">
-                {t.auth.subtitle || 'Phone number OTP verification'}
+                {t.appName} — {t.tagline}
               </p>
             </div>
           </div>
           <button
             onClick={() => window.history.back()}
-            className="p-1 text-emerald-200 hover:text-white rounded-full transition-colors cursor-pointer"
+            className="p-1.5 text-emerald-200 hover:text-white rounded-lg transition-colors"
+            aria-label="Close"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
-        {/* Form Section */}
-        <div className="p-6 overflow-y-auto space-y-5">
-
+        <div className="p-6 space-y-5">
           {/* Language Selector */}
-          <div className="p-3 bg-stone-50 border border-stone-200 rounded-xl text-xs text-stone-600 flex items-center gap-2">
-            <span className="font-medium text-stone-800">Language</span>
+          <div className="flex items-center gap-2 p-3 bg-stone-50 border border-stone-200 rounded-xl">
+            <Mic className="w-4 h-4 text-stone-400" />
+            <label className="text-xs font-semibold text-stone-700" htmlFor="lang-select">
+              Language
+            </label>
             <select
+              id="lang-select"
               value={language}
-              onChange={(e) => setLanguage(e.target.value as any)}
-              className="bg-transparent font-medium text-stone-800 focus:outline-none cursor-pointer"
+              onChange={(e) => setLanguage(e.target.value as typeof language)}
+              className="ml-auto bg-transparent text-xs font-medium text-stone-800 focus:outline-none cursor-pointer"
             >
               <option value="en">English (EN)</option>
               <option value="hi">हिंदी (HI)</option>
@@ -125,92 +141,97 @@ export const OtpScreen: React.FC<OtpScreenProps> = ({
 
           {/* Phone Input */}
           {!showOtpInput && (
-            <div>
-              <div className="p-3 bg-stone-50 border border-stone-200 rounded-xl mb-4">
-                <label className="block text-xs font-bold text-stone-700 mb-1">
-                  {t.auth.phoneLabel || 'Phone Number'}
+            <div className="space-y-3">
+              <div>
+                <label htmlFor="phone-input" className="block text-xs font-bold text-stone-700 mb-1.5">
+                  Phone Number / मोबाईल नंबर
                 </label>
                 <input
                   type="tel"
                   id="phone-input"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  placeholder="+91 98231 44521"
-                  className="w-full px-3 py-2 text-xs font-semibold bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                  maxLength="15"
+                  onKeyDown={(e) => handleKeyDown(e, handleSendOtp)}
+                  placeholder="+91 98765 43210"
+                  className="w-full px-4 py-3 text-sm font-semibold bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
+                  maxLength={15}
+                  inputMode="tel"
                 />
-                <p className="text-xs text-stone-500 mt-1">
-                  {t.auth.phoneHint || 'Enter your Indian mobile number'}
+                <p className="text-xs text-stone-400 mt-1.5">
+                  Use a seeded phone: +919876543210 (farmer), +919876543211 (buyer)
                 </p>
               </div>
 
               <button
+                id="send-otp-btn"
                 onClick={handleSendOtp}
-                disabled={isVerifying || !phone.startsWith('+91')}
-                className={`w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-md transition-all cursor-pointer ${
-                  (!phone.startsWith('+91') || isVerifying)
-                    ? 'opacity-50 cursor-not-allowed'
-                    : 'cursor-pointer'
-                }`}
+                disabled={isSending || phone.length < 10}
+                className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold text-sm rounded-xl shadow-md transition-all flex items-center justify-center gap-2"
               >
-                {isVerifying ? 'Sending OTP...' : 'Send OTP'}
+                {isSending && <Loader2 className="w-4 h-4 animate-spin" />}
+                {isSending ? 'Sending OTP...' : 'Send OTP →'}
               </button>
-              {error && (
-                <p className="mt-2 text-sm text-rose-600">{error}</p>
-              )}
             </div>
           )}
 
-          {/* OTP Verification */}
+          {/* OTP Input */}
           {showOtpInput && (
-            <div>
-              <p className="text-xs text-stone-500 mb-3">
-                {t.auth.otpReceived || 'OTP sent to your phone'}
-              </p>
+            <div className="space-y-3">
+              <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-700">
+                OTP sent to <strong>{pendingPhone || phone}</strong>
+                {devOtpHint && (
+                  <span className="block mt-0.5 text-stone-500">{devOtpHint}</span>
+                )}
+              </div>
 
-              <div className="p-3 bg-stone-50 border border-stone-200 rounded-xl mb-4">
+              <div>
+                <label htmlFor="otp-input" className="block text-xs font-bold text-stone-700 mb-1.5">
+                  Enter 6-digit OTP
+                </label>
                 <input
                   type="text"
+                  id="otp-input"
                   value={otp}
-                  onChange={(e) => setOtp(e.target.value)}
+                  onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                  onKeyDown={(e) => handleKeyDown(e, handleVerifyOtp)}
                   placeholder="123456"
-                  maxLength="6"
-                  className="w-full px-3 py-2 text-xl text-stone-900 font-bold border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-center"
+                  maxLength={6}
+                  inputMode="numeric"
+                  className="w-full px-4 py-3 text-2xl font-bold tracking-[0.5em] text-stone-900 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-center transition-all"
                 />
-                <p className="text-xs text-stone-500 mt-1">
-                  {t.auth.otpHint || 'Enter the 6-digit OTP sent to your phone'}
-                </p>
               </div>
 
               <button
+                id="verify-otp-btn"
                 onClick={handleVerifyOtp}
                 disabled={isVerifying || otp.length !== 6}
-                className={`w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-md transition-all cursor-pointer ${
-                  otp.length !== 6 || isVerifying
-                    ? 'opacity-50 cursor-not-allowed'
-                    : 'cursor-pointer'
-                }`}
+                className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold text-sm rounded-xl shadow-md transition-all flex items-center justify-center gap-2"
               >
-                {isVerifying ? 'Verifying OTP...' : 'Verify OTP'}
+                {isVerifying && <Loader2 className="w-4 h-4 animate-spin" />}
+                {isVerifying ? 'Verifying...' : 'Verify OTP & Continue →'}
               </button>
-              {error && (
-                <p className="mt-2 text-sm text-rose-600">{error}</p>
-              )}
 
-              {isVerifying && (
-                <p className="mt-3 text-xs text-stone-500">
-                  {t.auth.verifying || 'Verifying...'}
-                </p>
-              )}
+              <button
+                onClick={() => { setShowOtpInput(false); setOtp(''); setError(''); }}
+                className="w-full py-2 text-xs text-stone-500 hover:text-stone-700 transition-colors"
+              >
+                ← Use a different phone number
+              </button>
+            </div>
+          )}
+
+          {/* Error */}
+          {error && (
+            <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700 font-medium">
+              {error}
             </div>
           )}
         </div>
 
-        {/* Footer notice */}
-        <div className="p-3 bg-stone-50 border-t border-stone-200 text-xs text-stone-600">
-          {t.auth.noAccount || 'Do not have an account? Register below.'}
+        {/* Footer */}
+        <div className="px-6 py-3 bg-stone-50 border-t border-stone-100 text-xs text-stone-500 text-center">
+          Secure OTP login — your identity stays anonymous until you confirm a trade.
         </div>
-
       </div>
     </div>
   );

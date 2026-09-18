@@ -1,7 +1,7 @@
 // In-memory data store backed by seed data.
 // This layer can be replaced with PostgreSQL/Prisma/Redis later.
 import {
-  Listing, Order, LogisticsPool, AppNotification,
+  Listing, Order, LogisticsPool, AppNotification, AdvanceRequest, ReputationEvent
 } from '../types.js';
 import {
   SEED_LISTINGS, SEED_ORDERS, SEED_LOGISTICS_POOLS,
@@ -18,6 +18,8 @@ export interface DataStore {
   orders: Order[];
   pools: LogisticsPool[];
   notifications: AppNotification[];
+  advances: AdvanceRequest[];
+  reputationEvents: ReputationEvent[];
 }
 
 export const createStore = (): DataStore => ({
@@ -25,6 +27,8 @@ export const createStore = (): DataStore => ({
   orders: cloneSeed(SEED_ORDERS),
   pools: cloneSeed(SEED_LOGISTICS_POOLS),
   notifications: cloneSeed(SEED_NOTIFICATIONS),
+  advances: [],
+  reputationEvents: [],
 });
 
 // Singleton store for in-memory usage

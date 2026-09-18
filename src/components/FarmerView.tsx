@@ -8,6 +8,7 @@ import {
   Language,
   QualityAssessment,
   PriceBand,
+  AdvanceRequest,
 } from '../types';
 import { I18N_STRINGS } from '../data/i18n';
 import {
@@ -15,6 +16,7 @@ import {
   getAiPriceRecommendation,
   assessProduceQuality,
 } from '../lib/api-client';
+import { useVoiceCapture } from '../hooks/useVoiceCapture';
 import {
   Mic,
   MicOff,
@@ -44,9 +46,13 @@ interface FarmerViewProps {
   orders: Order[];
   schemes: GovScheme[];
   riskAssessment: RiskAssessment;
+  advances?: AdvanceRequest[];
   currentLanguage: Language;
   onAddListing: (listing: Listing) => void;
+  onUpdateListingStatus?: (id: string, status: string) => void;
+  onUpdateOrderStatus?: (orderId: string, status: string) => void;
   onOpenAepsModal: (amount: number) => void;
+  onRequestAdvance?: (amount: number, purpose: string, simulateAeps: boolean) => void;
   onSubmitSafetyReport: (report: {
     category: any;
     description: string;
@@ -62,9 +68,13 @@ export const FarmerView: React.FC<FarmerViewProps> = ({
   orders,
   schemes,
   riskAssessment,
+  advances = [],
   currentLanguage,
   onAddListing,
+  onUpdateListingStatus,
+  onUpdateOrderStatus,
   onOpenAepsModal,
+  onRequestAdvance,
   onSubmitSafetyReport,
   initialTab = 'listings',
 }) => {
@@ -82,18 +92,20 @@ export const FarmerView: React.FC<FarmerViewProps> = ({
 
   // Voice Listing Creation Modal State
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [isRecording, setIsRecording] = useState(false);
   const [speechTranscript, setSpeechTranscript] = useState('');
   const [cropInput, setCropInput] = useState('Tomato');
   const [varietyInput, setVarietyInput] = useState('Abhinav Hybrid');
   const [quantityInput, setQuantityInput] = useState<number>(2000);
   const [priceInput, setPriceInput] = useState<number>(18);
   const [isProcessingAI, setIsProcessingAI] = useState(false);
+  const [isAssessingQuality, setIsAssessingQuality] = useState(false);
   const [aiPriceBand, setAiPriceBand] = useState<PriceBand | null>(null);
   const [qualityGrade, setQualityGrade] = useState<QualityAssessment | null>(null);
   const [selectedPhotoUrl, setSelectedPhotoUrl] = useState<string>(
     'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=600&auto=format&fit=crop&q=80'
   );
+  // base64 image data for CNN quality API call
+  const [photoBase64, setPhotoBase64] = useState<string>('');
 
   // Safety Report Form State
   const [safetyCategory, setSafetyCategory] = useState<string>('Underpricing & Cartel');
@@ -108,92 +120,75 @@ export const FarmerView: React.FC<FarmerViewProps> = ({
     setAiPriceBand(band);
   }, [cropInput, farmer.district]);
 
-  // Initial quality scan simulation
+  // Trigger quality assessment via CNN API whenever photo or crop changes
   useEffect(() => {
-    assessProduceQuality(selectedPhotoUrl, cropInput).then(setQualityGrade);
-  }, [selectedPhotoUrl, cropInput]);
+    setIsAssessingQuality(true);
+    setQualityGrade(null);
+    // Pass base64 image data if available, otherwise pass URL as fallback identifier
+    assessProduceQuality(photoBase64 || selectedPhotoUrl, cropInput)
+      .then(setQualityGrade)
+      .finally(() => setIsAssessingQuality(false));
+  }, [selectedPhotoUrl, photoBase64, cropInput]);
+
+  // Handle file input: convert to base64 and update photo state
+  const handlePhotoFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      const base64 = evt.target?.result as string;
+      setPhotoBase64(base64);
+      setSelectedPhotoUrl(base64);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // Demo crop photos for judges to try CNN assessment without a camera
+  const DEMO_PHOTOS: Record<string, { url: string; label: string }[]> = {
+    Tomato: [
+      { url: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=600&auto=format&fit=crop&q=80', label: 'Ripe Batch A' },
+      { url: 'https://images.unsplash.com/photo-1627626775846-122b778965ae?w=600&auto=format&fit=crop&q=80', label: 'Mixed Harvest B' },
+    ],
+    Onion: [
+      { url: 'https://images.unsplash.com/photo-1508747703725-719777637510?w=600&auto=format&fit=crop&q=80', label: 'Nashik Red A' },
+    ],
+    Potato: [
+      { url: 'https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=600&auto=format&fit=crop&q=80', label: 'Kufri Jyoti A' },
+    ],
+    'Green Chilli': [
+      { url: 'https://images.unsplash.com/photo-1588252820310-3a69f25f6688?w=600&auto=format&fit=crop&q=80', label: 'G4 Hot Pepper A' },
+    ],
+    Soybean: [
+      { url: 'https://images.unsplash.com/photo-1531912942579-bc411c69ad64?w=600&auto=format&fit=crop&q=80', label: 'JS-9560 Premium A' },
+    ],
+    Wheat: [
+      { url: 'https://images.unsplash.com/photo-1504638465-8dab2f5e7e4a?w=600&auto=format&fit=crop&q=80', label: 'Sharbati Gold A' },
+    ],
+  };
+
+  const handleVoiceResult = async (transcript: string) => {
+    setSpeechTranscript(transcript);
+    setIsProcessingAI(true);
+    const result = await extractVoiceListing(transcript, currentLanguage);
+    setCropInput(result.crop);
+    setVarietyInput(result.variety);
+    setQuantityInput(result.quantityKg);
+    setPriceInput(result.priceExpected);
+    setIsProcessingAI(false);
+  };
+
+  const { isRecording, startRecording, stopRecording } = useVoiceCapture(
+    currentLanguage,
+    handleVoiceResult
+  );
 
   // Web Speech API Voice Capture Handler
   const handleToggleRecording = () => {
     if (isRecording) {
-      setIsRecording(false);
-      return;
-    }
-
-    const SpeechRecognition =
-      (window as any).SpeechRecognition ||
-      (window as any).webkitSpeechRecognition;
-
-    if (!SpeechRecognition) {
-      // Fallback simulated speech
-      setIsRecording(true);
-      setTimeout(async () => {
-        const simulatedSpoken =
-          currentLanguage === 'hi'
-            ? 'दो क्विंटल टमाटर, अठारह रुपये किलो'
-            : currentLanguage === 'mr'
-            ? 'दोन क्विंटल टोमॅटो, वीस रुपये किलो'
-            : currentLanguage === 'pa'
-            ? 'ਪੰਜਾਹ ਕੁਇੰਟਲ ਆਲੂ, ਚੌਦਾਂ ਰੁਪਏ ਕਿਲੋ'
-            : currentLanguage === 'te'
-            ? 'రెండు క్వింటాళ్ల టమోటా, కిలో పద్దెనిమిది రూపాయలు'
-            : '2 quintal tomato, expecting 18 rupees per kg';
-
-        setSpeechTranscript(simulatedSpoken);
-        setIsRecording(false);
-        setIsProcessingAI(true);
-        const result = await extractVoiceListing(simulatedSpoken, currentLanguage);
-        setCropInput(result.crop);
-        setVarietyInput(result.variety);
-        setQuantityInput(result.quantityKg);
-        setPriceInput(result.priceExpected);
-        setIsProcessingAI(false);
-      }, 1500);
-      return;
-    }
-
-    try {
-      const recognition = new SpeechRecognition();
-      recognition.continuous = false;
-      recognition.interimResults = false;
-      const langMap: Record<Language, string> = {
-        en: 'en-IN',
-        hi: 'hi-IN',
-        mr: 'mr-IN',
-        te: 'te-IN',
-        pa: 'pa-IN',
-      };
-      recognition.lang = langMap[currentLanguage] || 'en-IN';
-
-      recognition.onstart = () => {
-        setIsRecording(true);
-      };
-
-      recognition.onresult = async (event: any) => {
-        const transcript = event.results[0][0].transcript;
-        setSpeechTranscript(transcript);
-        setIsRecording(false);
-        setIsProcessingAI(true);
-
-        const result = await extractVoiceListing(transcript, currentLanguage);
-        setCropInput(result.crop);
-        setVarietyInput(result.variety);
-        setQuantityInput(result.quantityKg);
-        setPriceInput(result.priceExpected);
-        setIsProcessingAI(false);
-      };
-
-      recognition.onerror = () => {
-        setIsRecording(false);
-      };
-
-      recognition.onend = () => {
-        setIsRecording(false);
-      };
-
-      recognition.start();
-    } catch {
-      setIsRecording(false);
+      stopRecording();
+    } else {
+      startRecording();
     }
   };
 
@@ -474,9 +469,19 @@ export const FarmerView: React.FC<FarmerViewProps> = ({
 
                   <div className="text-[11px] text-stone-400 flex items-center justify-between pt-1">
                     <span>Added {item.createdAt}</span>
-                    <span className="text-emerald-700 font-semibold">
-                      {item.createdVia === 'voice' ? '🎙️ Voice listed' : '⌨️ Text listed'}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-emerald-700 font-semibold">
+                        {item.createdVia === 'voice' ? '🎙️ Voice' : '⌨️ Text'}
+                      </span>
+                      {item.status === 'active' && onUpdateListingStatus && (
+                        <button
+                          onClick={() => onUpdateListingStatus(item.id, 'withdrawn')}
+                          className="px-2 py-1 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded-md font-medium transition-colors"
+                        >
+                          Withdraw
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -563,7 +568,7 @@ export const FarmerView: React.FC<FarmerViewProps> = ({
 
                 {/* Identity Reveal Alert Box */}
                 {ord.identityRevealed && (
-                  <div className="p-3 bg-blue-50/80 border border-blue-200 rounded-xl text-xs text-blue-900 space-y-1">
+                  <div className="p-3 bg-blue-50/80 border border-blue-200 rounded-xl text-xs text-blue-900 space-y-1 mt-3">
                     <p className="font-bold flex items-center gap-1.5">
                       <ShieldCheck className="w-4 h-4 text-blue-700" />
                       Trade Confirmed: Mutual Identity Unlocked
@@ -571,6 +576,19 @@ export const FarmerView: React.FC<FarmerViewProps> = ({
                     <p className="text-blue-800">
                       Buyer delivery address: <span className="font-semibold">{ord.deliveryAddress}</span>. Logistics carrier is assigned to handle farmgate dispatch.
                     </p>
+                  </div>
+                )}
+
+                {/* Confirm Order Action */}
+                {ord.status === 'pending' && onUpdateOrderStatus && (
+                  <div className="pt-2 flex justify-end">
+                    <button
+                      onClick={() => onUpdateOrderStatus(ord.id, 'confirmed')}
+                      className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition-colors cursor-pointer flex items-center gap-1.5"
+                    >
+                      <ShieldCheck className="w-4 h-4" />
+                      <span>Confirm Order & Reveal Identity</span>
+                    </button>
                   </div>
                 )}
               </div>
@@ -657,7 +675,15 @@ export const FarmerView: React.FC<FarmerViewProps> = ({
               </div>
 
               <button
-                onClick={() => onOpenAepsModal(riskAssessment.eligibleAdvanceAmount)}
+                onClick={() => {
+                  // Direct trigger if onRequestAdvance is used. The UI requirement says "simulate AEPS cash-out".
+                  // We'll call onRequestAdvance if available to record the backend state, which then opens the modal.
+                  if (onRequestAdvance) {
+                    onRequestAdvance(riskAssessment.eligibleAdvanceAmount, 'Pre-Harvest Liquidity', true);
+                  } else {
+                    onOpenAepsModal(riskAssessment.eligibleAdvanceAmount);
+                  }
+                }}
                 className="px-5 py-3 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white font-bold text-sm rounded-xl shadow-md shadow-teal-700/20 flex items-center gap-2 cursor-pointer transition-all active:scale-95"
               >
                 <IndianRupee className="w-4 h-4" />
@@ -698,6 +724,28 @@ export const FarmerView: React.FC<FarmerViewProps> = ({
                 {riskAssessment.explanation}
               </p>
             </div>
+
+            {/* Advance Request History */}
+            {advances.length > 0 && (
+              <div className="pt-4 border-t border-stone-100">
+                <h4 className="font-bold text-stone-900 mb-3 text-sm">Working Capital Request History</h4>
+                <div className="space-y-3">
+                  {advances.map(adv => (
+                    <div key={adv.id} className="flex justify-between items-center p-3 rounded-xl border border-stone-100 bg-white shadow-xs">
+                      <div>
+                        <p className="font-bold text-stone-900">₹{adv.amountRequested.toLocaleString('en-IN')}</p>
+                        <p className="text-xs text-stone-500">Ref: {adv.aepsTxnRef || adv.id}</p>
+                      </div>
+                      <span className={`px-2 py-1 rounded-full text-xs font-bold uppercase ${
+                        adv.status === 'disbursed' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
+                      }`}>
+                        {adv.status}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -936,6 +984,80 @@ export const FarmerView: React.FC<FarmerViewProps> = ({
                 </div>
               </div>
 
+              {/* Photo Upload & CNN Quality Assessment Section */}
+              <div className="space-y-2">
+                <label className="block text-xs font-bold text-stone-700">
+                  📷 Produce Photo (for CNN Quality Assessment)
+                </label>
+
+                {/* Current Photo Preview */}
+                <div className="relative w-full h-36 rounded-xl overflow-hidden border border-stone-200 bg-stone-50">
+                  {selectedPhotoUrl && (
+                    <img
+                      src={selectedPhotoUrl}
+                      alt="Produce photo"
+                      className="w-full h-full object-cover"
+                    />
+                  )}
+                  <div className="absolute top-2 left-2">
+                    {isAssessingQuality ? (
+                      <span className="px-2 py-0.5 rounded-lg text-xs font-bold bg-amber-500 text-white animate-pulse">
+                        🔬 CNN Analysing...
+                      </span>
+                    ) : qualityGrade ? (
+                      <span className={`px-2 py-0.5 rounded-lg text-xs font-bold shadow-sm ${
+                        qualityGrade.grade === 'A' ? 'bg-emerald-600 text-white' :
+                        qualityGrade.grade === 'B' ? 'bg-amber-500 text-white' :
+                        'bg-rose-600 text-white'
+                      }`}>
+                        Grade {qualityGrade.grade} • {qualityGrade.confidence}%
+                      </span>
+                    ) : null}
+                  </div>
+                </div>
+
+                {/* File Upload */}
+                <div className="flex items-center gap-2">
+                  <label
+                    htmlFor="photo-upload"
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-xl cursor-pointer transition-colors"
+                  >
+                    <Camera className="w-3.5 h-3.5" />
+                    Upload Photo
+                  </label>
+                  <input
+                    id="photo-upload"
+                    type="file"
+                    accept="image/*"
+                    capture="environment"
+                    className="hidden"
+                    onChange={handlePhotoFileChange}
+                  />
+                  <span className="text-[11px] text-stone-400">or choose a demo crop photo:</span>
+                </div>
+
+                {/* Demo photo selector */}
+                {DEMO_PHOTOS[cropInput] && (
+                  <div className="flex gap-2 overflow-x-auto pb-1">
+                    {DEMO_PHOTOS[cropInput].map((demo) => (
+                      <button
+                        key={demo.url}
+                        type="button"
+                        onClick={() => { setSelectedPhotoUrl(demo.url); setPhotoBase64(''); }}
+                        className={`shrink-0 flex flex-col items-center gap-1 p-1 rounded-xl border-2 transition-all cursor-pointer ${
+                          selectedPhotoUrl === demo.url
+                            ? 'border-emerald-500 shadow-md'
+                            : 'border-stone-200 hover:border-stone-300'
+                        }`}
+                      >
+                        <img src={demo.url} alt={demo.label} className="w-16 h-12 object-cover rounded-lg" />
+                        <span className="text-[10px] text-stone-600 font-medium">{demo.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
               {/* AI Price Recommendation Band */}
               {aiPriceBand && (
                 <div className="p-3.5 bg-amber-50 border border-amber-200 rounded-2xl space-y-2">
@@ -962,34 +1084,63 @@ export const FarmerView: React.FC<FarmerViewProps> = ({
               )}
 
               {/* Produce Quality Assessment CNN Card */}
-              {qualityGrade && (
-                <div className="p-3.5 bg-emerald-50 border border-emerald-200 rounded-2xl space-y-2">
+              {isAssessingQuality && (
+                <div className="p-3.5 bg-stone-50 border border-stone-200 rounded-2xl space-y-2 animate-pulse">
+                  <div className="flex items-center gap-2 text-xs text-stone-500">
+                    <Camera className="w-4 h-4" />
+                    <span className="font-bold">MobileNet CNN analysing produce quality...</span>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2">
+                    {['Color', 'Firmness', 'Defects'].map(label => (
+                      <div key={label} className="bg-stone-200 h-8 rounded-lg" />
+                    ))}
+                  </div>
+                </div>
+              )}
+              {!isAssessingQuality && qualityGrade && (
+                <div className={`p-3.5 border rounded-2xl space-y-2 ${
+                  qualityGrade.grade === 'A' ? 'bg-emerald-50 border-emerald-200' :
+                  qualityGrade.grade === 'B' ? 'bg-amber-50 border-amber-200' :
+                  'bg-rose-50 border-rose-200'
+                }`}>
                   <div className="flex items-center justify-between text-xs">
-                    <span className="font-bold text-emerald-900 flex items-center gap-1.5">
-                      <Camera className="w-4 h-4 text-emerald-600" />
-                      CNN Produce Quality Scan: Grade {qualityGrade.grade}
+                    <span className={`font-bold flex items-center gap-1.5 ${
+                      qualityGrade.grade === 'A' ? 'text-emerald-900' :
+                      qualityGrade.grade === 'B' ? 'text-amber-900' :
+                      'text-rose-900'
+                    }`}>
+                      <Camera className="w-4 h-4" />
+                      CNN Grade {qualityGrade.grade} — {qualityGrade.freshnessLabel}
                     </span>
-                    <span className="font-bold text-emerald-800">
-                      {qualityGrade.confidence}% Confidence
+                    <span className={`font-bold px-2 py-0.5 rounded-full text-white ${
+                      qualityGrade.grade === 'A' ? 'bg-emerald-600' :
+                      qualityGrade.grade === 'B' ? 'bg-amber-500' :
+                      'bg-rose-600'
+                    }`}>
+                      {qualityGrade.confidence}%
                     </span>
                   </div>
 
                   <div className="grid grid-cols-3 gap-2 text-center text-xs">
-                    <div className="bg-white p-1.5 rounded-lg border border-emerald-100">
-                      <p className="text-[10px] text-stone-400">Color</p>
+                    <div className="bg-white p-1.5 rounded-lg border border-stone-100">
+                      <p className="text-[10px] text-stone-400">Color Uniformity</p>
                       <p className="font-bold text-stone-800">{qualityGrade.colorUniformity}%</p>
                     </div>
-                    <div className="bg-white p-1.5 rounded-lg border border-emerald-100">
+                    <div className="bg-white p-1.5 rounded-lg border border-stone-100">
                       <p className="text-[10px] text-stone-400">Firmness</p>
                       <p className="font-bold text-stone-800">{qualityGrade.firmnessScore}%</p>
                     </div>
-                    <div className="bg-white p-1.5 rounded-lg border border-emerald-100">
-                      <p className="text-[10px] text-stone-400">Defects</p>
-                      <p className="font-bold text-emerald-700">{qualityGrade.surfaceDefects}%</p>
+                    <div className="bg-white p-1.5 rounded-lg border border-stone-100">
+                      <p className="text-[10px] text-stone-400">Defect %</p>
+                      <p className={`font-bold ${
+                        qualityGrade.surfaceDefects <= 8 ? 'text-emerald-700' :
+                        qualityGrade.surfaceDefects <= 18 ? 'text-amber-600' :
+                        'text-rose-600'
+                      }`}>{qualityGrade.surfaceDefects}%</p>
                     </div>
                   </div>
 
-                  <p className="text-[11px] text-stone-600">
+                  <p className="text-[11px] text-stone-600 leading-relaxed">
                     {qualityGrade.notes}
                   </p>
                 </div>

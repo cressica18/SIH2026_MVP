@@ -256,3 +256,16 @@ export interface VoiceExtractionResult {
   confidence: number;
   rawTranscript: string;
 }
+
+export type ReputationEventType = 'fulfillment_success' | 'fulfillment_failed' | 'buyer_rating' | 'farmer_rating' | 'dispute_raised';
+
+export interface ReputationEvent {
+  id: string;
+  targetUserId: string;
+  sourceUserId: string;
+  orderId?: string;
+  eventType: ReputationEventType;
+  scoreImpact?: number;
+  notes?: string;
+  createdAt: string;
+}

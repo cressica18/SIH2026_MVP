@@ -247,3 +247,12 @@ export interface AppNotification {
   read: boolean;
   type: 'order' | 'reveal' | 'logistics' | 'finance' | 'safety';
 }
+
+export interface VoiceExtractionResult {
+  crop: string;
+  variety: string;
+  quantityKg: number;
+  priceExpected: number;
+  confidence: number;
+  rawTranscript: string;
+}

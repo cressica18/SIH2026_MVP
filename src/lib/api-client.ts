@@ -1,13 +1,4 @@
-import { PriceBand, QualityAssessment } from '../types';
-
-interface VoiceExtractionResult {
-  crop: string;
-  variety: string;
-  quantityKg: number;
-  priceExpected: number;
-  confidence: number;
-  rawTranscript: string;
-}
+import { PriceBand, QualityAssessment, VoiceExtractionResult } from '../types';
 
 // Dictionary of crop terms across Hindi, Marathi, Telugu, Punjabi, and English
 const CROP_DICTIONARY: Record<string, { standardName: string; defaultVariety: string }> = {

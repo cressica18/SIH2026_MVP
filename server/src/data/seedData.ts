@@ -123,17 +123,157 @@ export const SEED_NOTIFICATIONS: AppNotification[] = [
 ];
 
 export const SEED_GOV_SCHEMES: GovScheme[] = [
-  { id: 'SCHEME-01', title: 'Pradhan Mantri Kisan Samman Nidhi (PM-KISAN)', description: 'Direct income support of ₹6,000 per year in 3 equal installments to all eligible farmer families.', benefitAmount: '₹6,000 / year', category: 'Direct Benefit', eligibleStates: ['All India'], eligibleCrops: ['All Crops'], maxLandAcreage: 10, sourceUrl: 'https://pmkisan.gov.in', applicationDeadline: 'Continuous' },
-  { id: 'SCHEME-02', title: 'Pradhan Mantri Fasal Bima Yojana (PMFBY)', description: 'Crop insurance at low premium rates for crop failure due to natural calamities, pests, and diseases.', benefitAmount: 'Up to ₹2 Lakh per season', category: 'Crop Insurance', eligibleStates: ['All India'], eligibleCrops: ['Tomato', 'Onion', 'Potato', 'Wheat', 'Soybean', 'Green Chilli'], sourceUrl: 'https://pmfby.gov.in', applicationDeadline: 'Kharif: June-July / Rabi: Nov-Dec' },
-  { id: 'SCHEME-03', title: 'Agriculture Infrastructure Fund (AIF)', description: 'Medium to long-term debt financing for post-harvest management, cold chain, and primary processing infrastructure.', benefitAmount: '3% interest subvention up to ₹2 Crore', category: 'Infrastructure & Equipment', eligibleStates: ['All India'], eligibleCrops: ['All Crops'], sourceUrl: 'https://agriinfra.dac.gov.in', applicationDeadline: 'Open Scheme (2020-2032)' },
-  { id: 'SCHEME-04', title: 'PM Kusum (Solar Pump Scheme)', description: 'Financial support for solar pumps to reduce diesel pump dependency and cut irrigation costs.', benefitAmount: '90% subsidy on solar pump installation', category: 'Solar & Irrigation', eligibleStates: ['Maharashtra', 'Punjab', 'Madhya Pradesh', 'Telangana', 'Karnataka'], eligibleCrops: ['All Crops'], maxLandAcreage: 5, sourceUrl: 'https://mnre.gov.in/solar/pm-kusum', applicationDeadline: 'Rolling Applications' },
-  { id: 'SCHEME-05', title: 'Paramparagat Krishi Vikas Yojana (PKVY)', description: 'Promotes organic farming through cluster-based approach with ₹50,000/hectare over 3 years for input costs, certification and marketing.', benefitAmount: '₹50,000 / hectare / 3 years', category: 'Organic Subsidy', eligibleStates: ['All India'], eligibleCrops: ['Tomato', 'Onion', 'Potato', 'Soybean', 'Wheat'], minLandAcreage: 0.5, sourceUrl: 'https://pgsindia-ncof.gov.in/pkvy', applicationDeadline: 'March 31 each year' },
-  { id: 'SCHEME-06', title: 'National Horticulture Mission (NHM)', description: 'Financial assistance for area expansion of fruits and vegetables, seed production, post-harvest and marketing.', benefitAmount: '50–75% subsidy on inputs & infrastructure', category: 'Infrastructure & Equipment', eligibleStates: ['Maharashtra', 'Punjab', 'Madhya Pradesh', 'Telangana', 'Karnataka', 'UP'], eligibleCrops: ['Tomato', 'Onion', 'Potato', 'Grapes', 'Green Chilli'], sourceUrl: 'https://nhb.gov.in', applicationDeadline: 'Seasonal — check state horticulture department' },
-  { id: 'SCHEME-07', title: 'Kisan Credit Card (KCC)', description: 'Short-term credit at reduced interest rates (2–4% effective) for crop cultivation, post-harvest, allied activities up to ₹3 Lakh.', benefitAmount: 'Credit up to ₹3 Lakh at 4% interest', category: 'Direct Benefit', eligibleStates: ['All India'], eligibleCrops: ['All Crops'], sourceUrl: 'https://www.nabard.org/kcc', applicationDeadline: 'Continuous' },
-  { id: 'SCHEME-08', title: 'PM Annadata Aay Sanrakshan Abhiyan (PM-AASHA)', description: 'Price support, price deficiency payment, and private procurement systems to ensure farmers get MSP for oilseeds, pulses, and copra.', benefitAmount: 'MSP difference paid directly', category: 'Direct Benefit', eligibleStates: ['All India'], eligibleCrops: ['Soybean', 'Wheat'], sourceUrl: 'https://pmaasha.org.in', applicationDeadline: 'Active during procurement season' },
+  // ── Direct Benefit ──────────────────────────────────────────────────────────
+  { id: 'SCHEME-01', title: 'Pradhan Mantri Kisan Samman Nidhi (PM-KISAN)',
+    description: 'Direct income support of ₹6,000 per year in 3 equal installments to all eligible farmer families owning up to 2 hectares of land.',
+    benefitAmount: '₹6,000 / year', category: 'Direct Benefit',
+    eligibleStates: ['All India'], eligibleCrops: ['All Crops'], maxLandAcreage: 10,
+    sourceUrl: 'https://pmkisan.gov.in', applicationDeadline: 'Continuous' },
+
+  { id: 'SCHEME-07', title: 'Kisan Credit Card (KCC)',
+    description: 'Short-term credit at reduced interest rates (2–4% effective) for crop cultivation, post-harvest, allied activities. Covers working capital needs up to ₹3 Lakh with interest subvention.',
+    benefitAmount: 'Credit up to ₹3 Lakh at 4% interest', category: 'Credit',
+    eligibleStates: ['All India'], eligibleCrops: ['All Crops'],
+    sourceUrl: 'https://www.nabard.org/kcc', applicationDeadline: 'Continuous' },
+
+  { id: 'SCHEME-08', title: 'PM Annadata Aay Sanrakshan Abhiyan (PM-AASHA)',
+    description: 'Price support, price deficiency payment, and private procurement to ensure farmers get MSP for notified oilseeds, pulses and copra.',
+    benefitAmount: 'MSP difference paid directly', category: 'Direct Benefit',
+    eligibleStates: ['All India'], eligibleCrops: ['Soybean', 'Wheat'],
+    sourceUrl: 'https://pmaasha.org.in', applicationDeadline: 'Active during procurement season' },
+
+  { id: 'SCHEME-09', title: 'PM Kisan Maandhan Yojana (PM-KMY) — Farmer Pension',
+    description: 'Voluntary pension scheme for small and marginal farmers aged 18–40, providing ₹3,000/month pension on reaching age 60. Government matches farmer contribution.',
+    benefitAmount: '₹3,000 / month pension after age 60', category: 'Direct Benefit',
+    eligibleStates: ['All India'], eligibleCrops: ['All Crops'], maxLandAcreage: 5,
+    sourceUrl: 'https://pmkmy.gov.in', applicationDeadline: 'Continuous' },
+
+  // ── Crop Insurance ───────────────────────────────────────────────────────────
+  { id: 'SCHEME-02', title: 'Pradhan Mantri Fasal Bima Yojana (PMFBY)',
+    description: 'Comprehensive crop insurance at low premium rates (2% for Kharif, 1.5% for Rabi, 5% for horticulture) for crop failure due to natural calamities, pests, and diseases.',
+    benefitAmount: 'Up to ₹2 Lakh per season', category: 'Crop Insurance',
+    eligibleStates: ['All India'], eligibleCrops: ['Tomato', 'Onion', 'Potato', 'Wheat', 'Soybean', 'Green Chilli'],
+    sourceUrl: 'https://pmfby.gov.in', applicationDeadline: 'Kharif: June–July / Rabi: Nov–Dec' },
+
+  { id: 'SCHEME-10', title: 'Restructured Weather Based Crop Insurance Scheme (RWBCIS)',
+    description: 'Insurance based on weather parameters (rainfall, temperature, humidity) as proxy for crop yield. Faster claims settlement — no crop cutting experiments required.',
+    benefitAmount: 'Market-rate sum insured up to ₹1.5 Lakh/ha', category: 'Crop Insurance',
+    eligibleStates: ['Maharashtra', 'Punjab', 'Karnataka', 'Madhya Pradesh', 'Telangana', 'UP'],
+    eligibleCrops: ['Tomato', 'Grapes', 'Onion', 'Potato', 'Green Chilli'],
+    sourceUrl: 'https://pmfby.gov.in/rwbcis', applicationDeadline: 'Kharif: June / Rabi: Oct–Nov' },
+
+  // ── Credit ───────────────────────────────────────────────────────────────────
+  { id: 'SCHEME-11', title: 'Agriculture Infrastructure Fund (AIF)',
+    description: 'Medium to long-term debt financing at 3% interest subvention for post-harvest management infrastructure, cold chain, primary processing, grading & packaging units.',
+    benefitAmount: '3% interest subvention up to ₹2 Crore', category: 'Credit',
+    eligibleStates: ['All India'], eligibleCrops: ['All Crops'],
+    sourceUrl: 'https://agriinfra.dac.gov.in', applicationDeadline: 'Open Scheme (2020–2032)' },
+
+  { id: 'SCHEME-12', title: 'NABARD — Warehouse Infrastructure Fund (WIF)',
+    description: 'Low-interest loans for creating and upgrading scientific storage and warehouse facilities at the farm level. Helps farmers avoid distress sales.',
+    benefitAmount: 'Loan up to ₹50 Lakh at 8% p.a.', category: 'Credit',
+    eligibleStates: ['All India'], eligibleCrops: ['All Crops'],
+    sourceUrl: 'https://www.nabard.org/wif', applicationDeadline: 'Continuous' },
+
+  // ── Infrastructure & Equipment ───────────────────────────────────────────────
+  { id: 'SCHEME-03', title: 'Sub-Mission on Agricultural Mechanisation (SMAM)',
+    description: 'Capital subsidy of 40–50% for purchase of farm machinery and implements. Promotes custom hiring centers to share equipment access among small farmers.',
+    benefitAmount: '40–50% subsidy on farm machinery', category: 'Infrastructure & Equipment',
+    eligibleStates: ['All India'], eligibleCrops: ['All Crops'],
+    sourceUrl: 'https://agrimachinery.nic.in', applicationDeadline: 'Annual — check state agriculture dept.' },
+
+  { id: 'SCHEME-06', title: 'National Horticulture Mission (NHM)',
+    description: 'Financial assistance for area expansion of fruits and vegetables, seed production, post-harvest management (cold stores, ripening chambers, pack-houses) and market linkages.',
+    benefitAmount: '50–75% subsidy on inputs & infrastructure', category: 'Infrastructure & Equipment',
+    eligibleStates: ['Maharashtra', 'Punjab', 'Madhya Pradesh', 'Telangana', 'Karnataka', 'UP'],
+    eligibleCrops: ['Tomato', 'Onion', 'Potato', 'Grapes', 'Green Chilli'],
+    sourceUrl: 'https://nhb.gov.in', applicationDeadline: 'Seasonal — check state horticulture department' },
+
+  { id: 'SCHEME-13', title: 'Integrated Pack House Development Scheme',
+    description: 'Capital subsidy for setting up pack houses, primary processing centres, and integrated cold chain infrastructure for horticulture produce.',
+    benefitAmount: '35% capital subsidy up to ₹35 Lakh', category: 'Infrastructure & Equipment',
+    eligibleStates: ['Maharashtra', 'Karnataka', 'Punjab', 'UP', 'Madhya Pradesh'],
+    eligibleCrops: ['Tomato', 'Onion', 'Potato', 'Grapes', 'Green Chilli'],
+    sourceUrl: 'https://midh.gov.in', applicationDeadline: 'Rolling basis — MIDH portal' },
+
+  // ── Solar & Irrigation ───────────────────────────────────────────────────────
+  { id: 'SCHEME-04', title: 'PM Kusum (Solar Pump Scheme)',
+    description: 'Financial support for solarising agriculture pump sets. Reduces diesel pump dependency, cuts irrigation costs, and enables additional income by selling surplus solar power to grid.',
+    benefitAmount: '90% subsidy on solar pump installation', category: 'Solar & Irrigation',
+    eligibleStates: ['Maharashtra', 'Punjab', 'Madhya Pradesh', 'Telangana', 'Karnataka'],
+    eligibleCrops: ['All Crops'], maxLandAcreage: 5,
+    sourceUrl: 'https://mnre.gov.in/solar/pm-kusum', applicationDeadline: 'Rolling Applications' },
+
+  { id: 'SCHEME-14', title: 'Pradhan Mantri Krishi Sinchayee Yojana (PMKSY) — Drip & Sprinkler',
+    description: 'Subsidies of 55–90% on drip irrigation and sprinkler systems for water-efficient irrigation. Helps small farmers shift from flood irrigation to precision water use.',
+    benefitAmount: '55–90% subsidy on drip/sprinkler systems', category: 'Solar & Irrigation',
+    eligibleStates: ['All India'], eligibleCrops: ['Tomato', 'Onion', 'Potato', 'Green Chilli', 'Grapes', 'All Crops'],
+    sourceUrl: 'https://pmksy.gov.in', applicationDeadline: 'Continuous — state agriculture dept.' },
+
+  // ── Organic Subsidy ───────────────────────────────────────────────────────────
+  { id: 'SCHEME-05', title: 'Paramparagat Krishi Vikas Yojana (PKVY)',
+    description: 'Promotes organic farming through cluster-based approach with financial support of ₹50,000/hectare over 3 years for organic input procurement, certification, and marketing.',
+    benefitAmount: '₹50,000 / hectare / 3 years', category: 'Organic Subsidy',
+    eligibleStates: ['All India'], eligibleCrops: ['Tomato', 'Onion', 'Potato', 'Soybean', 'Wheat'],
+    minLandAcreage: 0.5,
+    sourceUrl: 'https://pgsindia-ncof.gov.in/pkvy', applicationDeadline: 'March 31 each year' },
+
+  // ── Market Linkage ────────────────────────────────────────────────────────────
+  { id: 'SCHEME-15', title: 'e-NAM (National Agriculture Market) Integration',
+    description: 'Online trading portal for agricultural commodities linking APMC mandis for transparent price discovery and direct access to buyers across India.',
+    benefitAmount: 'Free registration; transparent better price discovery', category: 'Market Linkage',
+    eligibleStates: ['All India'], eligibleCrops: ['Tomato', 'Onion', 'Potato', 'Wheat', 'Soybean', 'All Crops'],
+    sourceUrl: 'https://www.enam.gov.in', applicationDeadline: 'Continuous' },
+
+  { id: 'SCHEME-16', title: 'APMC Farmer Registration & Direct Buyer Access',
+    description: 'State APMC reforms enabling farmers to sell directly to licensed buyers, FPOs, and processors outside mandi premises without additional market fees.',
+    benefitAmount: 'Eliminates 2–4% mandi commission charges', category: 'Market Linkage',
+    eligibleStates: ['Maharashtra', 'Karnataka', 'Madhya Pradesh', 'UP', 'Punjab'],
+    eligibleCrops: ['All Crops'],
+    sourceUrl: 'https://agrimarket.nic.in', applicationDeadline: 'Continuous' },
+
+  // ── Training & Extension ──────────────────────────────────────────────────────
+  { id: 'SCHEME-17', title: 'Kisan Call Centre (KCC) & ATMA Scheme',
+    description: 'Free agricultural advice via 1800-180-1551 helpline in local languages. Block-level Agricultural Technology Management Agency (ATMA) provides training and extension services.',
+    benefitAmount: 'Free advisory and training', category: 'Training & Extension',
+    eligibleStates: ['All India'], eligibleCrops: ['All Crops'],
+    sourceUrl: 'https://dacfw.nic.in/atma', applicationDeadline: 'Continuous' },
+
+  { id: 'SCHEME-18', title: 'National Mission for Sustainable Agriculture (NMSA) — Soil Health Card',
+    description: 'Free soil health testing and card issuance with crop-wise fertilizer recommendations. Helps reduce input costs by 10–20% through precision fertilizer use.',
+    benefitAmount: 'Free soil testing + fertilizer recommendations', category: 'Training & Extension',
+    eligibleStates: ['All India'], eligibleCrops: ['All Crops'],
+    sourceUrl: 'https://soilhealth.dac.gov.in', applicationDeadline: 'Continuous' },
 ];
 
 
 export const SEED_RISK_ASSESSMENTS: Record<string, RiskAssessment> = {
   farmer_1: { farmerId: 'farmer_1', riskScore: 16, riskTier: 'Low Risk', eligibleAdvanceAmount: 45000, factors: { priceVolatilityIndex: 'Low', fulfillmentRate: '100%', avgQualityGrade: 'Grade A', reputationScore: 4.9, landHoldingWeight: '3.5 Acres' }, explanation: 'Outstanding 100% delivery fulfillment track record.' },
 };
+
+export const SEED_SAFETY_REPORTS: SafetyReport[] = [
+  {
+    id: 'REP-701',
+    reporterUserId: undefined,
+    reporterName: undefined,
+    isAnonymous: true,
+    reportedEntityName: 'Local Arhat / Mandi Sub-broker (Pimpalgaon)',
+    category: 'Underpricing & Cartel',
+    description: 'Local middleman cartel colluded to offer ₹8/kg for export quality tomatoes when digital Mandi average was ₹18/kg. Threatened to block unloading at yard.',
+    status: 'reviewing',
+    resolutionNotes: 'Assigned to Agricultural Marketing Board representative. Seller shifted listing to direct buyer on Vasundhara platform.',
+    createdAt: '2026-09-16 09:30 AM',
+  },
+  {
+    id: 'REP-702',
+    reporterUserId: 'farmer_2',
+    reporterName: 'Lakshmi Devi',
+    isAnonymous: false,
+    reportedEntityName: 'Unregistered Transport Agent',
+    category: 'Broker Exploitation',
+    description: 'Demanded additional ₹2000 cash gate surcharge beyond agreed freight contract during vehicle arrival.',
+    status: 'resolved',
+    resolutionNotes: 'Transport agent blacklisted from Vasundhara carrier network. Verified carrier assigned.',
+    createdAt: '2026-09-14 04:15 PM',
+  },
+];

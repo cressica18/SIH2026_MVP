@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Role,
   Language,
@@ -141,12 +141,30 @@ export default function App() {
           setPools(poolsData.pools);
         }
 
-        // Fetch schemes (public)
-        const schemesRes = await fetch('/api/schemes');
-        if (schemesRes.ok) {
-          const schemesData = await schemesRes.json();
-          setSchemes(schemesData.schemes);
+        // Fetch schemes — personalized match for farmers, public list for others
+        if (user?.role === 'farmer' && user?.id) {
+          const schemesRes = await fetch(`/api/schemes/match/${user.id}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          if (schemesRes.ok) {
+            const schemesData = await schemesRes.json();
+            setSchemes(schemesData.schemes);
+          } else {
+            // Fallback to public list if match endpoint fails
+            const fallbackRes = await fetch('/api/schemes');
+            if (fallbackRes.ok) {
+              const fallbackData = await fallbackRes.json();
+              setSchemes(fallbackData.schemes);
+            }
+          }
+        } else {
+          const schemesRes = await fetch('/api/schemes');
+          if (schemesRes.ok) {
+            const schemesData = await schemesRes.json();
+            setSchemes(schemesData.schemes);
+          }
         }
+
 
         // Fetch finance/risk data if applicable
         if (user?.role === 'farmer' || user?.role === 'admin') {
@@ -188,6 +206,31 @@ export default function App() {
     }
     fetchProfileAndListings();
   }, [isAuthenticated, user]);
+
+  // Fetch notifications from backend with polling
+  const fetchNotifications = useCallback(async () => {
+    const token = localStorage.getItem('vasundhara_token');
+    if (!token) return;
+    try {
+      const res = await fetch('/api/notifications', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setNotifications(data.notifications);
+      }
+    } catch (err) {
+      console.error('Failed to fetch notifications', err);
+    }
+  }, []);
+
+  // Poll for notifications every 30 seconds
+  useEffect(() => {
+    if (!isAuthenticated || !user) return;
+    fetchNotifications(); // Initial fetch
+    const interval = setInterval(fetchNotifications, 30000);
+    return () => clearInterval(interval);
+  }, [isAuthenticated, user, fetchNotifications]);
 
   // Add a new listing from farmer voice or manual input
   const handleAddListing = async (newListing: Listing) => {

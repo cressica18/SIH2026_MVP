@@ -171,13 +171,15 @@ export interface GovScheme {
   title: string;
   description: string;
   benefitAmount: string;
-  category: 'Direct Benefit' | 'Crop Insurance' | 'Infrastructure & Equipment' | 'Solar & Irrigation' | 'Organic Subsidy';
+  category: 'Direct Benefit' | 'Crop Insurance' | 'Infrastructure & Equipment' | 'Solar & Irrigation' | 'Organic Subsidy' | 'Credit' | 'Market Linkage' | 'Training & Extension';
   eligibleStates: string[];
   eligibleCrops: string[];
   maxLandAcreage?: number;
   minLandAcreage?: number;
   sourceUrl: string;
   applicationDeadline: string;
+  /** Present only on matched results — explains why this scheme is relevant */
+  eligibilityReason?: string;
 }
 
 export interface RiskAssessment {
@@ -245,7 +247,10 @@ export interface AppNotification {
   message: string;
   roleTarget: Role | 'all';
   read: boolean;
-  type: 'order' | 'reveal' | 'logistics' | 'finance' | 'safety';
+  type: 'order' | 'reveal' | 'logistics' | 'finance' | 'safety' | 'scheme' | 'match';
+  targetUserId?: string;
+  relatedOrderId?: string;
+  relatedReportId?: string;
 }
 
 export interface VoiceExtractionResult {

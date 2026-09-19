@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
-import { matchingService } from '../services/matchingService.js';
 import { AuthRequest } from '../middleware/auth.js';
+import { matchingService } from '../services/matchingService.js';
+import { notifyNewMatch } from '../services/notificationService.js';
+import { store } from '../data/store.js';
 
 export const getRankedListingsForBuyer = async (req: AuthRequest, res: Response) => {
   try {
@@ -28,14 +30,23 @@ export const getRankedBuyersForListing = async (req: AuthRequest, res: Response)
     const { id } = req.params;
     
     // Authorization: only the farmer who owns the listing can see its buyer matches
-    // (We allow logistics/admin for demo purposes if needed, but strict rule is farmer only)
     if (req.user?.role !== 'farmer' && req.user?.role !== 'admin') {
       return res.status(403).json({ error: 'Forbidden' });
     }
     
-    // We should ideally check if req.user is the owner of the listing, 
-    // but the store logic inside getRankedBuyersForListing will find the listing.
     const matches = matchingService.getRankedBuyersForListing(id);
+    
+    // Notify farmer of high-scoring new matches (simple approach for MVP)
+    if (req.user?.role === 'farmer' && matches.length > 0) {
+      const topMatches = matches.filter(m => m.matchScore >= 90).slice(0, 3);
+      for (const match of topMatches) {
+        const listing = store.listings.find(l => l.id === id);
+        if (listing) {
+          notifyNewMatch(req.user.userId, match.businessName || match.name, listing.crop, match.matchScore);
+        }
+      }
+    }
+    
     res.json(matches);
   } catch (error: any) {
     if (error.message === 'Listing not found') {

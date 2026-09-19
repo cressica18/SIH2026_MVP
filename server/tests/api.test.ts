@@ -356,11 +356,20 @@ describe('Vasundhara API', () => {
 
   // ---- NOTIFICATIONS ----
   describe('GET /api/notifications', () => {
-    it('should return all notifications', async () => {
-      const res = await request(server).get('/api/notifications');
+    it('should return all notifications for authenticated user', async () => {
+      const { generateAccessToken } = await import('../src/core/security.js');
+      const token = generateAccessToken({ userId: 'farmer_1', phone: '+91 98231 44521', role: 'farmer' });
+      const res = await request(server)
+        .get('/api/notifications')
+        .set('Authorization', `Bearer ${token}`);
       expect(res.status).toBe(200);
       expect(res.body).toHaveProperty('notifications');
       expect(Array.isArray(res.body.notifications)).toBe(true);
+    });
+
+    it('should return 401 without authentication', async () => {
+      const res = await request(server).get('/api/notifications');
+      expect(res.status).toBe(401);
     });
   });
 
@@ -1028,11 +1037,23 @@ describe('POST /api/logistics/pools', () => {
       const postRes = await request(server)
         .post('/api/finance/advances')
         .set('Authorization', `Bearer ${token}`)
-        .send({ amountRequested: 20000, purpose: 'Seeds', simulateAeps: true });
+        .send({ amountRequested: 20000, purpose: 'Seeds' });
       expect(postRes.status).toBe(201);
       expect(postRes.body.amountRequested).toBe(20000);
-      expect(postRes.body.status).toBe('disbursed');
-      expect(postRes.body.aepsTxnRef).toBeDefined();
+      expect(postRes.body.status).toBe('requested');
+      expect(postRes.body.id).toBeDefined();
+
+      const advanceId = postRes.body.id;
+
+      const aepsRes = await request(server)
+        .post('/api/finance/aeps/simulate-cashout')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ advanceId, aadhaarLast4: '1234' });
+      expect(aepsRes.status).toBe(200);
+      expect(aepsRes.body.advance.status).toBe('disbursed');
+      expect(aepsRes.body.advance.aepsTxnRef).toBeDefined();
+      expect(aepsRes.body.mockDetails).toBeDefined();
+      expect(aepsRes.body.mockDetails.note).toContain('SIMULATED');
 
       const getRes = await request(server)
         .get('/api/finance/advances')

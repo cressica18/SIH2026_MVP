@@ -3,6 +3,7 @@ import { store } from '../data/store.js';
 import { Order } from '../types.js';
 import { AuthRequest } from '../middleware/auth.js';
 import { emitReputationEvent } from '../services/reputationService.js';
+import { notifyOrderCreated, notifyOrderStatusChanged } from '../services/notificationService.js';
 import { SEED_FARMERS } from '../data/seedData.js';
 
 // GET /api/orders — Role-scoped order retrieval
@@ -86,6 +87,10 @@ export function createOrder(req: AuthRequest, res: Response): void {
     return;
   }
 
+  // Get buyer profile for notification
+  const buyer = store.buyerProfiles.find((b) => b.id === user?.userId) || 
+    { id: user?.userId || 'unknown', businessName: body.buyerName || 'Buyer', name: body.buyerName || 'Buyer' };
+
   const newOrder: Order = {
     ...(body as Order),
     id: `ORD-${Math.floor(1000 + Math.random() * 9000)}`,
@@ -111,6 +116,9 @@ export function createOrder(req: AuthRequest, res: Response): void {
   listing.quantityKg = Math.max(0, listing.quantityKg - newOrder.quantityKg);
   listing.status = listing.quantityKg <= 0 ? 'matched' : 'active';
 
+  // Send notifications
+  notifyOrderCreated(newOrder, buyer as any);
+
   res.status(201).json(scrubOrder(newOrder, user?.role));
 }
 
@@ -132,6 +140,7 @@ export function updateOrderStatus(req: AuthRequest, res: Response): void {
   }
   const order = store.orders[idx];
   const isAdmin = user.role === 'admin';
+  const previousStatus = order.status;
 
   // Role-gated state machine transitions
   if (order.status === 'pending' && status === 'confirmed') {
@@ -139,12 +148,14 @@ export function updateOrderStatus(req: AuthRequest, res: Response): void {
       order.status = 'confirmed';
       order.identityRevealed = true;
       order.identityRevealedAt = new Date().toISOString();
+      notifyOrderStatusChanged(order, 'confirmed', user.role);
       res.json(scrubOrder(order, user.role));
       return;
     }
   } else if (order.status === 'confirmed' && status === 'in_transit') {
     if (user.role === 'logistics' || isAdmin) {
       order.status = 'in_transit';
+      notifyOrderStatusChanged(order, 'in_transit', user.role);
       res.json(scrubOrder(order, user.role));
       return;
     }
@@ -163,6 +174,7 @@ export function updateOrderStatus(req: AuthRequest, res: Response): void {
           });
         }
       }
+      notifyOrderStatusChanged(order, 'delivered', user.role);
       res.json(scrubOrder(order, user.role));
       return;
     }
@@ -170,6 +182,7 @@ export function updateOrderStatus(req: AuthRequest, res: Response): void {
     if (user.role === 'buyer' || isAdmin) {
       order.status = 'settled';
       order.settledAt = new Date().toISOString();
+      notifyOrderStatusChanged(order, 'settled', user.role);
       res.json(scrubOrder(order, user.role));
       return;
     }
@@ -187,6 +200,7 @@ export function updateOrderStatus(req: AuthRequest, res: Response): void {
         });
       }
     }
+    notifyOrderStatusChanged(order, 'disputed', user.role);
     res.json(scrubOrder(order, user.role));
     return;
   }

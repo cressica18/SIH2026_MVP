@@ -128,21 +128,21 @@ graph TB
     subgraph "Frontend (Vite + React 19 + TS)"
         UI[React SPA]
         Auth[AuthContext + JWT]
-        Voice[useVoiceCapture<br/>Web Speech API]
+        Voice["useVoiceCapture - Web Speech API"]
         UI -- HTTPS --> API
     end
 
     subgraph "Backend (Express + TypeScript)"
         API[Express REST API]
         AuthM[JWT + Role Guards]
-        Store[(In-Memory Store<br/>+ Seed Data)]
+        Store[("In-Memory Store + Seed Data")]
         Services[Business Logic Services]
     end
 
     subgraph "External / Simulated"
-        Speech[Web Speech API<br/>(Browser STT/TTS)]
-        MockAEPS[Simulated AEPS<br/>Mock NPCI Ref]
-        MockQuality[Deterministic Quality<br/>Hash-based Grade]
+        Speech["Web Speech API (Browser STT/TTS)"]
+        MockAEPS["Simulated AEPS - Mock NPCI Ref"]
+        MockQuality["Deterministic Quality - Hash-based Grade"]
     end
 
     UI --> Auth

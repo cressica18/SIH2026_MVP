@@ -75,9 +75,9 @@ export default function App() {
   useEffect(() => {
     if (!isAuthenticated || !user) return;
     setCurrentRole(user.role);
+    setIsProfileLoading(true);
 
     async function fetchProfileAndListings() {
-      setIsProfileLoading(true);
       try {
         const token = localStorage.getItem('vasundhara_token');
         
@@ -633,20 +633,19 @@ export default function App() {
       );
     }
 
-    return (
+return (
       <div className="min-h-screen bg-stone-100/70 text-stone-900 font-sans flex flex-col selection:bg-emerald-500 selection:text-white">
-      
-      {/* Top Navigation Bar */}
-      <Navbar
-        currentRole={currentRole}
-        currentLanguage={currentLanguage}
-        onRoleChange={setCurrentRole}
-        onLanguageChange={setCurrentLanguage}
-        onOpenDemoGuide={() => setIsDemoModalOpen(true)}
-        onOpenInsights={() => setIsMarketInsightsOpen(true)}
-        notifications={notifications}
-        onMarkNotificationRead={handleMarkNotificationAsRead}
-      />
+       
+       {/* Top Navigation Bar */}
+       <Navbar
+         currentRole={currentRole}
+         currentLanguage={currentLanguage}
+         onLanguageChange={setCurrentLanguage}
+         onOpenDemoGuide={() => setIsDemoModalOpen(true)}
+         onOpenInsights={() => setIsMarketInsightsOpen(true)}
+         notifications={notifications}
+         onMarkNotificationRead={handleMarkNotificationAsRead}
+       />
 
       {/* Main Viewport */}
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">

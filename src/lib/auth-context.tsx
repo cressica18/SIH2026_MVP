@@ -11,6 +11,14 @@ export interface User {
   language: 'en' | 'hi' | 'mr' | 'te' | 'pa';
 }
 
+// Demo phone numbers for each role (from seed data)
+export const DEMO_PHONES: Record<UserRole, string> = {
+  farmer: '+91 98231 44521',
+  buyer: '+91 99801 88301',
+  logistics: '+91 98224 55198',
+  admin: '+91 99999 99999',
+};
+
 export interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
@@ -20,6 +28,7 @@ export interface AuthContextType {
   verifyOtp: (phone: string, otp: string) => Promise<{ success: boolean; role?: UserRole }>;
   logout: () => void;
   refreshToken: () => Promise<void>;
+  switchRole: (role: UserRole) => Promise<void>;
 }
 
 // Create context with default values
@@ -176,6 +185,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const switchRole = async (role: UserRole) => {
+    // Log out current user
+    logout();
+    // Small delay to ensure state updates
+    await new Promise(resolve => setTimeout(resolve, 100));
+    // Initiate login with demo phone for the target role
+    const phone = DEMO_PHONES[role];
+    await loginWithOtp(phone);
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-stone-100">
@@ -195,6 +214,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         verifyOtp,
         logout,
         refreshToken,
+        switchRole,
       }}
     >
       {children}

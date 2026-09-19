@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Role, Language, AppNotification } from '../types';
 import { I18N_STRINGS } from '../data/i18n';
+import { useAuth } from '../lib/auth-context';
 import {
   Sprout,
   UserCheck,
@@ -20,7 +21,6 @@ import { EmptyState } from './ui/EmptyState';
 
 interface NavbarProps {
   currentRole: Role;
-  onRoleChange: (role: Role) => void;
   currentLanguage: Language;
   onLanguageChange: (lang: Language) => void;
   notifications: AppNotification[];
@@ -46,7 +46,6 @@ const ROLES: { value: Role; label: string; icon: React.ReactNode }[] = [
 
 export const Navbar: React.FC<NavbarProps> = ({
   currentRole,
-  onRoleChange,
   currentLanguage,
   onLanguageChange,
   notifications,
@@ -54,6 +53,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenInsights,
   onMarkNotificationRead,
 }) => {
+  const { switchRole } = useAuth();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showLanguageMenu, setShowLanguageMenu] = useState(false);
   const [showRoleMenu, setShowRoleMenu] = useState(false);
@@ -93,8 +93,8 @@ export const Navbar: React.FC<NavbarProps> = ({
     setShowLanguageMenu(false);
   };
 
-  const handleRoleChange = (role: Role) => {
-    onRoleChange(role);
+  const handleRoleChange = async (role: Role) => {
+    await switchRole(role);
     setShowRoleMenu(false);
   };
 

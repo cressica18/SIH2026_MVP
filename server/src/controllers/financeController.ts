@@ -60,7 +60,7 @@ export function requestAdvance(req: AuthRequest, res: Response): void {
   }
 
   const newAdvance: AdvanceRequest = {
-    id: `ADV-${Date.now()}`,
+    id: `ADV-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
     farmerId: req.user!.userId,
     farmerName: profile.name,
     amountRequested,

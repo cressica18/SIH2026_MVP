@@ -263,7 +263,7 @@ describe('Phase 16: Financial Inclusion - Risk Scoring + AEPS Simulation', () =>
       expect(res.body.purpose).toBe('Seeds');
       expect(res.body.status).toBe('requested');
       expect(res.body.farmerId).toBe('farmer_1');
-      expect(res.body.id).toMatch(/^ADV-\d+$/);
+      expect(res.body.id).toMatch(/^ADV-\d+/);
     });
 
     it('should default purpose to "Working Capital"', async () => {

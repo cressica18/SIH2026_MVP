@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect, beforeAll, beforeEach } from 'vitest';
 import request from 'supertest';
 import app from '../src/app';
-import { store } from '../src/data/store';
+import { store, createStore } from '../src/data/store';
 import { SEED_BUYERS, SEED_FARMERS } from '../src/data/seedData';
 import { scoreMatch } from '../src/services/matchingService';
 
@@ -51,6 +51,10 @@ describe('Phase 13: Matching Engine API', () => {
     const { generateAccessToken } = await import('../src/core/security.js');
     buyerToken = generateAccessToken({ userId: buyer.id, phone: buyer.phone, role: 'buyer' });
     farmerToken = generateAccessToken({ userId: farmer.id, phone: farmer.phone, role: 'farmer' });
+  });
+
+  beforeEach(() => {
+    Object.assign(store, createStore());
   });
 
   // ── Unit tests for the scoreMatch function ──────────────────────────────

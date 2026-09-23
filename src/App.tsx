@@ -580,6 +580,7 @@ export default function App() {
         const adv = await res.json();
         setAdvances((prev) => [adv, ...prev]);
         if (simulateAeps) {
+          setAepsWithdrawAmount(amount);
           setAepsAdvanceId(adv.id);
           setIsAepsModalOpen(true);
         }
@@ -671,7 +672,6 @@ export default function App() {
         console.error('Failed to refresh advances', err);
       }
     }
-    setAepsAdvanceId(undefined);
   };
 
   const handleOpenAepsModalWithAmount = (amount: number, advanceId?: string) => {
@@ -806,7 +806,10 @@ return (
       {/* Simulated AEPS Biometric Cash-Out Modal */}
       <AepsModal
         isOpen={isAepsModalOpen}
-        onClose={() => setIsAepsModalOpen(false)}
+        onClose={() => {
+          setIsAepsModalOpen(false);
+          setAepsAdvanceId(undefined);
+        }}
         farmerName={farmer?.name || 'Farmer'}
         defaultAmount={aepsWithdrawAmount}
         advanceId={aepsAdvanceId}

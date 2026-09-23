@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Fingerprint, CheckCircle2, IndianRupee, ShieldCheck, X, AlertCircle, Loader2 } from 'lucide-react';
 
 interface AepsModalProps {
@@ -24,6 +24,16 @@ export const AepsModal: React.FC<AepsModalProps> = ({
   const [txnRef, setTxnRef] = useState('');
   const [isSimulating, setIsSimulating] = useState(false);
   const [simError, setSimError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      setAmount(defaultAmount);
+      setAuthStep('input');
+      setSimError(null);
+      setTxnRef('');
+      setIsSimulating(false);
+    }
+  }, [isOpen, defaultAmount]);
 
   if (!isOpen) return null;
 
@@ -55,9 +65,11 @@ export const AepsModal: React.FC<AepsModalProps> = ({
       }
       const data = await res.json();
       const newTxnRef = data.advance.aepsTxnRef;
+      const disbursedAmount = data.advance.amountRequested || amount;
       setTxnRef(newTxnRef);
+      setAmount(disbursedAmount);
       setAuthStep('success');
-      onSuccess(amount, newTxnRef);
+      onSuccess(disbursedAmount, newTxnRef);
     } catch (err) {
       setSimError('Failed to connect to AEPS simulation service');
       setAuthStep('error');

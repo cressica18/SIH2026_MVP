@@ -42,6 +42,7 @@ import {
   Loader2,
   AlertCircle,
   ClipboardList,
+  Fingerprint,
 } from 'lucide-react';
 import { Button } from './ui/Button';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from './ui/Card';
@@ -768,8 +769,22 @@ function FinanceTab({
                       <div>
                         <p className="font-semibold text-stone-900">₹{adv.amountRequested.toLocaleString('en-IN')}</p>
                         <p className="text-xs text-stone-500">Ref: {adv.aepsTxnRef || adv.id}</p>
+                        {adv.purpose && <p className="text-[10px] text-stone-400">{adv.purpose}</p>}
                       </div>
-                      <StatusBadge status={adv.status} />
+                      <div className="flex items-center gap-2">
+                        {adv.status === 'requested' && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => onOpenAepsModal(adv.amountRequested, adv.id)}
+                            className="text-xs border-teal-600 text-teal-700 hover:bg-teal-50 flex items-center gap-1"
+                          >
+                            <Fingerprint className="w-3.5 h-3.5" />
+                            <span>Cash Out (AEPS)</span>
+                          </Button>
+                        )}
+                        <StatusBadge status={adv.status} />
+                      </div>
                     </div>
                   );
                 })}

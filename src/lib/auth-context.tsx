@@ -65,17 +65,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (token) {
       const payload = decodeJwt(token);
       if (payload && payload.exp && (payload.exp as number) * 1000 > Date.now()) {
-        setUser({
-          id: payload.userId as string,
-          phone: payload.phone as string,
-          name: (payload.name as string) || (payload.phone as string),
-          role: payload.role as UserRole,
-          language: (payload.language as 'en' | 'hi' | 'mr' | 'te' | 'pa') || 'en',
-        });
+        // Validate that the role is a valid UserRole
+        const validRoles: UserRole[] = ['farmer', 'buyer', 'logistics', 'admin'];
+        if (validRoles.includes(payload.role as UserRole)) {
+          setUser({
+            id: payload.userId as string,
+            phone: payload.phone as string,
+            name: (payload.name as string) || (payload.phone as string),
+            role: payload.role as UserRole,
+            language: (payload.language as 'en' | 'hi' | 'mr' | 'te' | 'pa') || 'en',
+          });
+        } else {
+          // Invalid role in token, clear stale auth state
+          localStorage.removeItem('vasundhara_token');
+          localStorage.removeItem('vasundhara_refresh_token');
+          setUser(null);
+        }
       } else {
         // Token expired, clear it
         localStorage.removeItem('vasundhara_token');
         localStorage.removeItem('vasundhara_refresh_token');
+        setUser(null);
       }
     }
     setIsLoading(false);
@@ -83,6 +93,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Step 1: Request OTP to be sent to phone
   const loginWithOtp = async (phone: string): Promise<void> => {
+    // Reset pending phone from any previous attempt
+    setPendingPhone(null);
+
     const res = await fetch('/api/auth/otp/send', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -131,7 +144,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       id: (payload.userId as string) || `user_${Date.now()}`,
       phone: (payload.phone as string) || phone,
       name: (payload.name as string) || data.user?.name || phone,
-      role: (payload.role as UserRole) || 'farmer',
+      role: payload.role as UserRole,
       language: (payload.language as 'en' | 'hi' | 'mr' | 'te' | 'pa') || 'en',
     };
 
@@ -186,11 +199,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const switchRole = async (role: UserRole) => {
-    // Log out current user
+    // Log out current user and clear all auth state
     logout();
-    // Small delay to ensure state updates
-    await new Promise(resolve => setTimeout(resolve, 100));
     // Initiate login with demo phone for the target role
+    // logout already clears user, pendingPhone, and localStorage tokens
     const phone = DEMO_PHONES[role];
     await loginWithOtp(phone);
   };

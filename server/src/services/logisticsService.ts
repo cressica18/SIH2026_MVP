@@ -168,7 +168,7 @@ export function autoPoolOrders(): { pools: LogisticsPool[]; skipped: string[] } 
     // Assign pool to orders
     cluster.forEach(o => {
       o.poolId = poolId;
-      o.status = 'in_transit';
+      // Orders stay 'confirmed' until the pool is dispatched to 'in_transit'
     });
 
     const clusterRegion = deriveClusterRegion(cluster);
@@ -225,7 +225,7 @@ export function createManualPool(orderIds: string[]): LogisticsPool {
 
   selectedOrders.forEach(o => {
     o.poolId = poolId;
-    o.status = 'in_transit';
+    // Orders stay 'confirmed' until the pool is dispatched to 'in_transit'
   });
 
   const newPool: LogisticsPool = {

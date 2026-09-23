@@ -301,6 +301,7 @@ describe('Phase 18: Women-Centric Privacy & Anonymous Reporting', () => {
       expect(res.status).toBe(201);
       expect(res.body.report.isAnonymous).toBe(false);
       expect(res.body.report.reporterUserId).toBe('farmer_1');
+      expect(res.body.report.reporterName).toBe('Ramesh Patil');
     });
 
     it('should include relatedOrderId when provided', async () => {
@@ -471,6 +472,60 @@ describe('Phase 18: Women-Centric Privacy & Anonymous Reporting', () => {
       expect(res.status).toBe(201);
       expect(res.body.report.reporterUserId).toBeUndefined();
       expect(res.body.report.reporterName).toBe('Anonymous Farmer');
+    });
+
+    it('should NOT expose reporter identity for anonymous reports in admin queue (POST -> GET)', async () => {
+      // Farmer submits an anonymous report through the real API
+      const created = await request(app)
+        .post('/api/reports')
+        .set('Authorization', `Bearer ${farmer1Token}`)
+        .send({
+          category: 'Harassment',
+          description: 'Anonymous identity must not leak to admin queue.',
+          isAnonymous: true,
+          reportedEntityName: 'Mandi Official',
+        });
+      expect(created.status).toBe(201);
+
+      // Admin fetches the queue through the real API
+      const adminRes = await request(app)
+        .get('/api/reports/admin')
+        .set('Authorization', `Bearer ${adminToken}`);
+      expect(adminRes.status).toBe(200);
+      const anon = adminRes.body.reports.find(
+        (r: any) => r.description === 'Anonymous identity must not leak to admin queue.'
+      );
+      expect(anon).toBeDefined();
+      expect(anon.isAnonymous).toBe(true);
+      expect(anon.reporterUserId).toBeUndefined();
+      expect(anon.reporterName).toBeUndefined();
+    });
+
+    it('should expose reporter identity for identified reports in admin queue (POST -> GET)', async () => {
+      const created = await request(app)
+        .post('/api/reports')
+        .set('Authorization', `Bearer ${farmer1Token}`)
+        .send({
+          category: 'Payment Default',
+          description: 'Identified report admin can see reporter identity.',
+          isAnonymous: false,
+          reportedEntityName: 'Defaulting Trader',
+        });
+      expect(created.status).toBe(201);
+      expect(created.body.report.reporterUserId).toBe('farmer_1');
+      expect(created.body.report.reporterName).toBe('Ramesh Patil');
+
+      const adminRes = await request(app)
+        .get('/api/reports/admin')
+        .set('Authorization', `Bearer ${adminToken}`);
+      expect(adminRes.status).toBe(200);
+      const identified = adminRes.body.reports.find(
+        (r: any) => r.description === 'Identified report admin can see reporter identity.'
+      );
+      expect(identified).toBeDefined();
+      expect(identified.isAnonymous).toBe(false);
+      expect(identified.reporterUserId).toBe('farmer_1');
+      expect(identified.reporterName).toBe('Ramesh Patil');
     });
 
     it('should NOT allow farmer to view other farmers reports', async () => {

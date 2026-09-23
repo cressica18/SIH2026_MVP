@@ -24,7 +24,7 @@ interface AdminViewProps {
   reports: SafetyReport[];
   schemes: GovScheme[];
   currentLanguage: Language;
-  onUpdateReportStatus: (reportId: string, status: 'open' | 'reviewing' | 'resolved', notes: string) => void;
+  onUpdateReportStatus: (reportId: string, status: 'open' | 'reviewing' | 'resolved', notes: string) => Promise<SafetyReport | null>;
   initialTab?: string;
 }
 
@@ -51,10 +51,12 @@ export const AdminView: React.FC<AdminViewProps> = ({
     setResolutionNotes(rep.resolutionNotes || '');
   };
 
-  const handleSaveResolution = () => {
+  const handleSaveResolution = async () => {
     if (!selectedReport) return;
-    onUpdateReportStatus(selectedReport.id, newStatus, resolutionNotes);
-    setSelectedReport(null);
+    const updated = await onUpdateReportStatus(selectedReport.id, newStatus, resolutionNotes);
+    if (updated) {
+      setSelectedReport(null);
+    }
   };
 
   return (

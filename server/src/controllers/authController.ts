@@ -63,14 +63,26 @@ export function verifyOtp(req: AuthRequest, res: Response): void {
   }
 
   // OTP verified — find user in seed data
-  const user = [...SEED_FARMERS, ...SEED_BUYERS, ...SEED_LOGISTICS].find(
-    (u) => u.phone === phone
-  );
+  const allUsers = [...SEED_FARMERS, ...SEED_BUYERS, ...SEED_LOGISTICS];
+  const foundUser = allUsers.find((u) => u.phone === phone);
 
   // Clean up used OTP
   otpStore.delete(phone);
 
-  if (!user) {
+  // Admin phone special case
+  const ADMIN_PHONE = '+91 99999 99999';
+  if (phone === ADMIN_PHONE) {
+    const accessToken = generateAccessToken({ userId: 'admin_1', phone, role: 'admin' });
+    const refreshToken = generateRefreshToken({ userId: 'admin_1', phone, role: 'admin' });
+    res.json({
+      message: 'OTP verified successfully',
+      tokens: { accessToken, refreshToken },
+      user: { id: 'admin_1', phone, name: 'Admin User', role: 'admin' },
+    });
+    return;
+  }
+
+  if (!foundUser) {
     // Phone not in seed data — register as new farmer
     const newId = `user_${Date.now()}`;
     const accessToken = generateAccessToken({ userId: newId, phone, role: 'farmer' });
@@ -83,7 +95,7 @@ export function verifyOtp(req: AuthRequest, res: Response): void {
     return;
   }
 
-  const { id, name, role } = user;
+  const { id, name, role } = foundUser;
   const accessToken = generateAccessToken({ userId: id, phone, role });
   const refreshToken = generateRefreshToken({ userId: id, phone, role });
 

@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Fingerprint, CheckCircle2, IndianRupee, ShieldCheck, X, AlertCircle } from 'lucide-react';
+import { Fingerprint, CheckCircle2, IndianRupee, ShieldCheck, X, AlertCircle, Loader2 } from 'lucide-react';
 
 interface AepsModalProps {
   isOpen: boolean;
   onClose: () => void;
   farmerName: string;
   defaultAmount?: number;
+  advanceId?: string;
   onSuccess: (amount: number, txnRef: string) => void;
 }
 
@@ -14,28 +15,66 @@ export const AepsModal: React.FC<AepsModalProps> = ({
   onClose,
   farmerName,
   defaultAmount = 20000,
+  advanceId,
   onSuccess,
 }) => {
   const [aadhaarLast4, setAadhaarLast4] = useState('4521');
   const [amount, setAmount] = useState(defaultAmount);
-  const [authStep, setAuthStep] = useState<'input' | 'scanning' | 'success'>('input');
+  const [authStep, setAuthStep] = useState<'input' | 'scanning' | 'success' | 'error'>('input');
   const [txnRef, setTxnRef] = useState('');
+  const [isSimulating, setIsSimulating] = useState(false);
+  const [simError, setSimError] = useState<string | null>(null);
 
   if (!isOpen) return null;
 
-  const handleStartBiometric = () => {
+  const handleStartBiometric = async () => {
+    if (!advanceId) {
+      setSimError('No advance request found. Please request an advance first.');
+      setAuthStep('error');
+      return;
+    }
+    setIsSimulating(true);
+    setSimError(null);
     setAuthStep('scanning');
-    setTimeout(() => {
-      const generatedRef = `NPCI-AEPS-${Date.now().toString().slice(-8)}-${Math.floor(1000 + Math.random() * 9000)}`;
-      setTxnRef(generatedRef);
+    try {
+      const token = localStorage.getItem('vasundhara_token');
+      const res = await fetch('/api/finance/aeps/simulate-cashout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ advanceId, aadhaarLast4 }),
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        setSimError(err.error || 'AEPS simulation failed');
+        setAuthStep('error');
+        setIsSimulating(false);
+        return;
+      }
+      const data = await res.json();
+      const newTxnRef = data.advance.aepsTxnRef;
+      setTxnRef(newTxnRef);
       setAuthStep('success');
-      onSuccess(amount, generatedRef);
-    }, 1800);
+      onSuccess(amount, newTxnRef);
+    } catch (err) {
+      setSimError('Failed to connect to AEPS simulation service');
+      setAuthStep('error');
+    } finally {
+      setIsSimulating(false);
+    }
   };
 
   const resetModal = () => {
     setAuthStep('input');
+    setSimError(null);
     onClose();
+  };
+
+  const handleRetry = () => {
+    setAuthStep('input');
+    setSimError(null);
   };
 
   return (
@@ -130,10 +169,20 @@ export const AepsModal: React.FC<AepsModalProps> = ({
               <div className="pt-2">
                 <button
                   onClick={handleStartBiometric}
-                  className="w-full py-3 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white font-bold text-sm rounded-xl shadow-lg shadow-teal-700/20 flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-98"
+                  disabled={isSimulating}
+                  className="w-full py-3 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white font-bold text-sm rounded-xl shadow-lg shadow-teal-700/20 flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-98 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <Fingerprint className="w-5 h-5" />
-                  <span>Scan Biometric Fingerprint (Authenticate)</span>
+                  {isSimulating ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      <span>Simulating AEPS...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Fingerprint className="w-5 h-5" />
+                      <span>Scan Biometric Fingerprint (Authenticate)</span>
+                    </>
+                  )}
                 </button>
               </div>
             </div>
@@ -147,12 +196,53 @@ export const AepsModal: React.FC<AepsModalProps> = ({
               </div>
               <div>
                 <h4 className="font-bold text-sm text-stone-900">
-                  Scanning RD Service Fingerprint...
+                  Simulating AEPS Cash-Out...
                 </h4>
                 <p className="text-xs text-stone-500 mt-1">
-                  Transmitting encrypted biometric token to NPCI gateway
+                  Transmitting to NPCI gateway (SIMULATED — no real banking)
                 </p>
               </div>
+              {isSimulating && (
+                <Loader2 className="w-6 h-6 text-teal-600 animate-spin" />
+              )}
+            </div>
+          )}
+
+          {authStep === 'error' && (
+            <div className="space-y-4 text-center">
+              <div className="w-14 h-14 mx-auto rounded-full bg-rose-100 flex items-center justify-center text-rose-600">
+                <AlertCircle className="w-8 h-8" />
+              </div>
+              <div>
+                <h4 className="font-bold text-base text-rose-900">
+                  AEPS Simulation Failed
+                </h4>
+                <p className="text-xs text-stone-600 mt-0.5">
+                  {simError || 'An error occurred during AEPS simulation'}
+                </p>
+              </div>
+              <div className="p-3.5 bg-stone-50 border border-stone-200 rounded-xl text-left font-mono text-xs space-y-1.5 text-stone-700">
+                <div className="flex justify-between">
+                  <span className="text-stone-400">Advance ID:</span>
+                  <span className="font-bold text-stone-900">{advanceId || 'N/A'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-stone-400">Aadhaar Auth:</span>
+                  <span>•••• •••• {aadhaarLast4} (Simulated)</span>
+                </div>
+              </div>
+              <button
+                onClick={handleRetry}
+                className="w-full py-2.5 bg-stone-900 hover:bg-stone-800 text-white font-bold text-xs rounded-xl cursor-pointer transition-colors"
+              >
+                Retry Simulation
+              </button>
+              <button
+                onClick={resetModal}
+                className="w-full py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold text-xs rounded-xl cursor-pointer transition-colors"
+              >
+                Cancel
+              </button>
             </div>
           )}
 
@@ -200,7 +290,7 @@ export const AepsModal: React.FC<AepsModalProps> = ({
 
           <div className="pt-2 border-t border-stone-100 text-[11px] text-stone-400 flex items-center gap-1.5 justify-center">
             <AlertCircle className="w-3.5 h-3.5" />
-            <span>Simulated AEPS interface with mock NPCI settlement standard.</span>
+            <span>Simulated AEPS interface with mock NPCI settlement. No real banking integration.</span>
           </div>
 
         </div>

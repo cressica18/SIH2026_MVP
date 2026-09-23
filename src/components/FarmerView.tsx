@@ -9,6 +9,7 @@ import {
   QualityAssessment,
   PriceBand,
   AdvanceRequest,
+  SafetyReport,
 } from '../types';
 import { I18N_STRINGS } from '../data/i18n';
 import { extractVoiceListing, getAiPriceRecommendation, assessProduceQuality } from '../lib/api-client';
@@ -62,14 +63,14 @@ interface FarmerViewProps {
   onAddListing: (listing: Listing) => void;
   onUpdateListingStatus?: (id: string, status: string) => void;
   onUpdateOrderStatus?: (orderId: string, status: string) => void;
-  onOpenAepsModal: (amount: number) => void;
+  onOpenAepsModal: (amount: number, advanceId?: string) => void;
   onRequestAdvance?: (amount: number, purpose: string, simulateAeps: boolean) => void;
   onSubmitSafetyReport: (report: {
     category: string;
     description: string;
     isAnonymous: boolean;
     reportedEntityName: string;
-  }) => void;
+  }) => Promise<SafetyReport | null>;
   initialTab?: string;
 }
 
@@ -254,25 +255,6 @@ export const FarmerView: React.FC<FarmerViewProps> = ({
     setShowCreateModal(false);
     setSpeechTranscript('');
     setActiveTab('listings');
-  };
-
-  const handleSafetySubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!safetyDescription.trim()) return;
-
-    onSubmitSafetyReport({
-      category: safetyCategory,
-      description: safetyDescription,
-      isAnonymous: safetyAnonymous,
-      reportedEntityName: safetyEntity || 'Local Mandi Intermediary',
-    });
-
-    setSafetySubmitted(true);
-    setTimeout(() => {
-      setSafetySubmitted(false);
-      setSafetyDescription('');
-      setSafetyEntity('');
-    }, 3000);
   };
 
   return (
@@ -721,7 +703,7 @@ function FinanceTab({
   riskAssessment: RiskAssessment;
   advances: AdvanceRequest[];
   t: any;
-  onOpenAepsModal: (amount: number) => void;
+  onOpenAepsModal: (amount: number, advanceId?: string) => void;
   onRequestAdvance?: (amount: number, purpose: string, simulateAeps: boolean) => void;
 }) {
   return (
@@ -815,7 +797,12 @@ function SafetyTab({
   setSafetySubmitted,
 }: {
   t: any;
-  onSubmitSafetyReport: (report: any) => void;
+  onSubmitSafetyReport: (report: {
+    category: string;
+    description: string;
+    isAnonymous: boolean;
+    reportedEntityName: string;
+  }) => Promise<SafetyReport | null>;
   safetyCategory: string;
   setSafetyCategory: (val: string) => void;
   safetyEntity: string;
@@ -827,21 +814,26 @@ function SafetyTab({
   safetySubmitted: boolean;
   setSafetySubmitted: (val: boolean) => void;
 }) {
-  const handleSafetySubmit = (e: React.FormEvent) => {
+  const handleSafetySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!safetyDescription.trim()) return;
-    onSubmitSafetyReport({
+
+    const created = await onSubmitSafetyReport({
       category: safetyCategory,
       description: safetyDescription,
       isAnonymous: safetyAnonymous,
       reportedEntityName: safetyEntity || 'Local Mandi Intermediary',
     });
-    setSafetySubmitted(true);
-    setTimeout(() => {
-      setSafetySubmitted(false);
-      setSafetyDescription('');
-      setSafetyEntity('');
-    }, 3000);
+
+    // Only mark as submitted once the backend has persisted the report
+    if (created) {
+      setSafetySubmitted(true);
+      setTimeout(() => {
+        setSafetySubmitted(false);
+        setSafetyDescription('');
+        setSafetyEntity('');
+      }, 3000);
+    }
   };
 
   return (

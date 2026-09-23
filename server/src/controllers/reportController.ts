@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { AuthRequest } from '../middleware/auth.js';
 import { createReport, getAllReports, updateReportStatus } from '../services/reportService.js';
 import { notifyReportCreated, notifyReportStatusChanged } from '../services/notificationService.js';
+import { SEED_FARMERS } from '../data/seedData.js';
 
 export async function createSafetyReport(req: AuthRequest, res: Response): Promise<void> {
   try {
@@ -18,6 +19,7 @@ export async function createSafetyReport(req: AuthRequest, res: Response): Promi
 
     const { category, description, isAnonymous, reportedEntityName, relatedOrderId } = req.body;
 
+    const farmer = SEED_FARMERS.find((f) => f.id === user.userId);
     const input = {
       category,
       description,
@@ -25,7 +27,7 @@ export async function createSafetyReport(req: AuthRequest, res: Response): Promi
       reportedEntityName,
       relatedOrderId,
       reporterUserId: isAnonymous ? undefined : user.userId,
-      reporterName: isAnonymous ? undefined : user.userId, // Could map to name if needed
+      reporterName: isAnonymous ? undefined : (farmer?.name ?? user.userId),
     };
 
     const { report } = createReport(input);

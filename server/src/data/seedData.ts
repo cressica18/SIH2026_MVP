@@ -103,14 +103,31 @@ export const SEED_ORDERS: Order[] = [
     buyerType: 'Food Processor (Sahyadri Agro)', buyerPhone: '+91 99801 88301',
     anonSellerId: 'FARM-88214', sellerRealName: 'Ramesh Patil', sellerPhone: '+91 98231 44521',
     sellerVillage: 'Pimpalgaon', sellerDistrict: 'Nashik', sellerState: 'Maharashtra',
-    status: 'confirmed', identityRevealed: true, identityRevealedAt: '2026-09-17 09:12 AM',
+    status: 'in_transit', identityRevealed: true, identityRevealedAt: '2026-09-17 09:12 AM',
     deliveryAddress: 'Plot 44, Food Park MIDC, Pune, Maharashtra', poolId: 'POOL-NSK-01',
     createdAt: '2026-09-17 08:50 AM' },
 ];
 
 export const SEED_LOGISTICS_POOLS: LogisticsPool[] = [
   { id: 'POOL-NSK-01', clusterRegion: 'Nashik - Pimpalgaon to Pune MIDC Corridor', date: '2026-09-17',
-    orderIds: ['ORD-1092', 'ORD-1088'], orders: [], routeStops: [], totalWeightKg: 2500, maxCapacityKg: 3000,
+    orderIds: ['ORD-1092'], orders: [
+      { id: 'ORD-1092', listingId: 'list_1', crop: 'Tomato', variety: 'Abhinav Hybrid', quantityKg: 1000,
+        agreedPricePerKg: 18, totalAmount: 18000, buyerId: 'buyer_1', buyerName: 'Vikram Joshi',
+        buyerType: 'Food Processor (Sahyadri Agro)', buyerPhone: '+91 99801 88301',
+        anonSellerId: 'FARM-88214', sellerRealName: 'Ramesh Patil', sellerPhone: '+91 98231 44521',
+        sellerVillage: 'Pimpalgaon', sellerDistrict: 'Nashik', sellerState: 'Maharashtra',
+        status: 'in_transit', identityRevealed: true, identityRevealedAt: '2026-09-17 09:12 AM',
+        deliveryAddress: 'Plot 44, Food Park MIDC, Pune, Maharashtra', poolId: 'POOL-NSK-01',
+        createdAt: '2026-09-17 08:50 AM' },
+    ],
+    routeStops: [
+      { id: 'STOP-P-ORD-1092-0', orderId: 'ORD-1092', stopType: 'pickup',
+        locationName: 'Pimpalgaon', farmerOrBuyerName: 'Ramesh Patil', contactPhone: '+91 98231 44521',
+        crop: 'Tomato', quantityKg: 1000, lat: 20.1634, lng: 73.9856, completed: true },
+      { id: 'STOP-D-ORD-1092-0', orderId: 'ORD-1092', stopType: 'dropoff',
+        locationName: 'Plot 44, Food Park MIDC', farmerOrBuyerName: 'Vikram Joshi', contactPhone: '+91 99801 88301',
+        crop: 'Tomato', quantityKg: 1000, lat: 18.5204, lng: 73.8567, completed: false },
+    ], totalWeightKg: 1000, maxCapacityKg: 3000,
     vehicleAssigned: 'Eicher 14ft (MH-15-EG-4912)', driverName: 'Kailash Shinde', driverPhone: '+91 98224 55198',
     status: 'in_transit', fuelSavingsPercent: 34, carbonReducedKg: 82.5 },
 ];

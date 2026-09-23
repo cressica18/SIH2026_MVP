@@ -46,6 +46,12 @@ export const LogisticsView: React.FC<LogisticsViewProps> = ({
   const t = I18N_STRINGS[currentLanguage];
 
   const currentPool = pools.find((p) => p.id === selectedPoolId) || pools[0];
+
+  // Fleet-wide metrics derived from actual pool data
+  const totalCarbonReduced = pools.reduce((sum, p) => sum + (p.carbonReducedKg || 0), 0);
+  const avgFuelSavings = pools.length > 0
+    ? Math.round(pools.reduce((sum, p) => sum + (p.fuelSavingsPercent || 0), 0) / pools.length)
+    : 0;
   
   const unassignedOrders = orders.filter(o => o.status === 'confirmed' && !o.poolId);
 
@@ -75,7 +81,7 @@ export const LogisticsView: React.FC<LogisticsViewProps> = ({
               </span>
               <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 flex items-center gap-1">
                 <Leaf className="w-3.5 h-3.5" />
-                Pooled Route Optimization (OR-Tools)
+                Pooled Route Optimization (NN Heuristic)
               </span>
             </div>
             <h2 className="text-xl sm:text-2xl font-black text-white">
@@ -90,13 +96,13 @@ export const LogisticsView: React.FC<LogisticsViewProps> = ({
             <div className="px-4 py-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/15 text-center">
               <p className="text-[11px] text-stone-300 font-medium">Fleet Fuel Savings</p>
               <p className="text-base font-black text-amber-400">
-                ~34% Saved
+                ~{avgFuelSavings}% Saved
               </p>
             </div>
             <div className="px-4 py-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/15 text-center">
               <p className="text-[11px] text-stone-300 font-medium">Carbon Abated</p>
               <p className="text-base font-black text-emerald-400">
-                82.5 kg CO₂
+                {totalCarbonReduced.toFixed(1)} kg CO₂
               </p>
             </div>
           </div>
@@ -193,7 +199,9 @@ export const LogisticsView: React.FC<LogisticsViewProps> = ({
                 </div>
                 <p className="text-[11px] text-emerald-800 font-medium flex items-center gap-1">
                   <Leaf className="w-3.5 h-3.5 text-emerald-600" />
-                  Consolidating 2 pickups reduces empty haulage miles by 48 km.
+                  {currentPool.orderIds.length > 1
+                    ? `Consolidating ${currentPool.orderIds.length} pickups reduces empty haulage miles.`
+                    : 'Single pickup — no pooling savings.'}
                 </p>
               </div>
 
@@ -248,7 +256,7 @@ export const LogisticsView: React.FC<LogisticsViewProps> = ({
                 <div>
                   <h3 className="font-bold text-base text-stone-900 flex items-center gap-2">
                     <Navigation className="w-5 h-5 text-emerald-600" />
-                    <span>OR-Tools Optimized Waypoint Sequence</span>
+                    <span>Optimized Waypoint Sequence (NN Heuristic)</span>
                   </h3>
                   <p className="text-xs text-stone-500">
                     Stops calculated to minimize vehicle turnaround and maximize fuel economy
@@ -325,20 +333,26 @@ export const LogisticsView: React.FC<LogisticsViewProps> = ({
                 ))}
               </div>
 
-              {/* Route Map Simulation Schematic */}
+              {/* Route Map Simulation Schematic — derived from backend stops */}
               <div className="p-4 bg-stone-900 rounded-2xl text-white space-y-2 text-xs">
                 <div className="flex items-center justify-between text-stone-300">
                   <span className="font-bold text-emerald-400">
-                    Live Telemetry Route Corridor
+                    Route Corridor ({currentPool.routeStops.length} stops)
                   </span>
-                  <span>Avg Speed: 42 km/h • ETA to Pune: 2h 15m</span>
+                  <span>Capacity: {currentPool.vehicleAssigned}</span>
                 </div>
-                <div className="p-3 bg-stone-800/80 rounded-xl border border-stone-700 flex items-center justify-between text-[11px] text-stone-300 font-mono">
-                  <span>[Farmgate A: Pimpalgaon]</span>
-                  <span>── 8 km ──▶</span>
-                  <span>[Storage Shed B]</span>
-                  <span>── 164 km (NH 60) ──▶</span>
-                  <span>[Pune MIDC Food Park]</span>
+                <div className="p-3 bg-stone-800/80 rounded-xl border border-stone-700 flex flex-wrap gap-2 items-center text-[11px] text-stone-300 font-mono">
+                  {currentPool.routeStops.map((stop, idx) => {
+                    const isCompleted = stop.completed;
+                    const prefix = stop.stopType === 'pickup' ? '🖑' : '📦';
+                    return (
+                      <span key={stop.id} className={`px-2 py-1 rounded ${
+                        isCompleted ? 'bg-emerald-700/30' : 'bg-stone-700'
+                      }`}>
+                        {prefix} {stop.locationName}
+                      </span>
+                    );
+                  })}
                 </div>
               </div>
 

@@ -109,15 +109,14 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
       buyerType: buyer.buyerType,
       buyerPhone: buyer.phone,
       anonSellerId: selectedListing.anonSellerId,
-      // Private seller details will only be visible once confirmed!
+      // Private seller details sent to backend; only revealed after farmer confirms
       sellerRealName: selectedListing.farmerRealName,
       sellerPhone: selectedListing.farmerPhone,
       sellerVillage: selectedListing.village,
       sellerDistrict: selectedListing.district,
       sellerState: selectedListing.state,
-      status: 'confirmed', // Automatically confirmed on buyer commitment for seamless demo reveal
-      identityRevealed: true,
-      identityRevealedAt: new Date().toLocaleTimeString(),
+      status: 'pending',
+      identityRevealed: false,
       deliveryAddress,
       createdAt: 'Just now',
     };

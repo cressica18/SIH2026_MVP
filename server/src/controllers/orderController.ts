@@ -29,7 +29,7 @@ export function getOrders(req: AuthRequest, res: Response): void {
   const user = req.user;
   if (!user) {
     // Unauthenticated: return empty (don't 401, for backwards compat with seed data tests)
-    res.json({ orders: store.orders, total: store.orders.length });
+    res.json({ orders: [], total: 0 });
     return;
   }
 

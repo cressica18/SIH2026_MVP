@@ -1,11 +1,20 @@
 import { Request, Response } from 'express';
 import { store } from '../data/store.js';
-import { Listing } from '../types.js';
+import { Listing, QualityAssessment, PriceBand } from '../types.js';
 import { AuthRequest } from '../middleware/auth.js';
 import { getAnonIdentity, getFarmerProfile } from './usersController.js';
 
+// Helper to scrub private seller info from listings
+// (seller identity stays hidden until order confirmation state)
+function scrubListing(listing: Listing): Listing {
+  const scrubbed = { ...listing };
+  delete scrubbed.farmerRealName;
+  delete scrubbed.farmerPhone;
+  return scrubbed;
+}
+
 export function getListings(req: Request, res: Response): void {
-  res.json({ listings: store.listings, total: store.listings.length });
+  res.json({ listings: store.listings.map(scrubListing), total: store.listings.length });
 }
 
 export function getListing(req: Request, res: Response): void {
@@ -15,7 +24,7 @@ export function getListing(req: Request, res: Response): void {
     res.status(404).json({ error: 'Listing not found' });
     return;
   }
-  res.json(listing);
+  res.json(scrubListing(listing));
 }
 
 export function createListing(req: AuthRequest, res: Response): void {
@@ -41,20 +50,48 @@ export function createListing(req: AuthRequest, res: Response): void {
     return;
   }
 
+  const priceExpected = body.priceExpected || 0;
+
   const newListing: Listing = {
     ...body,
     id: `list_${Date.now()}`,
     anonSellerId,
     farmerRealName: farmerProfile.name,
     farmerPhone: farmerProfile.phone,
+    // Populate region/location from farmer profile
+    village: body.village || farmerProfile.village,
+    district: body.district || farmerProfile.district,
+    state: body.state || farmerProfile.state,
+    lat: body.lat || farmerProfile.lat,
+    lng: body.lng || farmerProfile.lng,
+    // Defaults for required fields not yet assessed
+    quality: body.quality || {
+      grade: 'B',
+      confidence: 85,
+      colorUniformity: 85,
+      surfaceDefects: 10,
+      firmnessScore: 80,
+      freshnessLabel: 'Fresh harvest',
+      notes: 'Quality not yet assessed via CNN.',
+    },
+    priceAi: body.priceAi || {
+      min: Math.round(priceExpected * 0.85),
+      fair: priceExpected,
+      max: Math.round(priceExpected * 1.15),
+      confidence: 80,
+      historicalMandiAvg: Math.round(priceExpected * 0.95),
+      trend: 'stable',
+      benchmarkMandi: `${farmerProfile.district} APMC`,
+    },
+    imageUrl: body.imageUrl || 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=600&auto=format&fit=crop&q=80',
     status: 'active',
     createdVia: body.createdVia || 'text',
     createdAt: new Date().toISOString(),
     farmerReputation: farmerProfile.reputationScore || 5.0,
   };
-  
+
   store.listings.unshift(newListing);
-  res.status(201).json(newListing);
+  res.status(201).json(scrubListing(newListing));
 }
 
 export function updateListing(req: AuthRequest, res: Response): void {
@@ -87,6 +124,6 @@ export function updateListing(req: AuthRequest, res: Response): void {
   }
 
   store.listings[idx] = listing;
-  res.json(listing);
+  res.json(scrubListing(listing));
 }
 

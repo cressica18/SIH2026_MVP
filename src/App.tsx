@@ -22,7 +22,6 @@ import {
   SEED_ORDERS,
   SEED_LOGISTICS_POOLS,
   SEED_GOV_SCHEMES,
-  SEED_SAFETY_REPORTS,
   SEED_NOTIFICATIONS,
   SEED_RISK_ASSESSMENTS,
 } from './data/seedData';
@@ -55,12 +54,13 @@ export default function App() {
   const [isAepsModalOpen, setIsAepsModalOpen] = useState(false);
   const [isMarketInsightsOpen, setIsMarketInsightsOpen] = useState(false);
   const [aepsWithdrawAmount, setAepsWithdrawAmount] = useState<number>(20000);
+  const [aepsAdvanceId, setAepsAdvanceId] = useState<string | undefined>(undefined);
 
   // Core Data Collections
   const [listings, setListings] = useState<Listing[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [pools, setPools] = useState<LogisticsPool[]>([]);
-  const [reports, setReports] = useState<SafetyReport[]>(SEED_SAFETY_REPORTS);
+  const [reports, setReports] = useState<SafetyReport[]>([]);
   const [notifications, setNotifications] = useState<AppNotification[]>(SEED_NOTIFICATIONS);
   const [schemes, setSchemes] = useState<GovScheme[]>([]);
   const [advances, setAdvances] = useState<AdvanceRequest[]>([]);
@@ -162,6 +162,17 @@ export default function App() {
           if (schemesRes.ok) {
             const schemesData = await schemesRes.json();
             setSchemes(schemesData.schemes);
+          }
+        }
+
+        // Fetch safety reports for admin
+        if (user?.role === 'admin') {
+          const reportsRes = await fetch('/api/reports/admin', {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          if (reportsRes.ok) {
+            const reportsData = await reportsRes.json();
+            setReports(reportsData.reports);
           }
         }
 
@@ -427,8 +438,8 @@ export default function App() {
       const updatedPool = await res.json();
       setPools((prev) => prev.map((p) => (p.id === poolId ? updatedPool : p)));
 
-      if (status === 'delivered') {
-        // Backend already marks orders as settled; refresh orders
+      if (status === 'in_transit' || status === 'delivered') {
+        // Backend synced order statuses; refresh orders
         const ordToken = localStorage.getItem('vasundhara_token');
         const ordRes = await fetch('/api/orders', {
           headers: { Authorization: `Bearer ${ordToken}` },
@@ -502,37 +513,59 @@ export default function App() {
     }
   };
 
-  // Whistleblower Safety Report submission
-  const handleSubmitSafetyReport = (rep: {
-    category: any;
+  // Whistleblower Safety Report submission — persists to backend via POST /api/reports
+  const handleSubmitSafetyReport = async (rep: {
+    category: string;
     description: string;
     isAnonymous: boolean;
     reportedEntityName: string;
-  }) => {
-    const newReport: SafetyReport = {
-      id: `REP-${Math.floor(100 + Math.random() * 900)}`,
-      reporterName: rep.isAnonymous ? 'Anonymous Farmer' : (farmer?.name || 'Farmer'),
-      isAnonymous: rep.isAnonymous,
-      category: rep.category,
-      reportedEntityName: rep.reportedEntityName,
-      description: rep.description,
-      status: 'open',
-      createdAt: 'Just now',
-    };
+  }): Promise<SafetyReport | null> => {
+    try {
+      const token = localStorage.getItem('vasundhara_token');
+      const res = await fetch('/api/reports', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          category: rep.category,
+          description: rep.description,
+          isAnonymous: rep.isAnonymous,
+          reportedEntityName: rep.reportedEntityName,
+        }),
+      });
 
-    setReports((prev) => [newReport, ...prev]);
+      if (!res.ok) {
+        console.error('Failed to submit safety report', await res.text());
+        return null;
+      }
 
-    // Add alert notification for Admin
-    const notifAdmin: AppNotification = {
-      id: `notif_${Date.now()}`,
-      title: 'New Anonymous Safety Report',
-      message: `Report filed regarding ${rep.reportedEntityName} (${rep.category}).`,
-      timestamp: 'Just now',
-      read: false,
-      roleTarget: 'admin',
-      type: 'safety',
-    };
-    setNotifications((prev) => [notifAdmin, ...prev]);
+      const data = await res.json();
+      const created: SafetyReport = data.report;
+
+      // Backend is the single source of truth — use the persisted report returned by POST
+      setReports((prev) => [created, ...prev]);
+
+      // Alert the Admin moderation queue (backend also persists a notification)
+      const notifAdmin: AppNotification = {
+        id: `notif_${Date.now()}`,
+        title: rep.isAnonymous ? 'New Anonymous Safety Report' : 'New Safety Report',
+        message: `Report filed regarding ${rep.reportedEntityName} (${rep.category}). ${
+          rep.isAnonymous ? 'Anonymous submission.' : ''
+        }`,
+        timestamp: 'Just now',
+        read: false,
+        roleTarget: 'admin',
+        type: 'safety',
+      };
+      setNotifications((prev) => [notifAdmin, ...prev]);
+
+      return created;
+    } catch (err) {
+      console.error('Failed to submit safety report', err);
+      return null;
+    }
   };
 
   const handleRequestAdvance = async (amount: number, purpose: string, simulateAeps: boolean) => {
@@ -547,27 +580,52 @@ export default function App() {
         const adv = await res.json();
         setAdvances((prev) => [adv, ...prev]);
         if (simulateAeps) {
+          setAepsAdvanceId(adv.id);
           setIsAepsModalOpen(true);
         }
       } else {
-        console.error('Failed to request advance', await res.text());
+        const errText = await res.text();
+        console.error('Failed to request advance', errText);
       }
     } catch (err) {
       console.error('Error requesting advance', err);
     }
   };
 
-  // Admin update on report status
-  const handleUpdateReportStatus = (
+  // Admin updates report status — persisted to backend via PATCH /api/reports/admin/:id
+  const handleUpdateReportStatus = async (
     reportId: string,
     status: 'open' | 'reviewing' | 'resolved',
     resolutionNotes: string
-  ) => {
-    setReports((prev) =>
-      prev.map((r) =>
-        r.id === reportId ? { ...r, status, resolutionNotes } : r
-      )
-    );
+  ): Promise<SafetyReport | null> => {
+    try {
+      const token = localStorage.getItem('vasundhara_token');
+      const res = await fetch(`/api/reports/admin/${reportId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ status, resolutionNotes }),
+      });
+
+      if (!res.ok) {
+        console.error('Failed to update report status', await res.text());
+        return null;
+      }
+
+      const data = await res.json();
+      const updated: SafetyReport = data.report;
+
+      // Backend is the single source of truth — reflect the persisted, updated report
+      setReports((prev) =>
+        prev.map((r) => (r.id === reportId ? { ...updated } : r))
+      );
+      return updated;
+    } catch (err) {
+      console.error('Failed to update report status', err);
+      return null;
+    }
   };
 
   // Notification clear or read
@@ -586,37 +644,55 @@ export default function App() {
     if (role === 'admin' && tabName) setAdminSubTab(tabName);
   };
 
-  const handleOpenAepsModalWithAmount = (amount: number) => {
+  const handleAepsSuccess = async (amount: number, txnRef: string) => {
+    const notif: AppNotification = {
+      id: `notif_${Date.now()}`,
+      title: 'AEPS Cash-Out Disbursed',
+      message: `₹${amount.toLocaleString('en-IN')} withdrawn via Bank Mitra (Ref: ${txnRef}).`,
+      timestamp: 'Just now',
+      read: false,
+      roleTarget: 'farmer',
+      type: 'finance',
+    };
+    setNotifications((prev) => [notif, ...prev]);
+
+    // Refresh advances from backend to ensure source-of-truth consistency
+    const token = localStorage.getItem('vasundhara_token');
+    if (token) {
+      try {
+        const advRes = await fetch('/api/finance/advances', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (advRes.ok) {
+          const advData = await advRes.json();
+          setAdvances(advData.advances);
+        }
+      } catch (err) {
+        console.error('Failed to refresh advances', err);
+      }
+    }
+    setAepsAdvanceId(undefined);
+  };
+
+  const handleOpenAepsModalWithAmount = (amount: number, advanceId?: string) => {
     setAepsWithdrawAmount(amount);
+    if (advanceId) setAepsAdvanceId(advanceId);
     setIsAepsModalOpen(true);
   };
 
-  const handleAepsSuccess = (amount: number, txnRef: string) => {
-      const notif: AppNotification = {
-        id: `notif_${Date.now()}`,
-        title: 'AEPS Cash-Out Disbursed',
-        message: `₹${amount.toLocaleString('en-IN')} withdrawn via Bank Mitra (Ref: ${txnRef}).`,
-        timestamp: 'Just now',
-        read: false,
-        roleTarget: 'farmer',
-        type: 'finance',
-      };
-      setNotifications((prev) => [notif, ...prev]);
-    };
+  if (isAuthLoading || isProfileLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-stone-100">
+        <div className="text-stone-600 text-sm">Loading...</div>
+      </div>
+    );
+  }
 
-    if (isAuthLoading || isProfileLoading) {
-      return (
-        <div className="min-h-screen flex items-center justify-center bg-stone-100">
-          <div className="text-stone-600 text-sm">Loading...</div>
-        </div>
-      );
-    }
+  if (!isAuthenticated) {
+    return <OtpScreen onSuccess={(role) => setCurrentRole(role)} />;
+  }
 
-    if (!isAuthenticated) {
-      return <OtpScreen onSuccess={(role) => setCurrentRole(role)} />;
-    }
-
-    const needsOnboarding =
+  const needsOnboarding =
       (currentRole === 'farmer' && !farmer) ||
       (currentRole === 'buyer' && !buyer) ||
       (currentRole === 'logistics' && !logistics);
@@ -733,6 +809,7 @@ return (
         onClose={() => setIsAepsModalOpen(false)}
         farmerName={farmer?.name || 'Farmer'}
         defaultAmount={aepsWithdrawAmount}
+        advanceId={aepsAdvanceId}
         onSuccess={handleAepsSuccess}
       />
 

@@ -1,13 +1,14 @@
 import { Request, Response } from 'express';
 import { store } from '../data/store.js';
 import { LogisticsPool, RouteStop, Order } from '../types.js';
-import { 
-  autoPoolOrders, 
-  createManualPool, 
-  optimizeRoute, 
+import { notifyOrderStatusChanged } from '../services/notificationService.js';
+import {
+  autoPoolOrders,
+  createManualPool,
+  optimizeRoute,
   buildRouteStops,
   resolvePickupCoords,
-  resolveDropoffCoords 
+  resolveDropoffCoords
 } from '../services/logisticsService.js';
 
 export function getPools(req: Request, res: Response): void {
@@ -32,11 +33,37 @@ export function updatePoolStatus(req: Request, res: Response): void {
     res.status(404).json({ error: 'Pool not found' });
     return;
   }
+  const validTransitions: Record<string, string[]> = {
+    unassigned: ['in_transit', 'delivered'],
+    assigned: ['in_transit', 'delivered'],
+    in_transit: ['delivered'],
+    delivered: [],
+  };
+
+  // Allow idempotent transitions (same status) plus defined next-step transitions
+  if (pool.status !== status && !validTransitions[pool.status]?.includes(status)) {
+    res.status(400).json({ error: `Invalid pool status transition: ${pool.status} → ${status}` });
+    return;
+  }
+
   pool.status = status;
-  if (status === 'delivered') {
+
+  // Sync order statuses to match the pool's lifecycle
+  if (status === 'in_transit') {
     pool.orderIds.forEach((oid: string) => {
       const order = store.orders.find((o) => o.id === oid);
-      if (order) order.status = 'settled';
+      if (order && (order.status === 'confirmed' || order.status === 'pending')) {
+        order.status = 'in_transit';
+        notifyOrderStatusChanged(order, 'in_transit', 'logistics');
+      }
+    });
+  } else if (status === 'delivered') {
+    pool.orderIds.forEach((oid: string) => {
+      const order = store.orders.find((o) => o.id === oid);
+      if (order && order.status !== 'settled') {
+        order.status = 'delivered';
+        notifyOrderStatusChanged(order, 'delivered', 'logistics');
+      }
     });
   }
   res.json(pool);
@@ -144,7 +171,10 @@ export function updatePoolStop(req: Request, res: Response): void {
     pool.status = 'delivered';
     pool.orderIds.forEach((oid: string) => {
       const order = store.orders.find((o) => o.id === oid);
-      if (order) order.status = 'settled';
+      if (order && order.status !== 'settled') {
+        order.status = 'delivered';
+        notifyOrderStatusChanged(order, 'delivered', 'logistics');
+      }
     });
   }
 

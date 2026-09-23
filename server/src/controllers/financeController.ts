@@ -51,10 +51,19 @@ export function requestAdvance(req: AuthRequest, res: Response): void {
   }
 
   const risk = assessRisk(req.user!.userId);
-  if (amountRequested > risk.eligibleAdvanceAmount) {
+
+  // Calculate sum of active advances (requested or disbursed) for this farmer
+  const existingActiveAdvancesTotal = store.advances
+    .filter(a => a.farmerId === req.user!.userId && (a.status === 'requested' || a.status === 'disbursed'))
+    .reduce((sum, a) => sum + a.amountRequested, 0);
+
+  const remainingEligible = Math.max(0, risk.eligibleAdvanceAmount - existingActiveAdvancesTotal);
+
+  if (amountRequested > remainingEligible) {
     res.status(400).json({ 
-      error: `Requested amount exceeds eligible advance limit of ₹${risk.eligibleAdvanceAmount.toLocaleString('en-IN')}`,
-      eligibleAdvanceAmount: risk.eligibleAdvanceAmount
+      error: `Requested amount exceeds eligible advance limit of ₹${remainingEligible.toLocaleString('en-IN')}`,
+      eligibleAdvanceAmount: risk.eligibleAdvanceAmount,
+      remainingEligible
     });
     return;
   }

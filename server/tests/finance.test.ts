@@ -274,6 +274,29 @@ describe('Phase 16: Financial Inclusion - Risk Scoring + AEPS Simulation', () =>
       expect(res.status).toBe(201);
       expect(res.body.purpose).toBe('Working Capital');
     });
+
+    it('should reject advance request when cumulative active advances exceed eligible limit', async () => {
+      const riskRes = await request(app)
+        .get('/api/finance/risk/farmer_1')
+        .set('Authorization', `Bearer ${farmer1Token}`);
+      const eligible = riskRes.body.eligibleAdvanceAmount;
+
+      // First request for 30000 should succeed
+      const res1 = await request(app)
+        .post('/api/finance/advances')
+        .set('Authorization', `Bearer ${farmer1Token}`)
+        .send({ amountRequested: 30000 });
+      expect(res1.status).toBe(201);
+
+      // Second request for 20000 exceeds remaining limit (15000)
+      const res2 = await request(app)
+        .post('/api/finance/advances')
+        .set('Authorization', `Bearer ${farmer1Token}`)
+        .send({ amountRequested: 20000 });
+      expect(res2.status).toBe(400);
+      expect(res2.body.error).toContain('exceeds eligible advance limit');
+      expect(res2.body.remainingEligible).toBe(eligible - 30000);
+    });
   });
 
   // ── API tests: GET /api/finance/advances ───────────────────────────────────

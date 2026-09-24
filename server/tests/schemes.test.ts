@@ -21,11 +21,7 @@ describe('Phase 15: Government Scheme Awareness', () => {
     });
 
     it('should reject a state-specific scheme for farmer outside that state', () => {
-      // NHM covers Maharashtra but not Punjab in the seed data
-      const nhm = SEED_GOV_SCHEMES.find(s => s.id === 'SCHEME-06')!;
-      // Punjab farmer has Punjab in eligibleStates? Let's check
-      // NHM eligibleStates includes ['Maharashtra', 'Punjab', ...]
-      // So Punjab farmer should match — test with a Karnataka-only scheme
+      // SMAM is All India scheme
       const smam = SEED_GOV_SCHEMES.find(s => s.id === 'SCHEME-03')!; // All India
       const result = checkEligibility(smam, punjabFarmer);
       expect(result.eligible).toBe(true); // SMAM is All India

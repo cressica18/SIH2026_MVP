@@ -222,7 +222,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 )}
               </Button>
 
-{showNotifications && (
+              {showNotifications && (
                 <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-xl shadow-xl border border-stone-200 z-50 animate-fade-in">
                   <div className="flex items-center justify-between px-4 py-3 border-b border-stone-100">
                     <h4 className="font-semibold text-sm text-stone-900 flex items-center gap-2">
@@ -270,15 +270,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                   </Button>
                 </div>
               )}
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="w-full px-4 py-2 border-t border-stone-100"
-                    onClick={() => setShowNotifications(false)}
-                  >
-                    Close
-                  </Button>
-                </div>
             </div>
 
             {/* Role Switcher - Mobile */}
@@ -337,6 +328,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
           ))}
         </div>
+      </div>
     </header>
   );
 };

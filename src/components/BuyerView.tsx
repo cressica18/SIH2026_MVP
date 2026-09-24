@@ -29,9 +29,9 @@ interface BuyerViewProps {
   listings: Listing[];
   orders: Order[];
   currentLanguage: Language;
-  onPlaceOrder: (order: Order) => void;
+  onPlaceOrder: (order: Order) => Promise<boolean>;
   onUpdateOrderStatus: (orderId: string, status: string) => void;
-  onRateFarmer: (orderId: string, rating: number) => void;
+  onRateFarmer: (orderId: string, rating: number) => Promise<boolean>;
   initialTab?: string;
 }
 
@@ -60,10 +60,14 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
   const [deliveryAddress, setDeliveryAddress] = useState<string>(
     'Plot 44, Food Park MIDC, Pune, Maharashtra'
   );
+  const [isSubmittingOrder, setIsSubmittingOrder] = useState(false);
+  const [orderError, setOrderError] = useState<string | null>(null);
 
   // Rating Modal
   const [ratingOrderId, setRatingOrderId] = useState<string | null>(null);
   const [selectedStarRating, setSelectedStarRating] = useState<number>(5);
+  const [isSubmittingRating, setIsSubmittingRating] = useState(false);
+  const [ratingError, setRatingError] = useState<string | null>(null);
 
   const t = I18N_STRINGS[currentLanguage];
 
@@ -91,45 +95,70 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
   const handleOpenOrderModal = (listing: Listing) => {
     setSelectedListing(listing);
     setOrderQuantity(Math.min(1000, listing.quantityKg));
+    setOrderError(null);
   };
 
-  const handleSubmitOrder = () => {
+  const handleSubmitOrder = async () => {
     if (!selectedListing) return;
+    setIsSubmittingOrder(true);
+    setOrderError(null);
 
-    const newOrder: Order = {
-      id: `ORD-${Math.floor(1000 + Math.random() * 9000)}`,
-      listingId: selectedListing.id,
-      crop: selectedListing.crop,
-      variety: selectedListing.variety,
-      quantityKg: Number(orderQuantity),
-      agreedPricePerKg: selectedListing.priceExpected,
-      totalAmount: Number(orderQuantity) * selectedListing.priceExpected,
-      buyerId: buyer.id,
-      buyerName: buyer.businessName || buyer.name,
-      buyerType: buyer.buyerType,
-      buyerPhone: buyer.phone,
-      anonSellerId: selectedListing.anonSellerId,
-      // Private seller details sent to backend; only revealed after farmer confirms
-      sellerRealName: selectedListing.farmerRealName,
-      sellerPhone: selectedListing.farmerPhone,
-      sellerVillage: selectedListing.village,
-      sellerDistrict: selectedListing.district,
-      sellerState: selectedListing.state,
-      status: 'pending',
-      identityRevealed: false,
-      deliveryAddress,
-      createdAt: 'Just now',
-    };
+    try {
+      const newOrder: Order = {
+        id: `ORD-${Math.floor(1000 + Math.random() * 9000)}`,
+        listingId: selectedListing.id,
+        crop: selectedListing.crop,
+        variety: selectedListing.variety,
+        quantityKg: Number(orderQuantity),
+        agreedPricePerKg: selectedListing.priceExpected,
+        totalAmount: Number(orderQuantity) * selectedListing.priceExpected,
+        buyerId: buyer.id,
+        buyerName: buyer.businessName || buyer.name,
+        buyerType: buyer.buyerType,
+        buyerPhone: buyer.phone,
+        anonSellerId: selectedListing.anonSellerId,
+        // Private seller details sent to backend; only revealed after farmer confirms
+        sellerRealName: selectedListing.farmerRealName,
+        sellerPhone: selectedListing.farmerPhone,
+        sellerVillage: selectedListing.village,
+        sellerDistrict: selectedListing.district,
+        sellerState: selectedListing.state,
+        status: 'pending',
+        identityRevealed: false,
+        deliveryAddress,
+        createdAt: 'Just now',
+      };
 
-    onPlaceOrder(newOrder);
-    setSelectedListing(null);
-    setActiveTab('orders');
+      const success = await onPlaceOrder(newOrder);
+      if (success) {
+        setSelectedListing(null);
+        setActiveTab('orders');
+      } else {
+        setOrderError('Failed to place order. Please check quantity or try again.');
+      }
+    } catch {
+      setOrderError('An unexpected error occurred while placing order.');
+    } finally {
+      setIsSubmittingOrder(false);
+    }
   };
 
-  const handleRateSubmit = () => {
+  const handleRateSubmit = async () => {
     if (!ratingOrderId) return;
-    onRateFarmer(ratingOrderId, selectedStarRating);
-    setRatingOrderId(null);
+    setIsSubmittingRating(true);
+    setRatingError(null);
+    try {
+      const success = await onRateFarmer(ratingOrderId, selectedStarRating);
+      if (success) {
+        setRatingOrderId(null);
+      } else {
+        setRatingError('Failed to submit rating. Order must be settled first.');
+      }
+    } catch {
+      setRatingError('An error occurred while submitting rating.');
+    } finally {
+      setIsSubmittingRating(false);
+    }
   };
 
   return (
@@ -546,6 +575,13 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
             </div>
 
             <div className="p-6 space-y-4 text-xs">
+              {orderError && (
+                <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800 flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+                  <span>{orderError}</span>
+                </div>
+              )}
+
               <div className="p-3 bg-blue-50 border border-blue-200 rounded-xl text-blue-900 space-y-1">
                 <p className="font-bold flex items-center gap-1">
                   <ShieldCheck className="w-4 h-4 text-blue-700" />
@@ -613,13 +649,11 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
 
               <button
                 type="button"
-                onClick={() => {
-                  handleSubmitOrder();
-                  setSelectedListing(null);
-                }}
-                className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-xl shadow-md transition-all cursor-pointer active:scale-98"
+                disabled={isSubmittingOrder}
+                onClick={handleSubmitOrder}
+                className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-xl shadow-md transition-all cursor-pointer active:scale-98 disabled:opacity-50"
               >
-                Request Order (Pending Farmer Approval)
+                {isSubmittingOrder ? 'Submitting Order...' : 'Request Order (Pending Farmer Approval)'}
               </button>
             </div>
 
@@ -638,6 +672,13 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
               Your rating directly updates the farmer's transparent reputation score on Vasundhara.
             </p>
 
+            {ratingError && (
+              <div className="p-2.5 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800 flex items-center gap-1.5 text-left">
+                <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+                <span>{ratingError}</span>
+              </div>
+            )}
+
             <div className="flex justify-center gap-2 py-2">
               {[1, 2, 3, 4, 5].map((star) => (
                 <button
@@ -652,16 +693,21 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
 
             <div className="flex gap-2">
               <button
-                onClick={() => setRatingOrderId(null)}
+                disabled={isSubmittingRating}
+                onClick={() => {
+                  setRatingOrderId(null);
+                  setRatingError(null);
+                }}
                 className="flex-1 py-2 text-xs font-semibold text-stone-600 bg-stone-100 rounded-xl"
               >
                 Cancel
               </button>
               <button
+                disabled={isSubmittingRating}
                 onClick={handleRateSubmit}
-                className="flex-1 py-2 text-xs font-bold text-white bg-emerald-600 rounded-xl shadow-xs"
+                className="flex-1 py-2 text-xs font-bold text-white bg-emerald-600 rounded-xl shadow-xs disabled:opacity-50"
               >
-                Submit Rating
+                {isSubmittingRating ? 'Submitting...' : 'Submit Rating'}
               </button>
             </div>
           </div>

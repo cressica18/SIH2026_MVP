@@ -129,6 +129,11 @@ export const AdminView: React.FC<AdminViewProps> = ({
             </div>
           </div>
 
+          {reports.length === 0 ? (
+            <div className="p-8 text-center text-stone-500 bg-white rounded-2xl border border-stone-200">
+              No whistleblower or safety complaints in queue.
+            </div>
+          ) : (
           <div className="space-y-3">
             {reports.map((rep) => (
               <div
@@ -203,6 +208,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
               </div>
             ))}
           </div>
+          )}
         </div>
       )}
 
@@ -268,6 +274,11 @@ export const AdminView: React.FC<AdminViewProps> = ({
       {/* TAB 3: GOVERNMENT SCHEMES REGISTRY */}
       {activeTab === 'schemes' && (
         <div className="space-y-4">
+          {schemes.length === 0 ? (
+            <div className="p-8 text-center text-stone-500 bg-white rounded-2xl border border-stone-200">
+              No government schemes registered.
+            </div>
+          ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {schemes.map((sch) => (
               <div
@@ -288,6 +299,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
               </div>
             ))}
           </div>
+          )}
         </div>
       )}
 

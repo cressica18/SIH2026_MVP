@@ -41,10 +41,12 @@ export async function extractVoiceListingService(
   // 1. Detect crop
   let detectedCrop = 'Tomato';
   let detectedVariety = 'Abhinav Hybrid';
+  let cropFound = false;
   for (const [key, cropInfo] of Object.entries(CROP_DICTIONARY)) {
     if (text.includes(key)) {
       detectedCrop = cropInfo.standardName;
       detectedVariety = cropInfo.defaultVariety;
+      cropFound = true;
       break;
     }
   }
@@ -91,12 +93,16 @@ export async function extractVoiceListingService(
   else if (text.includes('chaubees') || text.includes('chovis')) priceExpected = 24;
   else if (text.includes('chauda') || text.includes('fourteen')) priceExpected = 14;
 
+  const quantityMatched = numMatches !== null;
+  const priceMatched = priceMatches !== null;
+  const confidence = cropFound ? (quantityMatched && priceMatched ? 94 : 75) : 35;
+
   return {
     crop: detectedCrop,
     variety: detectedVariety,
     quantityKg: Math.max(50, Math.round(quantityKg)),
     priceExpected: Math.max(5, Math.round(priceExpected * 10) / 10),
-    confidence: 94,
+    confidence,
     rawTranscript: transcript,
   };
 }

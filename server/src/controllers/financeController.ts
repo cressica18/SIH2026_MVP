@@ -39,8 +39,15 @@ export function requestAdvance(req: AuthRequest, res: Response): void {
   }
 
   const { amountRequested, purpose, simulateAeps } = req.body;
-  if (!amountRequested || amountRequested <= 0) {
-    res.status(400).json({ error: 'Valid amount requested is required' });
+  const amount = Number(amountRequested);
+
+  if (amountRequested === undefined || amountRequested === null || isNaN(amount) || amount <= 0 || !Number.isFinite(amount)) {
+    res.status(400).json({ error: 'Valid positive amount requested is required' });
+    return;
+  }
+
+  if (amount > 10_000_000) {
+    res.status(400).json({ error: 'Amount requested exceeds maximum allowed limit' });
     return;
   }
 
@@ -89,12 +96,13 @@ export function simulateAepsCashout(req: AuthRequest, res: Response): void {
 
   const { advanceId, aadhaarLast4 } = req.body;
   
-  if (!advanceId) {
-    res.status(400).json({ error: 'advanceId is required' });
+  if (!advanceId || typeof advanceId !== 'string' || advanceId.trim().length === 0) {
+    res.status(400).json({ error: 'advanceId is required and must be a non-empty string' });
     return;
   }
 
-  if (!aadhaarLast4 || !/^\d{4}$/.test(aadhaarLast4)) {
+  const aadhaarStr = String(aadhaarLast4 || '').trim();
+  if (!/^\d{4}$/.test(aadhaarStr)) {
     res.status(400).json({ error: 'Valid 4-digit Aadhaar last 4 digits required' });
     return;
   }

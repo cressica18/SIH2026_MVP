@@ -61,11 +61,11 @@ interface FarmerViewProps {
   riskAssessment: RiskAssessment;
   advances?: AdvanceRequest[];
   currentLanguage: Language;
-  onAddListing: (listing: Listing) => void;
+  onAddListing: (listing: Listing) => Promise<boolean>;
   onUpdateListingStatus?: (id: string, status: string) => void;
   onUpdateOrderStatus?: (orderId: string, status: string) => void;
   onOpenAepsModal: (amount: number, advanceId?: string) => void;
-  onRequestAdvance?: (amount: number, purpose: string, simulateAeps: boolean) => void;
+  onRequestAdvance?: (amount: number, purpose: string, simulateAeps: boolean) => Promise<{ success: boolean; advance?: AdvanceRequest; error?: string }>;
   onSubmitSafetyReport: (report: {
     category: string;
     description: string;
@@ -149,6 +149,8 @@ export const FarmerView: React.FC<FarmerViewProps> = ({
     'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=600&auto=format&fit=crop&q=80'
   );
   const [photoBase64, setPhotoBase64] = useState<string>('');
+  const [isPublishing, setIsPublishing] = useState(false);
+  const [publishError, setPublishError] = useState<string | null>(null);
 
   // Safety report form state
   const [safetyCategory, setSafetyCategory] = useState<string>('Underpricing & Cartel');
@@ -210,52 +212,64 @@ export const FarmerView: React.FC<FarmerViewProps> = ({
     }
   };
 
-  const handlePublishListing = () => {
-    const newListing: Listing = {
-      id: `list_${Date.now()}`,
-      anonSellerId: farmer.anonSellerId,
-      farmerRealName: farmer.name,
-      farmerPhone: farmer.phone,
-      crop: cropInput,
-      variety: varietyInput,
-      quantityKg: Number(quantityInput),
-      priceExpected: Number(priceInput),
-      priceAi: aiPriceBand || {
-        min: priceInput * 0.9,
-        fair: priceInput,
-        max: priceInput * 1.15,
-        confidence: 92,
-        historicalMandiAvg: priceInput,
-        trend: 'rising',
-        benchmarkMandi: `${farmer.district} APMC`,
-      },
-      quality: qualityGrade || {
-        grade: 'A',
-        confidence: 94,
-        colorUniformity: 92,
-        surfaceDefects: 4,
-        firmnessScore: 89,
-        freshnessLabel: 'Grade A Farmgate Batch',
-        notes: 'Harvest verified by AI image scan.',
-      },
-      imageUrl: selectedPhotoUrl,
-      village: farmer.village,
-      district: farmer.district,
-      state: farmer.state,
-      lat: farmer.lat,
-      lng: farmer.lng,
-      status: 'active',
-      createdVia: speechTranscript ? 'voice' : 'text',
-      createdAt: 'Just now',
-      farmerReputation: farmer.reputationScore,
-      distanceKm: 28,
-      matchScore: 96,
-    };
+  const handlePublishListing = async () => {
+    setIsPublishing(true);
+    setPublishError(null);
+    try {
+      const newListing: Listing = {
+        id: `list_${Date.now()}`,
+        anonSellerId: farmer.anonSellerId,
+        farmerRealName: farmer.name,
+        farmerPhone: farmer.phone,
+        crop: cropInput,
+        variety: varietyInput,
+        quantityKg: Number(quantityInput),
+        priceExpected: Number(priceInput),
+        priceAi: aiPriceBand || {
+          min: priceInput * 0.9,
+          fair: priceInput,
+          max: priceInput * 1.15,
+          confidence: 92,
+          historicalMandiAvg: priceInput,
+          trend: 'rising',
+          benchmarkMandi: `${farmer.district} APMC`,
+        },
+        quality: qualityGrade || {
+          grade: 'A',
+          confidence: 94,
+          colorUniformity: 92,
+          surfaceDefects: 4,
+          firmnessScore: 89,
+          freshnessLabel: 'Grade A Farmgate Batch',
+          notes: 'Harvest verified by AI image scan.',
+        },
+        imageUrl: selectedPhotoUrl,
+        village: farmer.village,
+        district: farmer.district,
+        state: farmer.state,
+        lat: farmer.lat,
+        lng: farmer.lng,
+        status: 'active',
+        createdVia: speechTranscript ? 'voice' : 'text',
+        createdAt: 'Just now',
+        farmerReputation: farmer.reputationScore,
+        distanceKm: 28,
+        matchScore: 96,
+      };
 
-    onAddListing(newListing);
-    setShowCreateModal(false);
-    setSpeechTranscript('');
-    setActiveTab('listings');
+      const success = await onAddListing(newListing);
+      if (success) {
+        setShowCreateModal(false);
+        setSpeechTranscript('');
+        setActiveTab('listings');
+      } else {
+        setPublishError('Failed to publish listing. Please check your connection and try again.');
+      }
+    } catch {
+      setPublishError('An error occurred while publishing the listing.');
+    } finally {
+      setIsPublishing(false);
+    }
   };
 
   return (
@@ -390,7 +404,10 @@ export const FarmerView: React.FC<FarmerViewProps> = ({
       {/* VOICE LISTING CREATION MODAL */}
       <CreateListingModal
         isOpen={showCreateModal}
-        onClose={() => setShowCreateModal(false)}
+        onClose={() => {
+          setShowCreateModal(false);
+          setPublishError(null);
+        }}
         farmer={farmer}
         currentLanguage={currentLanguage}
         t={t}
@@ -415,6 +432,8 @@ export const FarmerView: React.FC<FarmerViewProps> = ({
         handlePhotoFileChange={handlePhotoFileChange}
         isRecording={isRecording}
         handleToggleRecording={handleToggleRecording}
+        isPublishing={isPublishing}
+        publishError={publishError}
         onPublish={handlePublishListing}
       />
     </div>
@@ -434,7 +453,7 @@ function ListingTab({
   listings: Listing[];
   farmer: FarmerProfile;
   t: any;
-  onAddListing: (listing: Listing) => void;
+  onAddListing: (listing: Listing) => Promise<boolean>;
   onUpdateListingStatus?: (id: string, status: string) => void;
   showCreateModal: boolean;
   setShowCreateModal: (show: boolean) => void;
@@ -829,25 +848,37 @@ function SafetyTab({
   safetySubmitted: boolean;
   setSafetySubmitted: (val: boolean) => void;
 }) {
+  const [isSubmittingSafety, setIsSubmittingSafety] = useState(false);
+  const [safetyError, setSafetyError] = useState<string | null>(null);
+
   const handleSafetySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!safetyDescription.trim()) return;
 
-    const created = await onSubmitSafetyReport({
-      category: safetyCategory,
-      description: safetyDescription,
-      isAnonymous: safetyAnonymous,
-      reportedEntityName: safetyEntity || 'Local Mandi Intermediary',
-    });
+    setIsSubmittingSafety(true);
+    setSafetyError(null);
+    try {
+      const created = await onSubmitSafetyReport({
+        category: safetyCategory,
+        description: safetyDescription,
+        isAnonymous: safetyAnonymous,
+        reportedEntityName: safetyEntity || 'Local Mandi Intermediary',
+      });
 
-    // Only mark as submitted once the backend has persisted the report
-    if (created) {
-      setSafetySubmitted(true);
-      setTimeout(() => {
-        setSafetySubmitted(false);
-        setSafetyDescription('');
-        setSafetyEntity('');
-      }, 3000);
+      if (created) {
+        setSafetySubmitted(true);
+        setTimeout(() => {
+          setSafetySubmitted(false);
+          setSafetyDescription('');
+          setSafetyEntity('');
+        }, 3000);
+      } else {
+        setSafetyError('Failed to submit report. Please check your connection and try again.');
+      }
+    } catch {
+      setSafetyError('An error occurred while submitting report.');
+    } finally {
+      setIsSubmittingSafety(false);
     }
   };
 
@@ -868,6 +899,13 @@ function SafetyTab({
         </p>
         <p className="text-rose-800 leading-relaxed">{t.safety.guarantee}</p>
       </div>
+
+      {safetyError && (
+        <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800 flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+          <span>{safetyError}</span>
+        </div>
+      )}
 
       {safetySubmitted ? (
         <div className="p-6 bg-emerald-50 border border-emerald-200 rounded-2xl text-center space-y-2">
@@ -920,8 +958,8 @@ function SafetyTab({
             </label>
           </div>
 
-          <Button type="submit" className="w-full" variant="danger">
-            Submit Report to Safety Moderation
+          <Button type="submit" className="w-full" variant="danger" disabled={isSubmittingSafety}>
+            {isSubmittingSafety ? 'Submitting Report...' : 'Submit Report to Safety Moderation'}
           </Button>
         </form>
       )}
@@ -956,6 +994,8 @@ function CreateListingModal({
   handlePhotoFileChange,
   isRecording,
   handleToggleRecording,
+  isPublishing,
+  publishError,
   onPublish,
 }: {
   isOpen: boolean;
@@ -984,6 +1024,8 @@ function CreateListingModal({
   handlePhotoFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   isRecording: boolean;
   handleToggleRecording: () => void;
+  isPublishing?: boolean;
+  publishError?: string | null;
   onPublish: () => void;
 }) {
   return (
@@ -995,6 +1037,12 @@ function CreateListingModal({
       size="xl"
     >
       <div className="p-6 overflow-y-auto space-y-5">
+        {publishError && (
+          <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800 flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+            <span>{publishError}</span>
+          </div>
+        )}
         {/* Mic Record Banner */}
         <div className="p-4 bg-emerald-50 rounded-2xl border border-emerald-200 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
           <div className="space-y-1">
@@ -1202,8 +1250,17 @@ function CreateListingModal({
         </div>
 
         <div className="flex items-center justify-end gap-2 pt-4 border-t border-stone-200">
-          <Button variant="secondary" onClick={onClose}>Cancel</Button>
-          <Button onClick={onPublish}>Publish Anonymously</Button>
+          <Button variant="secondary" onClick={onClose} disabled={isPublishing}>Cancel</Button>
+          <Button onClick={onPublish} disabled={isPublishing}>
+            {isPublishing ? (
+              <span className="flex items-center gap-1.5">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>Publishing...</span>
+              </span>
+            ) : (
+              'Publish Anonymously'
+            )}
+          </Button>
         </div>
       </div>
     </Modal>

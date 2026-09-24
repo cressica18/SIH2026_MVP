@@ -84,16 +84,18 @@ export default function App() {
       setReports([]);
       setSchemes([]);
       setAdvances([]);
+      setNotifications([]);
       return;
     }
     setCurrentRole(user.role);
     setIsProfileLoading(true);
 
-    // Reset profiles for previous roles to avoid stale data
+    // Reset profiles and notifications for previous roles to avoid stale data
     setFarmer(null);
     setBuyer(null);
     setLogistics(null);
     setRiskAssessment(null);
+    setNotifications([]);
 
     async function fetchProfileAndListings() {
       try {
@@ -262,7 +264,7 @@ export default function App() {
   }, [isAuthenticated, user, fetchNotifications]);
 
   // Add a new listing from farmer voice or manual input
-  const handleAddListing = async (newListing: Listing) => {
+  const handleAddListing = async (newListing: Listing): Promise<boolean> => {
     try {
       const token = localStorage.getItem('vasundhara_token');
       const res = await fetch('/api/listings', {
@@ -289,9 +291,14 @@ export default function App() {
           type: 'order',
         };
         setNotifications((prev) => [notif, ...prev]);
+        return true;
+      } else {
+        console.error('Failed to create listing', await res.text());
+        return false;
       }
     } catch (err) {
       console.error('Failed to create listing', err);
+      return false;
     }
   };
 
@@ -317,7 +324,7 @@ export default function App() {
   };
 
   // Buyer places an order — POST to backend, then update local state
-  const handlePlaceOrder = async (newOrder: Order) => {
+  const handlePlaceOrder = async (newOrder: Order): Promise<boolean> => {
     try {
       const token = localStorage.getItem('vasundhara_token');
       const res = await fetch('/api/orders', {
@@ -327,7 +334,7 @@ export default function App() {
       });
       if (!res.ok) {
         console.error('Failed to create order', await res.text());
-        return;
+        return false;
       }
       const createdOrder: Order = await res.json();
       setOrders((prev) => [createdOrder, ...prev]);
@@ -365,8 +372,10 @@ export default function App() {
         type: 'logistics',
       };
       setNotifications((prev) => [notifFarmer, notifLogistics, ...prev]);
+      return true;
     } catch (err) {
       console.error('Failed to place order', err);
+      return false;
     }
   };
 
@@ -391,23 +400,12 @@ export default function App() {
   };
 
   // Buyer rates farmer fulfillment — Phase 12: persist to backend reputation service
-  const handleRateFarmer = async (orderId: string, rating: number) => {
-    // Update local order state immediately (optimistic)
-    setOrders((prev) =>
-      prev.map((ord) => (ord.id === orderId ? { ...ord, buyerRating: rating } : ord))
-    );
-
+  const handleRateFarmer = async (orderId: string, rating: number): Promise<boolean> => {
     try {
       const token = localStorage.getItem('vasundhara_token');
       const order = orders.find((o) => o.id === orderId);
-      if (!order) return;
+      if (!order) return false;
 
-      // The target is the farmer identified by anonSellerId — we use anonSellerId for now;
-      // the backend resolves to the farmer's userId from SEED_FARMERS.
-      // For farmers whose identities are revealed, the sellerRealName is exposed but userId is not
-      // in the order payload. We use the listing-based sellerId approach:
-      // the order's anonSellerId maps to a farmer.id via SEED_FARMERS in the backend.
-      // We pass anonSellerId as targetUserId and the backend normalises it.
       const res = await fetch('/api/reputation/events', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
@@ -422,17 +420,25 @@ export default function App() {
 
       if (res.ok) {
         const { updatedScore } = await res.json();
+        // Update local order state ONLY on API success
+        setOrders((prev) =>
+          prev.map((ord) => (ord.id === orderId ? { ...ord, buyerRating: rating } : ord))
+        );
+
         // Update local farmer reputation score if we have a farmer view loaded
         if (farmer && updatedScore) {
           setFarmer((prev) =>
             prev ? { ...prev, reputationScore: updatedScore.score } : prev
           );
         }
+        return true;
       } else {
-        console.warn('Failed to post reputation event (may need a settled order)', await res.text());
+        console.warn('Failed to post reputation event', await res.text());
+        return false;
       }
     } catch (err) {
       console.error('Failed to post reputation event', err);
+      return false;
     }
   };
 
@@ -441,7 +447,7 @@ export default function App() {
   const handleUpdatePoolStatus = async (
     poolId: string,
     status: 'assigned' | 'in_transit' | 'delivered'
-  ) => {
+  ): Promise<boolean> => {
     try {
       const token = localStorage.getItem('vasundhara_token');
       const res = await fetch(`/api/logistics/pools/${poolId}`, {
@@ -451,7 +457,7 @@ export default function App() {
       });
       if (!res.ok) {
         console.error('Failed to update pool status', await res.text());
-        return;
+        return false;
       }
       const updatedPool = await res.json();
       setPools((prev) => prev.map((p) => (p.id === poolId ? updatedPool : p)));
@@ -467,13 +473,15 @@ export default function App() {
           setOrders(ordData.orders);
         }
       }
+      return true;
     } catch (err) {
       console.error('Failed to update pool status', err);
+      return false;
     }
   };
 
   // Complete specific waypoint stop
-  const handleCompleteStop = async (poolId: string, stopId: string) => {
+  const handleCompleteStop = async (poolId: string, stopId: string): Promise<boolean> => {
     try {
       const token = localStorage.getItem('vasundhara_token');
       const res = await fetch(`/api/logistics/pools/${poolId}/stops/${stopId}`, {
@@ -482,7 +490,7 @@ export default function App() {
       });
       if (!res.ok) {
         console.error('Failed to update stop status', await res.text());
-        return;
+        return false;
       }
       const updatedPool = await res.json();
       setPools((prev) => prev.map((p) => (p.id === poolId ? updatedPool : p)));
@@ -498,12 +506,14 @@ export default function App() {
           setOrders(ordData.orders);
         }
       }
+      return true;
     } catch (err) {
       console.error('Failed to update stop status', err);
+      return false;
     }
   };
 
-  const handleCreatePool = async (orderIds: string[]) => {
+  const handleCreatePool = async (orderIds: string[]): Promise<boolean> => {
     try {
       const token = localStorage.getItem('vasundhara_token');
       const res = await fetch('/api/logistics/pools', {
@@ -513,7 +523,7 @@ export default function App() {
       });
       if (!res.ok) {
         console.error('Failed to create pool', await res.text());
-        return;
+        return false;
       }
       const newPool = await res.json();
       setPools((prev) => [...prev, newPool]);
@@ -526,8 +536,10 @@ export default function App() {
         const ordData = await ordRes.json();
         setOrders(ordData.orders);
       }
+      return true;
     } catch (err) {
       console.error('Failed to create pool', err);
+      return false;
     }
   };
 
@@ -586,7 +598,7 @@ export default function App() {
     }
   };
 
-  const handleRequestAdvance = async (amount: number, purpose: string, simulateAeps: boolean) => {
+  const handleRequestAdvance = async (amount: number, purpose: string, simulateAeps: boolean): Promise<{ success: boolean; advance?: AdvanceRequest; error?: string }> => {
     try {
       const token = localStorage.getItem('vasundhara_token');
       const res = await fetch('/api/finance/advances', {
@@ -602,12 +614,16 @@ export default function App() {
           setAepsAdvanceId(adv.id);
           setIsAepsModalOpen(true);
         }
+        return { success: true, advance: adv };
       } else {
-        const errText = await res.text();
+        const errJson = await res.json().catch(() => null);
+        const errText = errJson?.error || 'Failed to request advance';
         console.error('Failed to request advance', errText);
+        return { success: false, error: errText };
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error requesting advance', err);
+      return { success: false, error: err.message || 'Network error requesting advance' };
     }
   };
 
@@ -648,10 +664,22 @@ export default function App() {
   };
 
   // Notification clear or read
-  const handleMarkNotificationAsRead = (notifId: string) => {
+  const handleMarkNotificationAsRead = async (notifId: string) => {
     setNotifications((prev) =>
       prev.map((n) => (n.id === notifId ? { ...n, read: true } : n))
     );
+
+    try {
+      const token = localStorage.getItem('vasundhara_token');
+      if (token) {
+        await fetch(`/api/notifications/${notifId}/read`, {
+          method: 'PATCH',
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      }
+    } catch (err) {
+      console.error('Failed to mark notification as read on backend', err);
+    }
   };
 
   // Jump to step from 7-Step Demo Story Modal

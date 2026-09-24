@@ -26,9 +26,9 @@ interface LogisticsViewProps {
   pools: LogisticsPool[];
   orders?: Order[];
   currentLanguage: Language;
-  onUpdatePoolStatus: (poolId: string, status: 'assigned' | 'in_transit' | 'delivered') => void;
-  onCompleteStop: (poolId: string, stopId: string) => void;
-  onCreatePool?: (orderIds: string[]) => void;
+  onUpdatePoolStatus: (poolId: string, status: 'assigned' | 'in_transit' | 'delivered') => Promise<boolean>;
+  onCompleteStop: (poolId: string, stopId: string) => Promise<boolean>;
+  onCreatePool?: (orderIds: string[]) => Promise<boolean>;
 }
 
 export const LogisticsView: React.FC<LogisticsViewProps> = ({
@@ -42,7 +42,9 @@ export const LogisticsView: React.FC<LogisticsViewProps> = ({
 }) => {
   const [selectedPoolId, setSelectedPoolId] = useState<string>(pools[0]?.id || '');
   const [selectedOrdersForPool, setSelectedOrdersForPool] = useState<string[]>([]);
-  
+  const [isCreatingPool, setIsCreatingPool] = useState(false);
+  const [poolError, setPoolError] = useState<string | null>(null);
+
   const t = I18N_STRINGS[currentLanguage];
 
   const currentPool = pools.find((p) => p.id === selectedPoolId) || pools[0];
@@ -55,10 +57,22 @@ export const LogisticsView: React.FC<LogisticsViewProps> = ({
   
   const unassignedOrders = orders.filter(o => o.status === 'confirmed' && !o.poolId);
 
-  const handleCreatePoolClick = () => {
+  const handleCreatePoolClick = async () => {
     if (selectedOrdersForPool.length > 0 && onCreatePool) {
-      onCreatePool(selectedOrdersForPool);
-      setSelectedOrdersForPool([]);
+      setIsCreatingPool(true);
+      setPoolError(null);
+      try {
+        const success = await onCreatePool(selectedOrdersForPool);
+        if (success) {
+          setSelectedOrdersForPool([]);
+        } else {
+          setPoolError('Failed to create logistics pool. Please try again.');
+        }
+      } catch {
+        setPoolError('An error occurred while creating pool.');
+      } finally {
+        setIsCreatingPool(false);
+      }
     }
   };
 
@@ -119,12 +133,18 @@ export const LogisticsView: React.FC<LogisticsViewProps> = ({
             </h3>
             <button
               onClick={handleCreatePoolClick}
-              disabled={selectedOrdersForPool.length === 0}
+              disabled={selectedOrdersForPool.length === 0 || isCreatingPool}
               className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white text-sm font-bold rounded-xl shadow-xs transition-colors"
             >
-              Create Optimized Pool ({selectedOrdersForPool.length})
+              {isCreatingPool ? 'Creating Pool...' : `Create Optimized Pool (${selectedOrdersForPool.length})`}
             </button>
           </div>
+
+          {poolError && (
+            <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800 font-medium">
+              {poolError}
+            </div>
+          )}
           
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             {unassignedOrders.map(order => (

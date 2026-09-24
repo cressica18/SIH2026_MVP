@@ -100,6 +100,23 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
 
   const handleSubmitOrder = async () => {
     if (!selectedListing) return;
+
+    const qty = Number(orderQuantity);
+    if (isNaN(qty) || qty <= 0) {
+      setOrderError('Procurement quantity must be a positive number.');
+      return;
+    }
+
+    if (qty > selectedListing.quantityKg) {
+      setOrderError(`Procurement quantity cannot exceed available lot size (${selectedListing.quantityKg} kg).`);
+      return;
+    }
+
+    if (!deliveryAddress || deliveryAddress.trim().length === 0) {
+      setOrderError('Delivery destination address is required.');
+      return;
+    }
+
     setIsSubmittingOrder(true);
     setOrderError(null);
 
@@ -109,9 +126,9 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
         listingId: selectedListing.id,
         crop: selectedListing.crop,
         variety: selectedListing.variety,
-        quantityKg: Number(orderQuantity),
+        quantityKg: qty,
         agreedPricePerKg: selectedListing.priceExpected,
-        totalAmount: Number(orderQuantity) * selectedListing.priceExpected,
+        totalAmount: qty * selectedListing.priceExpected,
         buyerId: buyer.id,
         buyerName: buyer.businessName || buyer.name,
         buyerType: buyer.buyerType,
@@ -125,7 +142,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
         sellerState: selectedListing.state,
         status: 'pending',
         identityRevealed: false,
-        deliveryAddress,
+        deliveryAddress: deliveryAddress.trim(),
         createdAt: 'Just now',
       };
 

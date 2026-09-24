@@ -58,7 +58,12 @@ export const LogisticsView: React.FC<LogisticsViewProps> = ({
   const unassignedOrders = orders.filter(o => o.status === 'confirmed' && !o.poolId);
 
   const handleCreatePoolClick = async () => {
-    if (selectedOrdersForPool.length > 0 && onCreatePool) {
+    if (selectedOrdersForPool.length === 0) {
+      setPoolError('Please select at least one confirmed order to create a logistics pool.');
+      return;
+    }
+
+    if (onCreatePool) {
       setIsCreatingPool(true);
       setPoolError(null);
       try {
@@ -66,7 +71,7 @@ export const LogisticsView: React.FC<LogisticsViewProps> = ({
         if (success) {
           setSelectedOrdersForPool([]);
         } else {
-          setPoolError('Failed to create logistics pool. Please try again.');
+          setPoolError('Failed to create logistics pool. Please check order availability or capacity.');
         }
       } catch {
         setPoolError('An error occurred while creating pool.');

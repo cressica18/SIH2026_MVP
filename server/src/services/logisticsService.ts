@@ -203,11 +203,24 @@ export function autoPoolOrders(): { pools: LogisticsPool[]; skipped: string[] } 
  * Validates confirmed status and capacity.
  */
 export function createManualPool(orderIds: string[]): LogisticsPool {
+  if (!orderIds || !Array.isArray(orderIds) || orderIds.length === 0) {
+    throw new Error('An array of orderIds is required');
+  }
+
+  const uniqueOrderIds = new Set(orderIds.map(id => String(id).trim()));
+  if (uniqueOrderIds.size !== orderIds.length) {
+    throw new Error('Duplicate order IDs in a pool are not allowed');
+  }
+
   const selectedOrders: Order[] = [];
   let totalWeight = 0;
 
   for (const oid of orderIds) {
-    const order = store.orders.find(o => o.id === oid);
+    const trimmedId = String(oid).trim();
+    if (trimmedId.length === 0) {
+      throw new Error('Order ID cannot be empty');
+    }
+    const order = store.orders.find(o => o.id === trimmedId);
     if (!order) throw new Error(`Order ${oid} not found`);
     if (order.status !== 'confirmed') throw new Error(`Order ${oid} is not confirmed`);
     if (order.poolId) throw new Error(`Order ${oid} is already in a pool`);

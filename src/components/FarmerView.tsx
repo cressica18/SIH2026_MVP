@@ -213,6 +213,23 @@ export const FarmerView: React.FC<FarmerViewProps> = ({
   };
 
   const handlePublishListing = async () => {
+    if (!cropInput || cropInput.trim().length === 0) {
+      setPublishError('Crop name is required.');
+      return;
+    }
+
+    const qty = Number(quantityInput);
+    if (isNaN(qty) || qty <= 0) {
+      setPublishError('Quantity must be a positive number.');
+      return;
+    }
+
+    const price = Number(priceInput);
+    if (isNaN(price) || price <= 0) {
+      setPublishError('Price expected must be a positive number.');
+      return;
+    }
+
     setIsPublishing(true);
     setPublishError(null);
     try {
@@ -221,16 +238,16 @@ export const FarmerView: React.FC<FarmerViewProps> = ({
         anonSellerId: farmer.anonSellerId,
         farmerRealName: farmer.name,
         farmerPhone: farmer.phone,
-        crop: cropInput,
-        variety: varietyInput,
-        quantityKg: Number(quantityInput),
-        priceExpected: Number(priceInput),
+        crop: cropInput.trim(),
+        variety: varietyInput.trim() || 'Standard',
+        quantityKg: qty,
+        priceExpected: price,
         priceAi: aiPriceBand || {
-          min: priceInput * 0.9,
-          fair: priceInput,
-          max: priceInput * 1.15,
+          min: price * 0.9,
+          fair: price,
+          max: price * 1.15,
           confidence: 92,
-          historicalMandiAvg: priceInput,
+          historicalMandiAvg: price,
           trend: 'rising',
           benchmarkMandi: `${farmer.district} APMC`,
         },
@@ -853,7 +870,14 @@ function SafetyTab({
 
   const handleSafetySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!safetyDescription.trim()) return;
+    if (!safetyEntity.trim()) {
+      setSafetyError('Reported entity name is required.');
+      return;
+    }
+    if (!safetyDescription.trim() || safetyDescription.trim().length < 10) {
+      setSafetyError('Description must be at least 10 characters long.');
+      return;
+    }
 
     setIsSubmittingSafety(true);
     setSafetyError(null);

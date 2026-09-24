@@ -100,13 +100,21 @@ export function createOrder(req: AuthRequest, res: Response): void {
   const user = req.user;
   const body = req.body as Partial<Order>;
 
-  if (!body.listingId || !body.quantityKg) {
-    res.status(400).json({ error: 'listingId and quantityKg are required' });
+  if (!body.listingId || typeof body.listingId !== 'string' || body.listingId.trim().length === 0) {
+    res.status(400).json({ error: 'listingId is required and must be a non-empty string' });
+    return;
+  }
+
+  const listingId = body.listingId.trim();
+  const quantityKg = Number(body.quantityKg);
+
+  if (body.quantityKg === undefined || body.quantityKg === null || isNaN(quantityKg) || quantityKg <= 0 || !Number.isFinite(quantityKg)) {
+    res.status(400).json({ error: 'quantityKg must be a positive number' });
     return;
   }
 
   // Fetch the listing to validate it's active
-  const listing = store.listings.find((l) => l.id === body.listingId);
+  const listing = store.listings.find((l) => l.id === listingId);
   if (!listing) {
     res.status(404).json({ error: 'Listing not found' });
     return;
@@ -115,10 +123,18 @@ export function createOrder(req: AuthRequest, res: Response): void {
     res.status(400).json({ error: 'Listing is not available for ordering' });
     return;
   }
-  if (body.quantityKg > listing.quantityKg) {
+  if (quantityKg > listing.quantityKg) {
     res.status(400).json({ error: 'Ordered quantity exceeds available quantity' });
     return;
   }
+
+  const agreedPricePerKg = body.agreedPricePerKg !== undefined && body.agreedPricePerKg !== null && !isNaN(Number(body.agreedPricePerKg)) && Number(body.agreedPricePerKg) > 0
+    ? Number(body.agreedPricePerKg)
+    : listing.priceExpected;
+
+  const totalAmount = body.totalAmount !== undefined && body.totalAmount !== null && !isNaN(Number(body.totalAmount)) && Number(body.totalAmount) > 0
+    ? Number(body.totalAmount)
+    : Math.round(quantityKg * agreedPricePerKg);
 
   // Get buyer profile for notification
   const buyer = store.buyerProfiles.find((b) => b.id === user?.userId) || 
@@ -126,6 +142,10 @@ export function createOrder(req: AuthRequest, res: Response): void {
 
   const newOrder: Order = {
     ...(body as Order),
+    listingId,
+    quantityKg,
+    agreedPricePerKg,
+    totalAmount,
     id: `ORD-${Math.floor(1000 + Math.random() * 9000)}`,
     // Buyer identity from token (if authenticated), fallback to body
     buyerId: user?.userId || body.buyerId || 'unknown',
@@ -172,6 +192,18 @@ export function updateOrderStatus(req: AuthRequest, res: Response): void {
     return;
   }
   const order = store.orders[idx];
+
+  const validStatuses = ['pending', 'confirmed', 'in_transit', 'delivered', 'settled', 'disputed', 'cancelled'];
+  if (!status || typeof status !== 'string' || !validStatuses.includes(status)) {
+    res.status(400).json({ error: `Invalid status. Must be one of: ${validStatuses.join(', ')}` });
+    return;
+  }
+
+  if (order.status === 'settled' || (order.status as string) === 'cancelled') {
+    res.status(400).json({ error: `Order is already ${order.status} and cannot be modified` });
+    return;
+  }
+
   const isAdmin = user.role === 'admin';
   const previousStatus = order.status;
 

@@ -43,6 +43,20 @@ export const AepsModal: React.FC<AepsModalProps> = ({
       setAuthStep('error');
       return;
     }
+
+    if (!aadhaarLast4 || !/^\d{4}$/.test(aadhaarLast4.trim())) {
+      setSimError('Please enter a valid 4-digit Aadhaar number.');
+      setAuthStep('error');
+      return;
+    }
+
+    const withdrawalAmt = Number(amount);
+    if (isNaN(withdrawalAmt) || withdrawalAmt <= 0) {
+      setSimError('Please enter a valid withdrawal amount.');
+      setAuthStep('error');
+      return;
+    }
+
     setIsSimulating(true);
     setSimError(null);
     setAuthStep('scanning');

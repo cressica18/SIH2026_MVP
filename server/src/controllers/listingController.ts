@@ -37,8 +37,30 @@ export function createListing(req: AuthRequest, res: Response): void {
     return;
   }
 
-  if (!body.crop || !body.quantityKg) {
-    res.status(400).json({ error: 'crop and quantityKg are required' });
+  if (!body.crop || typeof body.crop !== 'string' || body.crop.trim().length === 0) {
+    res.status(400).json({ error: 'crop is required and must be a non-empty string' });
+    return;
+  }
+
+  const quantityKg = Number(body.quantityKg);
+  if (body.quantityKg === undefined || body.quantityKg === null || isNaN(quantityKg) || quantityKg <= 0 || !Number.isFinite(quantityKg)) {
+    res.status(400).json({ error: 'quantityKg must be a positive number' });
+    return;
+  }
+
+  if (quantityKg > 10_000_000) {
+    res.status(400).json({ error: 'quantityKg exceeds maximum allowed limit of 10,000,000 kg' });
+    return;
+  }
+
+  const priceExpected = Number(body.priceExpected);
+  if (body.priceExpected === undefined || body.priceExpected === null || isNaN(priceExpected) || priceExpected <= 0 || !Number.isFinite(priceExpected)) {
+    res.status(400).json({ error: 'priceExpected must be a positive number' });
+    return;
+  }
+
+  if (priceExpected > 1_000_000) {
+    res.status(400).json({ error: 'priceExpected exceeds maximum allowed limit of ₹1,000,000/kg' });
     return;
   }
 
@@ -50,10 +72,12 @@ export function createListing(req: AuthRequest, res: Response): void {
     return;
   }
 
-  const priceExpected = body.priceExpected || 0;
-
   const newListing: Listing = {
     ...body,
+    crop: body.crop.trim(),
+    variety: body.variety ? String(body.variety).trim() : 'Standard',
+    quantityKg,
+    priceExpected,
     id: `list_${Date.now()}`,
     anonSellerId,
     farmerRealName: farmerProfile.name,
@@ -120,7 +144,21 @@ export function updateListing(req: AuthRequest, res: Response): void {
   }
 
   if (body.status) {
+    const validStatuses = ['active', 'matched', 'withdrawn', 'completed'];
+    if (!validStatuses.includes(body.status)) {
+      res.status(400).json({ error: `Invalid status. Must be one of: ${validStatuses.join(', ')}` });
+      return;
+    }
     listing.status = body.status;
+  }
+
+  if (body.quantityKg !== undefined) {
+    const updatedQty = Number(body.quantityKg);
+    if (isNaN(updatedQty) || updatedQty < 0 || !Number.isFinite(updatedQty)) {
+      res.status(400).json({ error: 'quantityKg must be a non-negative number' });
+      return;
+    }
+    listing.quantityKg = updatedQty;
   }
 
   store.listings[idx] = listing;

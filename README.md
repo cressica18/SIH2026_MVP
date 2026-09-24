@@ -19,6 +19,7 @@ Kisan Setu enables anonymous produce listing, AI-assisted price discovery, produ
 - [Core Capabilities](#core-capabilities)
 - [Problem & Solution](#problem--solution)
 - [Ecosystem Flow](#ecosystem-flow)
+- [Revenue Model](#revenue-model)
 - [Architecture Overview](#architecture-overview)
 - [Implementation Reality](#implementation-reality)
 - [Technical Architecture](#technical-architecture)
@@ -118,6 +119,20 @@ graph TD
     L3 --> B3
     B3 --> A3
 ```
+
+---
+
+## Revenue Model
+
+> **Note:** The revenue streams described below represent the proposed commercialization model for a production deployment. The current MVP does not charge users or implement these monetization mechanisms.
+
+| Revenue Stream | Description |
+|---|---|
+| **Transaction / Service Fees** | A small service fee on successful produce transactions facilitated through Kisan Setu. |
+| **Logistics Fees** | Revenue from pooled transportation/logistics services facilitated through the platform. |
+| **Buyer / Enterprise Subscriptions** | Larger buyers, processors, or commercial procurement partners could subscribe to advanced sourcing, procurement, and analytics capabilities. |
+| **Financial Services Partnerships** | Potential partnership/referral revenue from regulated financial institutions providing eligible working-capital products through the platform. |
+| **Premium Market Intelligence** | Advanced market trends, demand insights, price intelligence, and procurement analytics could be offered as premium capabilities for commercial users. |
 
 ---
 

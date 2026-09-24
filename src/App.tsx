@@ -73,9 +73,27 @@ export default function App() {
 
   // Fetch profile on auth
   useEffect(() => {
-    if (!isAuthenticated || !user) return;
+    if (!isAuthenticated || !user) {
+      setFarmer(null);
+      setBuyer(null);
+      setLogistics(null);
+      setRiskAssessment(null);
+      setListings([]);
+      setOrders([]);
+      setPools([]);
+      setReports([]);
+      setSchemes([]);
+      setAdvances([]);
+      return;
+    }
     setCurrentRole(user.role);
     setIsProfileLoading(true);
+
+    // Reset profiles for previous roles to avoid stale data
+    setFarmer(null);
+    setBuyer(null);
+    setLogistics(null);
+    setRiskAssessment(null);
 
     async function fetchProfileAndListings() {
       try {

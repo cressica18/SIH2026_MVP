@@ -52,7 +52,7 @@ export function markNotificationReadController(req: AuthRequest, res: Response):
   }
   
   // Also check roleTarget
-  if (user.role !== 'admin' && notif.roleTarget !== user.role) {
+  if (user.role !== 'admin' && notif.roleTarget !== user.role && notif.roleTarget !== 'all') {
     res.status(403).json({ error: 'Not authorized to mark this notification' });
     return;
   }

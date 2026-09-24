@@ -3,6 +3,7 @@ import { AuthRequest } from '../middleware/auth.js';
 import { store } from '../data/store.js';
 import { computeScore, emitReputationEvent } from '../services/reputationService.js';
 import { SEED_FARMERS } from '../data/seedData.js';
+import { getAnonIdentity } from './usersController.js';
 
 /** Resolve an anonSellerId (FARM-XXXXX) to a real userId, or return the input unchanged */
 function resolveUserId(idOrAnon: string): string {
@@ -97,6 +98,13 @@ export function postReputationEvent(req: AuthRequest, res: Response): void {
     }
     if (order.status !== 'settled') {
       res.status(400).json({ error: 'Ratings can only be submitted after an order is settled' });
+      return;
+    }
+    // Verify user was a participant in this order
+    const isBuyer = user.role === 'buyer' && order.buyerId === user.userId;
+    const isFarmer = user.role === 'farmer' && getAnonIdentity(user.userId) === order.anonSellerId;
+    if (!isBuyer && !isFarmer && user.role !== 'admin') {
+      res.status(403).json({ error: 'Not authorized to rate an order you were not part of' });
       return;
     }
     // Prevent duplicate ratings on the same order from the same source

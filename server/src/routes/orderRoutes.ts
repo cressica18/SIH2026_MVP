@@ -14,7 +14,7 @@ router.route('/')
   .post(requireAnyRole('buyer', 'admin') as unknown as RequestHandler, createOrder as unknown as RequestHandler);
 
 router.route('/:id')
-  .get(getOrder);
+  .get(requireAnyRole('buyer', 'farmer', 'logistics', 'admin') as unknown as RequestHandler, getOrder as unknown as RequestHandler);
 
 router.route('/:id/status')
   .patch(requireAnyRole('farmer', 'buyer', 'logistics', 'admin') as unknown as RequestHandler, updateOrderStatus as unknown as RequestHandler);

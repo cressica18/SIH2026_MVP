@@ -3,6 +3,7 @@ import { AuthRequest } from '../middleware/auth.js';
 import { matchingService } from '../services/matchingService.js';
 import { notifyNewMatch } from '../services/notificationService.js';
 import { store } from '../data/store.js';
+import { getAnonIdentity } from './usersController.js';
 
 export const getRankedListingsForBuyer = async (req: AuthRequest, res: Response) => {
   try {
@@ -29,8 +30,18 @@ export const getRankedBuyersForListing = async (req: AuthRequest, res: Response)
   try {
     const { id } = req.params;
     
-    // Authorization: only the farmer who owns the listing can see its buyer matches
-    if (req.user?.role !== 'farmer' && req.user?.role !== 'admin') {
+    const listing = store.listings.find((l) => l.id === id);
+    if (!listing) {
+      return res.status(404).json({ error: 'Listing not found' });
+    }
+
+    // Authorization: only the farmer who owns the listing (or admin) can see its buyer matches
+    if (req.user?.role === 'farmer') {
+      const userAnonId = getAnonIdentity(req.user.userId);
+      if (!userAnonId || listing.anonSellerId !== userAnonId) {
+        return res.status(403).json({ error: 'Forbidden' });
+      }
+    } else if (req.user?.role !== 'admin') {
       return res.status(403).json({ error: 'Forbidden' });
     }
     

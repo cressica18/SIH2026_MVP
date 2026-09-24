@@ -404,7 +404,7 @@ describe('POST /api/logistics/pools', () => {
       const orderId = orderRes.body.id;
 
       // Farmer confirms the order
-      const farmerToken = generateAccessToken({ userId: 'farmer_2', phone: '111', role: 'farmer' });
+      const farmerToken = generateAccessToken({ userId: 'farmer_1', phone: '+91 98231 44521', role: 'farmer' });
       await request(server)
         .patch(`/api/orders/${orderId}/status`)
         .set('Authorization', `Bearer ${farmerToken}`)
@@ -477,7 +477,7 @@ describe('POST /api/logistics/pools', () => {
         });
         
       // Confirm the order first so it's eligible for pooling
-      const farmerToken = generateAccessToken({ userId: 'farmer_2', phone: '111', role: 'farmer' });
+      const farmerToken = generateAccessToken({ userId: 'farmer_1', phone: '+91 98231 44521', role: 'farmer' });
       await request(server)
         .patch(`/api/orders/${orderRes.body.id}/status`)
         .set('Authorization', `Bearer ${farmerToken}`)

@@ -5,6 +5,7 @@ import { AuthRequest } from '../middleware/auth.js';
 import { emitReputationEvent } from '../services/reputationService.js';
 import { notifyOrderCreated, notifyOrderStatusChanged } from '../services/notificationService.js';
 import { SEED_FARMERS } from '../data/seedData.js';
+import { getAnonIdentity } from './usersController.js';
 
 // GET /api/orders — Role-scoped order retrieval
 // - buyer: orders where buyerId matches
@@ -28,7 +29,7 @@ function scrubOrder(order: Order, userRole?: string): Order {
 export function getOrders(req: AuthRequest, res: Response): void {
   const user = req.user;
   if (!user) {
-    // Unauthenticated: return empty (don't 401, for backwards compat with seed data tests)
+    // Unauthenticated: return empty
     res.json({ orders: [], total: 0 });
     return;
   }
@@ -39,13 +40,15 @@ export function getOrders(req: AuthRequest, res: Response): void {
   } else if (user.role === 'buyer') {
     filtered = store.orders.filter((o) => o.buyerId === user.userId);
   } else if (user.role === 'logistics') {
-    // Logistics sees confirmed orders not yet settled (for pool management)
+    // Logistics sees confirmed, in_transit, delivered, settled orders for pool management
     filtered = store.orders.filter((o) =>
-      o.status === 'confirmed' || o.status === 'in_transit' || o.status === 'settled'
+      o.status === 'confirmed' || o.status === 'in_transit' || o.status === 'delivered' || o.status === 'settled'
     );
+  } else if (user.role === 'farmer') {
+    const farmerAnonId = getAnonIdentity(user.userId);
+    filtered = store.orders.filter((o) => o.anonSellerId === farmerAnonId);
   } else {
-    // Farmer: return all for now (farmer sees their own via anonSellerId filter on frontend)
-    filtered = store.orders;
+    filtered = [];
   }
 
   res.json({ orders: filtered.map(o => scrubOrder(o, user.role)), total: filtered.length });
@@ -54,12 +57,42 @@ export function getOrders(req: AuthRequest, res: Response): void {
 export function getOrder(req: AuthRequest, res: Response): void {
   const { id } = req.params;
   const user = req.user;
+  if (!user) {
+    res.status(401).json({ error: 'Authentication required' });
+    return;
+  }
+
   const order = store.orders.find((o) => o.id === id);
   if (!order) {
     res.status(404).json({ error: 'Order not found' });
     return;
   }
-  res.json(scrubOrder(order, user?.role));
+
+  // Authorization check
+  if (user.role === 'admin') {
+    // Admin can view any order
+  } else if (user.role === 'buyer') {
+    if (order.buyerId !== user.userId) {
+      res.status(403).json({ error: 'Not authorized to view this order' });
+      return;
+    }
+  } else if (user.role === 'farmer') {
+    const farmerAnonId = getAnonIdentity(user.userId);
+    if (!farmerAnonId || order.anonSellerId !== farmerAnonId) {
+      res.status(403).json({ error: 'Not authorized to view this order' });
+      return;
+    }
+  } else if (user.role === 'logistics') {
+    if (!['confirmed', 'in_transit', 'delivered', 'settled'].includes(order.status)) {
+      res.status(403).json({ error: 'Not authorized to view this order' });
+      return;
+    }
+  } else {
+    res.status(403).json({ error: 'Not authorized to view this order' });
+    return;
+  }
+
+  res.json(scrubOrder(order, user.role));
 }
 
 // POST /api/orders — Buyer places an order
@@ -142,9 +175,10 @@ export function updateOrderStatus(req: AuthRequest, res: Response): void {
   const isAdmin = user.role === 'admin';
   const previousStatus = order.status;
 
-  // Role-gated state machine transitions
+  // Role-gated state machine transitions with participant ownership checks
   if (order.status === 'pending' && status === 'confirmed') {
-    if (user.role === 'farmer' || isAdmin) {
+    const isOrderFarmer = user.role === 'farmer' && getAnonIdentity(user.userId) === order.anonSellerId;
+    if (isOrderFarmer || isAdmin) {
       order.status = 'confirmed';
       order.identityRevealed = true;
       order.identityRevealedAt = new Date().toISOString();
@@ -179,7 +213,8 @@ export function updateOrderStatus(req: AuthRequest, res: Response): void {
       return;
     }
   } else if (order.status === 'delivered' && status === 'settled') {
-    if (user.role === 'buyer' || isAdmin) {
+    const isOrderBuyer = user.role === 'buyer' && order.buyerId === user.userId;
+    if (isOrderBuyer || isAdmin) {
       order.status = 'settled';
       order.settledAt = new Date().toISOString();
       notifyOrderStatusChanged(order, 'settled', user.role);
@@ -187,22 +222,26 @@ export function updateOrderStatus(req: AuthRequest, res: Response): void {
       return;
     }
   } else if (status === 'disputed') {
-    order.status = 'disputed';
-    // Phase 12: Emit dispute_raised event — penalises the farmer's reputation
-    if (order.anonSellerId) {
-      const farmer = SEED_FARMERS.find((f) => f.anonSellerId === order.anonSellerId);
-      if (farmer) {
-        emitReputationEvent({
-          targetUserId: farmer.id,
-          sourceUserId: user.userId,
-          orderId: order.id,
-          eventType: 'dispute_raised',
-        });
+    const isOrderBuyer = user.role === 'buyer' && order.buyerId === user.userId;
+    const isOrderFarmer = user.role === 'farmer' && getAnonIdentity(user.userId) === order.anonSellerId;
+    if (isOrderBuyer || isOrderFarmer || isAdmin) {
+      order.status = 'disputed';
+      // Phase 12: Emit dispute_raised event — penalises the farmer's reputation
+      if (order.anonSellerId) {
+        const farmer = SEED_FARMERS.find((f) => f.anonSellerId === order.anonSellerId);
+        if (farmer) {
+          emitReputationEvent({
+            targetUserId: farmer.id,
+            sourceUserId: user.userId,
+            orderId: order.id,
+            eventType: 'dispute_raised',
+          });
+        }
       }
+      notifyOrderStatusChanged(order, 'disputed', user.role);
+      res.json(scrubOrder(order, user.role));
+      return;
     }
-    notifyOrderStatusChanged(order, 'disputed', user.role);
-    res.json(scrubOrder(order, user.role));
-    return;
   }
 
   res.status(400).json({ error: 'Invalid state transition or unauthorized role for this transition' });

@@ -81,8 +81,11 @@ export const matchingService = {
     
     const scored = activeListings.map(listing => {
       const match = scoreMatch(listing, buyer);
+      const scrubbed = { ...listing };
+      delete scrubbed.farmerRealName;
+      delete scrubbed.farmerPhone;
       return {
-        ...listing,
+        ...scrubbed,
         matchScore: match.score,
         distanceKm: match.distanceKm,
         matchFactors: match.factors

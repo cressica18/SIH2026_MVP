@@ -8,17 +8,30 @@ import { I18N_STRINGS } from '../data/i18n';
 import {
   ShieldCheck,
   AlertTriangle,
+  BarChart3,
+  Building2,
   CheckCircle2,
   Clock,
   TrendingUp,
   Users,
   IndianRupee,
-  Building2,
   FileText,
   Search,
   ChevronRight,
   Sparkles,
+  Filter,
+  Check,
+  Lock,
+  UserX,
+  X,
 } from 'lucide-react';
+import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from './ui/Card';
+import { Button } from './ui/Button';
+import { Badge, StatusBadge } from './ui/Badge';
+import { Modal } from './ui/Modal';
+import { Select } from './ui/Select';
+import { Textarea } from './ui/Input';
+import { EmptyState } from './ui/EmptyState';
 
 interface AdminViewProps {
   reports: SafetyReport[];
@@ -42,6 +55,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
   const [selectedReport, setSelectedReport] = useState<SafetyReport | null>(null);
   const [resolutionNotes, setResolutionNotes] = useState<string>('');
   const [newStatus, setNewStatus] = useState<'open' | 'reviewing' | 'resolved'>('reviewing');
+  const [isSaving, setIsSaving] = useState(false);
 
   const t = I18N_STRINGS[currentLanguage];
 
@@ -53,161 +67,174 @@ export const AdminView: React.FC<AdminViewProps> = ({
 
   const handleSaveResolution = async () => {
     if (!selectedReport) return;
-    const updated = await onUpdateReportStatus(selectedReport.id, newStatus, resolutionNotes);
-    if (updated) {
-      setSelectedReport(null);
+    setIsSaving(true);
+    try {
+      const updated = await onUpdateReportStatus(selectedReport.id, newStatus, resolutionNotes);
+      if (updated) {
+        setSelectedReport(null);
+      }
+    } finally {
+      setIsSaving(false);
     }
   };
+
+  const pendingReportsCount = reports.filter((r) => r.status !== 'resolved').length;
 
   return (
     <div className="space-y-6">
       
       {/* Admin Header Banner */}
-      <div className="bg-gradient-to-br from-stone-900 via-slate-900 to-emerald-950 text-white rounded-3xl p-5 sm:p-7 shadow-lg shadow-stone-950/20">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div className="space-y-1.5">
-            <div className="flex items-center gap-2">
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 flex items-center gap-1">
+      <Card variant="elevated" padding="lg" className="bg-gradient-to-br from-slate-900 via-stone-900 to-emerald-950 text-white border-none shadow-xl">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 flex-wrap">
+              <Badge variant="success" size="sm" className="bg-emerald-500/20 text-emerald-300 border-emerald-500/40">
                 <ShieldCheck className="w-3.5 h-3.5" />
-                Platform Oversight & Farmer Whistleblower Desk
-              </span>
+                Platform Oversight & Whistleblower Desk
+              </Badge>
+              <Badge variant="neutral" size="sm" className="bg-white/10 text-stone-200 border-white/15">
+                SIH 2026 Governance Console
+              </Badge>
             </div>
-            <h2 className="text-xl sm:text-2xl font-black text-white">
+            <CardTitle className="text-xl sm:text-2xl font-black text-white tracking-tight">
               Vasundhara Administration & Safety Console
-            </h2>
-            <p className="text-xs sm:text-sm text-stone-300">
-              Monitoring transparency, anonymous farmer protection, and market fairness across corridors.
-            </p>
+            </CardTitle>
+            <CardDescription className="text-xs sm:text-sm text-stone-300 max-w-2xl leading-relaxed">
+              Monitoring trade transparency, anonymous farmer protection against mandi cartels, and corridor logistics performance.
+            </CardDescription>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <button
               onClick={() => setActiveTab('reports')}
-              className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
                 activeTab === 'reports'
-                  ? 'bg-rose-600 text-white shadow-md'
+                  ? 'bg-rose-600 text-white shadow-md shadow-rose-600/30'
                   : 'bg-white/10 text-stone-200 hover:bg-white/20'
               }`}
             >
-              🚨 Whistleblower Queue ({reports.filter((r) => r.status !== 'resolved').length})
+              <AlertTriangle className="w-4 h-4 text-rose-300" />
+              <span>Whistleblower Queue</span>
+              {pendingReportsCount > 0 && (
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-rose-500 text-white">
+                  {pendingReportsCount}
+                </span>
+              )}
             </button>
+
             <button
               onClick={() => setActiveTab('metrics')}
-              className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
                 activeTab === 'metrics'
-                  ? 'bg-emerald-600 text-white shadow-md'
+                  ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/30'
                   : 'bg-white/10 text-stone-200 hover:bg-white/20'
               }`}
             >
-              📊 Platform Impact KPIs
+              <BarChart3 className="w-4 h-4 text-emerald-300" />
+              <span>Impact KPIs</span>
             </button>
+
             <button
               onClick={() => setActiveTab('schemes')}
-              className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
                 activeTab === 'schemes'
-                  ? 'bg-emerald-600 text-white shadow-md'
+                  ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/30'
                   : 'bg-white/10 text-stone-200 hover:bg-white/20'
               }`}
             >
-              🏛️ Schemes Registry
+              <Building2 className="w-4 h-4 text-purple-300" />
+              <span>Schemes Registry</span>
             </button>
           </div>
         </div>
-      </div>
+      </Card>
 
       {/* TAB 1: WHISTLEBLOWER & SAFETY QUEUE */}
       {activeTab === 'reports' && (
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div>
-              <h3 className="text-base sm:text-lg font-bold text-stone-900">
-                Anonymous Whistleblower & Exploitation Moderation Queue
-              </h3>
-              <p className="text-xs text-stone-500">
-                Reports submitted by smallholder & women farmers regarding mandi cartel price fixing, broker exploitation, or harassment.
-              </p>
+              <CardTitle className="flex items-center gap-2">
+                <AlertTriangle className="w-5 h-5 text-rose-600" />
+                <span>Whistleblower & Exploitation Moderation Queue</span>
+              </CardTitle>
+              <CardDescription>
+                Confidential reports submitted by farmers regarding mandi cartel price-fixing, broker extortion, or harassment.
+              </CardDescription>
             </div>
+            <span className="text-xs font-semibold text-stone-500 bg-stone-100 px-3 py-1 rounded-full border border-stone-200 self-start sm:self-auto">
+              Total Reports: {reports.length}
+            </span>
           </div>
 
           {reports.length === 0 ? (
-            <div className="p-8 text-center text-stone-500 bg-white rounded-2xl border border-stone-200">
-              No whistleblower or safety complaints in queue.
-            </div>
+            <EmptyState variant="reports" />
           ) : (
-          <div className="space-y-3">
-            {reports.map((rep) => (
-              <div
-                key={rep.id}
-                className="bg-white rounded-2xl border border-stone-200 p-5 shadow-xs space-y-3"
-              >
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-stone-100 pb-3">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="font-mono font-bold text-xs text-stone-900 bg-stone-100 px-2 py-0.5 rounded-md">
-                      {rep.id}
-                    </span>
-                    <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-100 text-rose-800">
-                      {rep.category}
-                    </span>
-                    {rep.isAnonymous ? (
-                      <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-stone-900 text-amber-300 flex items-center gap-1">
-                        <ShieldCheck className="w-3 h-3" />
-                        100% Anonymous Submitter
+            <div className="space-y-3.5">
+              {reports.map((rep) => (
+                <Card key={rep.id} variant="bordered" padding="md" className="space-y-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-stone-100 pb-3">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="font-mono font-bold text-xs text-stone-900 bg-stone-100 px-2 py-0.5 rounded-md border border-stone-200">
+                        {rep.id}
                       </span>
-                    ) : (
-                      <span className="text-xs text-stone-600">
-                        Submitted by: {rep.reporterName}
+                      <Badge variant="danger" size="sm">{rep.category}</Badge>
+                      {rep.isAnonymous ? (
+                        <Badge variant="neutral" size="sm" className="bg-stone-900 text-amber-300 border-stone-800 flex items-center gap-1">
+                          <Lock className="w-3 h-3" />
+                          100% Anonymous Submitter
+                        </Badge>
+                      ) : (
+                        <span className="text-xs text-stone-600 font-medium">
+                          Reporter: {rep.reporterName}
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <StatusBadge status={rep.status} />
+                      <span className="text-xs text-stone-400 font-medium">
+                        {rep.createdAt}
                       </span>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2 text-xs sm:text-sm">
+                    <div className="flex items-center gap-2">
+                      <span className="text-stone-500 font-medium">Reported Entity:</span>
+                      <span className="font-bold text-stone-900 bg-stone-50 px-2 py-0.5 rounded border border-stone-200">
+                        {rep.reportedEntityName}
+                      </span>
+                    </div>
+
+                    <p className="text-stone-800 bg-stone-50 p-3.5 rounded-xl border border-stone-200/80 leading-relaxed font-sans text-xs sm:text-sm italic">
+                      "{rep.description}"
+                    </p>
+
+                    {rep.resolutionNotes && (
+                      <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-200/80 text-xs text-emerald-950 space-y-1">
+                        <span className="font-bold flex items-center gap-1.5 text-emerald-900">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                          Moderation Action Executed:
+                        </span>
+                        <p className="text-stone-700 leading-relaxed">{rep.resolutionNotes}</p>
+                      </div>
                     )}
                   </div>
 
-                  <div className="flex items-center gap-2">
-                    <span
-                      className={`px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider ${
-                        rep.status === 'resolved'
-                          ? 'bg-emerald-100 text-emerald-800'
-                          : rep.status === 'reviewing'
-                          ? 'bg-amber-100 text-amber-800'
-                          : 'bg-rose-100 text-rose-800'
-                      }`}
+                  <div className="pt-2 flex justify-end">
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => handleOpenReportModal(rep)}
                     >
-                      {rep.status}
-                    </span>
-                    <span className="text-xs text-stone-400">
-                      {rep.createdAt}
-                    </span>
+                      <span>Triage & Update Resolution</span>
+                      <ChevronRight className="w-4 h-4" />
+                    </Button>
                   </div>
-                </div>
-
-                <div className="space-y-1.5 text-xs">
-                  <p className="text-stone-500 font-medium">
-                    Entity / Party Reported:{' '}
-                    <span className="font-bold text-stone-900">
-                      {rep.reportedEntityName}
-                    </span>
-                  </p>
-                  <p className="text-stone-800 bg-stone-50 p-3 rounded-xl border border-stone-200/60 leading-relaxed">
-                    "{rep.description}"
-                  </p>
-
-                  {rep.resolutionNotes && (
-                    <div className="p-2.5 bg-emerald-50 rounded-xl border border-emerald-200 text-emerald-900">
-                      <span className="font-bold">Moderation Action Taken: </span>
-                      <span>{rep.resolutionNotes}</span>
-                    </div>
-                  )}
-                </div>
-
-                <div className="pt-2 flex justify-end">
-                  <button
-                    onClick={() => handleOpenReportModal(rep)}
-                    className="px-3 py-1.5 bg-stone-800 hover:bg-stone-900 text-white font-bold text-xs rounded-xl transition-colors cursor-pointer"
-                  >
-                    Triage & Update Resolution
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
+                </Card>
+              ))}
+            </div>
           )}
         </div>
       )}
@@ -215,58 +242,77 @@ export const AdminView: React.FC<AdminViewProps> = ({
       {/* TAB 2: PLATFORM IMPACT KPIS */}
       {activeTab === 'metrics' && (
         <div className="space-y-5">
+          <div>
+            <CardTitle className="flex items-center gap-2">
+              <BarChart3 className="w-5 h-5 text-emerald-600" />
+              <span>Platform Impact & Economic Realization KPIs</span>
+            </CardTitle>
+            <CardDescription>
+              Aggregated direct commerce, price realization premium, and freight efficiency across registered regional corridors.
+            </CardDescription>
+          </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="p-5 bg-white rounded-2xl border border-stone-200 shadow-xs">
+            <Card variant="bordered" padding="md" className="space-y-2">
               <div className="flex items-center justify-between text-stone-500 text-xs font-semibold">
                 <span>Total Farmgate GMV</span>
-                <IndianRupee className="w-4 h-4 text-emerald-600" />
+                <div className="p-2 bg-emerald-50 text-emerald-700 rounded-xl border border-emerald-100">
+                  <IndianRupee className="w-4 h-4" />
+                </div>
               </div>
-              <p className="text-2xl font-black text-stone-900 mt-2">
+              <p className="text-2xl font-black text-stone-900 tracking-tight">
                 ₹38.4 Lakhs
               </p>
-              <p className="text-[11px] text-emerald-700 font-semibold mt-1">
+              <p className="text-xs text-emerald-700 font-bold flex items-center gap-1">
+                <TrendingUp className="w-3.5 h-3.5" />
                 Direct trade transacted
               </p>
-            </div>
+            </Card>
 
-            <div className="p-5 bg-white rounded-2xl border border-stone-200 shadow-xs">
+            <Card variant="bordered" padding="md" className="space-y-2">
               <div className="flex items-center justify-between text-stone-500 text-xs font-semibold">
-                <span>Farmgate Price Realization</span>
-                <TrendingUp className="w-4 h-4 text-emerald-600" />
+                <span>Farmgate Price Premium</span>
+                <div className="p-2 bg-emerald-50 text-emerald-700 rounded-xl border border-emerald-100">
+                  <TrendingUp className="w-4 h-4" />
+                </div>
               </div>
-              <p className="text-2xl font-black text-emerald-700 mt-2">
+              <p className="text-2xl font-black text-emerald-700 tracking-tight">
                 +22.4%
               </p>
-              <p className="text-[11px] text-stone-500 font-semibold mt-1">
+              <p className="text-xs text-stone-500 font-medium">
                 Above local arhat middlemen rates
               </p>
-            </div>
+            </Card>
 
-            <div className="p-5 bg-white rounded-2xl border border-stone-200 shadow-xs">
+            <Card variant="bordered" padding="md" className="space-y-2">
               <div className="flex items-center justify-between text-stone-500 text-xs font-semibold">
                 <span>Verified Farmers</span>
-                <Users className="w-4 h-4 text-blue-600" />
+                <div className="p-2 bg-sky-50 text-sky-700 rounded-xl border border-sky-100">
+                  <Users className="w-4 h-4" />
+                </div>
               </div>
-              <p className="text-2xl font-black text-stone-900 mt-2">
+              <p className="text-2xl font-black text-stone-900 tracking-tight">
                 1,248
               </p>
-              <p className="text-[11px] text-stone-500 font-semibold mt-1">
+              <p className="text-xs text-stone-500 font-medium">
                 Across 4 horticulture districts
               </p>
-            </div>
+            </Card>
 
-            <div className="p-5 bg-white rounded-2xl border border-stone-200 shadow-xs">
+            <Card variant="bordered" padding="md" className="space-y-2">
               <div className="flex items-center justify-between text-stone-500 text-xs font-semibold">
-                <span>Logistics Mileage Saved</span>
-                <Building2 className="w-4 h-4 text-amber-600" />
+                <span>Freight Mileage Abated</span>
+                <div className="p-2 bg-amber-50 text-amber-700 rounded-xl border border-amber-100">
+                  <Building2 className="w-4 h-4" />
+                </div>
               </div>
-              <p className="text-2xl font-black text-amber-700 mt-2">
+              <p className="text-2xl font-black text-amber-700 tracking-tight">
                 34.1%
               </p>
-              <p className="text-[11px] text-stone-500 font-semibold mt-1">
+              <p className="text-xs text-stone-500 font-medium">
                 Via multi-order VRP pooling
               </p>
-            </div>
+            </Card>
           </div>
         </div>
       )}
@@ -274,91 +320,112 @@ export const AdminView: React.FC<AdminViewProps> = ({
       {/* TAB 3: GOVERNMENT SCHEMES REGISTRY */}
       {activeTab === 'schemes' && (
         <div className="space-y-4">
-          {schemes.length === 0 ? (
-            <div className="p-8 text-center text-stone-500 bg-white rounded-2xl border border-stone-200">
-              No government schemes registered.
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <Building2 className="w-5 h-5 text-purple-600" />
+                <span>Central & State Government Schemes Registry</span>
+              </CardTitle>
+              <CardDescription>
+                Verified welfare schemes and subsidies matched to smallholder profiles.
+              </CardDescription>
             </div>
-          ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {schemes.map((sch) => (
-              <div
-                key={sch.id}
-                className="bg-white rounded-2xl border border-stone-200 p-5 shadow-xs space-y-2 text-xs"
-              >
-                <div className="flex justify-between font-bold">
-                  <span className="text-purple-800 bg-purple-50 px-2 py-0.5 rounded-md">
-                    {sch.category}
-                  </span>
-                  <span className="font-mono text-stone-400">{sch.id}</span>
-                </div>
-                <h4 className="font-bold text-sm text-stone-900">{sch.title}</h4>
-                <p className="text-stone-600">{sch.description}</p>
-                <div className="p-2 bg-stone-50 rounded-lg text-emerald-900 font-semibold">
-                  Benefit: {sch.benefitAmount}
-                </div>
-              </div>
-            ))}
+            <span className="text-xs font-bold text-purple-800 bg-purple-50 px-3 py-1 rounded-full border border-purple-200">
+              {schemes.length} Active Schemes
+            </span>
           </div>
+
+          {schemes.length === 0 ? (
+            <EmptyState variant="schemes" />
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {schemes.map((sch) => (
+                <Card key={sch.id} variant="bordered" padding="md" className="space-y-3 flex flex-col justify-between">
+                  <div className="space-y-2 text-xs sm:text-sm">
+                    <div className="flex items-center justify-between font-bold">
+                      <Badge variant="info" size="sm">{sch.category}</Badge>
+                      <span className="font-mono text-stone-400 text-xs">{sch.id}</span>
+                    </div>
+                    <CardTitle className="text-base">{sch.title}</CardTitle>
+                    <p className="text-stone-600 leading-relaxed text-xs sm:text-sm">{sch.description}</p>
+                    <div className="p-2.5 bg-emerald-50 rounded-xl text-xs text-emerald-950 font-semibold border border-emerald-100">
+                      Benefit: {sch.benefitAmount}
+                    </div>
+                  </div>
+
+                  <CardFooter className="text-xs text-stone-500">
+                    <span>Deadline: {sch.applicationDeadline}</span>
+                  </CardFooter>
+                </Card>
+              ))}
+            </div>
           )}
         </div>
       )}
 
       {/* TRIAGE MODAL */}
-      {selectedReport && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-stone-950/70 backdrop-blur-sm animate-fade-in">
-          <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl border border-stone-200 p-6 space-y-4 text-xs">
-            <h3 className="font-bold text-base text-stone-900">
-              Triage Whistleblower Report {selectedReport.id}
-            </h3>
-            <p className="text-stone-600">
-              Target Entity: <span className="font-bold">{selectedReport.reportedEntityName}</span>
-            </p>
+      <Modal
+        isOpen={!!selectedReport}
+        onClose={() => setSelectedReport(null)}
+        title={selectedReport ? `Triage Whistleblower Report #${selectedReport.id}` : ''}
+        description={selectedReport ? `Target Entity: ${selectedReport.reportedEntityName}` : ''}
+        size="md"
+      >
+        {selectedReport && (
+          <div className="space-y-4 text-xs sm:text-sm">
+            <div className="p-3 bg-stone-50 border border-stone-200 rounded-xl space-y-1">
+              <span className="font-semibold text-stone-500 block text-xs">Report Description:</span>
+              <p className="text-stone-800 italic text-xs">"{selectedReport.description}"</p>
+            </div>
 
             <div>
-              <label className="block font-bold text-stone-700 mb-1">
-                Workflow Status
+              <label className="block font-bold text-stone-700 mb-1 text-xs">
+                Workflow Moderation Status
               </label>
               <select
                 value={newStatus}
                 onChange={(e) => setNewStatus(e.target.value as any)}
-                className="w-full px-3 py-2 font-semibold bg-stone-50 border border-stone-300 rounded-xl"
+                className="w-full px-3 py-2.5 font-semibold bg-white border border-stone-300 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
               >
-                <option value="open">Open (Under Review)</option>
+                <option value="open">Open (Under Investigation)</option>
                 <option value="reviewing">Reviewing (Assigned to Vigilance)</option>
-                <option value="resolved">Resolved (Action Taken)</option>
+                <option value="resolved">Resolved (Action Enforced)</option>
               </select>
             </div>
 
             <div>
-              <label className="block font-bold text-stone-700 mb-1">
-                Resolution & Enforcement Notes
+              <label className="block font-bold text-stone-700 mb-1 text-xs">
+                Resolution & Enforcement Action Notes
               </label>
-              <textarea
+              <Textarea
                 rows={3}
                 value={resolutionNotes}
                 onChange={(e) => setResolutionNotes(e.target.value)}
-                placeholder="e.g. Forwarded complaint to District Marketing Officer; broker barred from carrier dispatch."
-                className="w-full px-3 py-2 border border-stone-300 rounded-xl"
+                placeholder="e.g. Complaint forwarded to District Marketing Officer; broker temporarily suspended from APMC gate."
               />
             </div>
 
             <div className="flex gap-2 pt-2">
-              <button
+              <Button
+                variant="secondary"
+                fullWidth
                 onClick={() => setSelectedReport(null)}
-                className="flex-1 py-2 font-semibold text-stone-600 bg-stone-100 rounded-xl cursor-pointer"
+                disabled={isSaving}
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="primary"
+                fullWidth
+                loading={isSaving}
                 onClick={handleSaveResolution}
-                className="flex-1 py-2 font-bold text-white bg-stone-900 rounded-xl cursor-pointer shadow-xs"
               >
                 Save Resolution
-              </button>
+              </Button>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </Modal>
 
     </div>
   );

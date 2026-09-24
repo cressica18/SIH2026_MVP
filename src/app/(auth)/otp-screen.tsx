@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Mic, ShieldCheck, X, Loader2, Sparkles } from 'lucide-react';
+import { Mic, ShieldCheck, X, Loader2, Sparkles, Sprout, ShoppingCart, Truck, Phone, Key, Globe } from 'lucide-react';
 import { I18N_STRINGS } from '../../data/i18n';
 import { useAuth, UserRole, DEMO_PHONES } from '../../lib/auth-context';
+import { Button } from '../../components/ui/Button';
+import { Badge } from '../../components/ui/Badge';
 
 interface OtpScreenProps {
   initialLanguage?: 'en' | 'hi' | 'mr' | 'te' | 'pa';
@@ -120,81 +122,76 @@ export const OtpScreen: React.FC<OtpScreenProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-100 flex items-center justify-center p-4 sm:p-6">
-      <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl border border-emerald-100 overflow-hidden flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-950 via-stone-900 to-slate-900 flex items-center justify-center p-4 sm:p-6 selection:bg-emerald-500 selection:text-white">
+      <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl border border-stone-200 overflow-hidden flex flex-col">
 
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-5 bg-gradient-to-r from-emerald-600 to-teal-700 text-white">
+        <div className="flex items-center justify-between px-6 py-5 bg-gradient-to-r from-emerald-800 to-teal-900 text-white">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-emerald-500/30 rounded-xl">
-              <ShieldCheck className="w-5 h-5 text-emerald-200" />
+            <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center shrink-0">
+              <Sprout className="w-6 h-6 text-emerald-300" />
             </div>
             <div>
-              <h1 className="text-base font-bold tracking-tight">Vasundhara / वसुंधरा</h1>
-              <p className="text-xs text-emerald-200">
+              <h1 className="text-base font-black tracking-tight">Vasundhara / वसुंधरा</h1>
+              <p className="text-xs text-emerald-200 font-medium">
                 {t.appName} — {t.tagline}
               </p>
             </div>
           </div>
-          <button
-            onClick={() => window.history.back()}
-            className="p-1.5 text-emerald-200 hover:text-white rounded-lg transition-colors"
-            aria-label="Close"
-          >
-            <X className="w-4 h-4" />
-          </button>
         </div>
 
         <div className="p-6 space-y-5">
           {/* Quick Demo Login Bar for Judges */}
-          <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl space-y-2">
-            <div className="flex items-center gap-1.5 text-xs font-bold text-amber-900">
-              <Sparkles className="w-4 h-4 text-amber-600" />
-              <span>SIH Demo Mode — Quick Role Login</span>
+          <div className="p-3.5 bg-amber-50/80 border border-amber-200/90 rounded-2xl space-y-2">
+            <div className="flex items-center gap-1.5 text-xs font-bold text-amber-950">
+              <Sparkles className="w-4 h-4 text-amber-600 shrink-0" />
+              <span>SIH Demo Mode — Instant Role Switcher</span>
             </div>
             <div className="grid grid-cols-2 gap-1.5 text-xs">
               <button
                 type="button"
                 onClick={() => handleQuickDemoLogin('farmer')}
-                className="px-2.5 py-1.5 bg-white border border-amber-300 hover:bg-amber-100 text-stone-800 rounded-lg font-semibold text-left transition-colors"
+                className="flex items-center gap-2 px-3 py-2 bg-white border border-amber-200 hover:border-amber-400 hover:bg-amber-100/50 text-stone-800 rounded-xl font-bold transition-all cursor-pointer shadow-2xs"
               >
-                🌾 Farmer
+                <Sprout className="w-4 h-4 text-emerald-600" />
+                <span>Farmer</span>
               </button>
               <button
                 type="button"
                 onClick={() => handleQuickDemoLogin('buyer')}
-                className="px-2.5 py-1.5 bg-white border border-amber-300 hover:bg-amber-100 text-stone-800 rounded-lg font-semibold text-left transition-colors"
+                className="flex items-center gap-2 px-3 py-2 bg-white border border-amber-200 hover:border-amber-400 hover:bg-amber-100/50 text-stone-800 rounded-xl font-bold transition-all cursor-pointer shadow-2xs"
               >
-                🛒 Buyer
+                <ShoppingCart className="w-4 h-4 text-blue-600" />
+                <span>Buyer</span>
               </button>
               <button
                 type="button"
                 onClick={() => handleQuickDemoLogin('logistics')}
-                className="px-2.5 py-1.5 bg-white border border-amber-300 hover:bg-amber-100 text-stone-800 rounded-lg font-semibold text-left transition-colors"
+                className="flex items-center gap-2 px-3 py-2 bg-white border border-amber-200 hover:border-amber-400 hover:bg-amber-100/50 text-stone-800 rounded-xl font-bold transition-all cursor-pointer shadow-2xs"
               >
-                🚚 Logistics
+                <Truck className="w-4 h-4 text-amber-600" />
+                <span>Logistics</span>
               </button>
               <button
                 type="button"
                 onClick={() => handleQuickDemoLogin('admin')}
-                className="px-2.5 py-1.5 bg-white border border-amber-300 hover:bg-amber-100 text-stone-800 rounded-lg font-semibold text-left transition-colors"
+                className="flex items-center gap-2 px-3 py-2 bg-white border border-amber-200 hover:border-amber-400 hover:bg-amber-100/50 text-stone-800 rounded-xl font-bold transition-all cursor-pointer shadow-2xs"
               >
-                🛡️ Admin
+                <ShieldCheck className="w-4 h-4 text-purple-600" />
+                <span>Admin</span>
               </button>
             </div>
           </div>
 
           {/* Language Selector */}
-          <div className="flex items-center gap-2 p-3 bg-stone-50 border border-stone-200 rounded-xl">
-            <Mic className="w-4 h-4 text-stone-400" />
-            <label className="text-xs font-semibold text-stone-700" htmlFor="lang-select">
-              Language
-            </label>
+          <div className="flex items-center gap-2 p-3 bg-stone-50 border border-stone-200 rounded-xl text-xs font-semibold text-stone-700">
+            <Globe className="w-4 h-4 text-emerald-600" />
+            <label htmlFor="lang-select">Interface Language</label>
             <select
               id="lang-select"
               value={language}
               onChange={(e) => setLanguage(e.target.value as typeof language)}
-              className="ml-auto bg-transparent text-xs font-medium text-stone-800 focus:outline-none cursor-pointer"
+              className="ml-auto bg-transparent text-xs font-bold text-stone-900 focus:outline-none cursor-pointer"
             >
               <option value="en">English (EN)</option>
               <option value="hi">हिंदी (HI)</option>
@@ -211,38 +208,41 @@ export const OtpScreen: React.FC<OtpScreenProps> = ({
                 <label htmlFor="phone-input" className="block text-xs font-bold text-stone-700 mb-1.5">
                   Phone Number / मोबाईल नंबर
                 </label>
-                <input
-                  type="tel"
-                  id="phone-input"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  onKeyDown={(e) => handleKeyDown(e, handleSendOtp)}
-                  placeholder="+91 98765 43210"
-                  className="w-full px-4 py-3 text-sm font-semibold bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
-                  maxLength={15}
-                  inputMode="tel"
-                />
+                <div className="relative">
+                  <Phone className="w-4 h-4 text-stone-400 absolute left-3 top-3.5" />
+                  <input
+                    type="tel"
+                    id="phone-input"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    onKeyDown={(e) => handleKeyDown(e, handleSendOtp)}
+                    placeholder="+91 98765 43210"
+                    className="w-full pl-9 pr-4 py-2.5 text-sm font-bold bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all text-stone-900"
+                    maxLength={15}
+                    inputMode="tel"
+                  />
+                </div>
               </div>
 
-              <button
+              <Button
                 id="send-otp-btn"
                 onClick={handleSendOtp}
                 disabled={isSending || phone.length < 10}
-                className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold text-sm rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+                loading={isSending}
+                fullWidth
               >
-                {isSending && <Loader2 className="w-4 h-4 animate-spin" />}
-                {isSending ? 'Sending OTP...' : 'Send OTP →'}
-              </button>
+                Send OTP →
+              </Button>
             </div>
           )}
 
           {/* OTP Input */}
           {showOtpInput && (
             <div className="space-y-3">
-              <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-700 flex flex-col gap-1">
-                <span>OTP sent to <strong>{pendingPhone || phone}</strong></span>
+              <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-900 flex flex-col gap-1 font-medium">
+                <span>OTP sent to <strong className="font-bold text-stone-900">{pendingPhone || phone}</strong></span>
                 {devOtpHint && (
-                  <span className="text-stone-500 font-medium">{devOtpHint}</span>
+                  <span className="text-stone-500 font-semibold">{devOtpHint}</span>
                 )}
               </div>
 
@@ -268,23 +268,23 @@ export const OtpScreen: React.FC<OtpScreenProps> = ({
                   placeholder="123456"
                   maxLength={6}
                   inputMode="numeric"
-                  className="w-full px-4 py-3 text-2xl font-bold tracking-[0.5em] text-stone-900 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-center transition-all"
+                  className="w-full px-4 py-3 text-2xl font-black tracking-[0.5em] text-stone-900 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-center transition-all bg-stone-50"
                 />
               </div>
 
-              <button
+              <Button
                 id="verify-otp-btn"
                 onClick={handleVerifyOtp}
                 disabled={isVerifying || otp.length !== 6}
-                className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold text-sm rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+                loading={isVerifying}
+                fullWidth
               >
-                {isVerifying && <Loader2 className="w-4 h-4 animate-spin" />}
-                {isVerifying ? 'Verifying...' : 'Verify OTP & Continue →'}
-              </button>
+                Verify OTP & Continue →
+              </Button>
 
               <button
                 onClick={() => { setShowOtpInput(false); setOtp(''); setError(''); }}
-                className="w-full py-2 text-xs text-stone-500 hover:text-stone-700 transition-colors cursor-pointer"
+                className="w-full py-2 text-xs font-semibold text-stone-500 hover:text-stone-800 transition-colors cursor-pointer"
               >
                 ← Use a different phone number
               </button>
@@ -293,15 +293,15 @@ export const OtpScreen: React.FC<OtpScreenProps> = ({
 
           {/* Error */}
           {error && (
-            <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700 font-medium">
+            <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800 font-bold">
               {error}
             </div>
           )}
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-3 bg-stone-50 border-t border-stone-100 text-xs text-stone-500 text-center">
-          Secure OTP login — your identity stays anonymous until you confirm a trade.
+        <div className="px-6 py-3 bg-stone-50 border-t border-stone-100 text-[11px] text-stone-500 text-center font-medium">
+          Secure OTP login — your identity stays anonymous until trade confirmation.
         </div>
       </div>
     </div>

@@ -19,17 +19,17 @@ export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
     ref
   ) => {
     const variantStyles = {
-      default: 'bg-stone-100 text-stone-700',
-      success: 'bg-emerald-50 text-emerald-700 border border-emerald-100',
-      warning: 'bg-amber-50 text-amber-700 border border-amber-100',
-      danger: 'bg-rose-50 text-rose-700 border border-rose-100',
-      info: 'bg-blue-50 text-blue-700 border border-blue-100',
-      neutral: 'bg-stone-100 text-stone-600',
-      pending: 'bg-amber-50 text-amber-700 border border-amber-100',
+      default: 'bg-stone-100 text-stone-700 border-stone-200',
+      success: 'bg-emerald-50 text-emerald-800 border-emerald-200/80',
+      warning: 'bg-amber-50 text-amber-800 border-amber-200/80',
+      danger: 'bg-rose-50 text-rose-800 border-rose-200/80',
+      info: 'bg-sky-50 text-sky-800 border-sky-200/80',
+      neutral: 'bg-stone-100 text-stone-700 border-stone-200',
+      pending: 'bg-amber-50 text-amber-800 border-amber-200/80',
     };
 
     const sizeStyles = {
-      sm: 'px-2 py-0.5 text-[10px] gap-1',
+      sm: 'px-2 py-0.5 text-[11px] gap-1',
       md: 'px-2.5 py-1 text-xs gap-1.5',
       lg: 'px-3 py-1.5 text-sm gap-2',
     };
@@ -38,12 +38,12 @@ export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
       <span
         ref={ref}
         className={`
-          inline-flex items-center font-semibold rounded-full border
+          inline-flex items-center font-bold rounded-full border tracking-tight shadow-2xs
           ${variantStyles[variant]} ${sizeStyles[size]} ${className}
         `}
         {...props}
       >
-        {dot && <span className={`w-1.5 h-1.5 rounded-full bg-current opacity-70`} aria-hidden="true" />}
+        {dot && <span className="w-1.5 h-1.5 rounded-full bg-current opacity-80" aria-hidden="true" />}
         {children}
       </span>
     );
@@ -80,5 +80,5 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, variant }) => 
   const v = variant || statusVariants[status] || 'default';
   const label = status.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 
-  return <Badge variant={v} size="sm">{label}</Badge>;
+  return <Badge variant={v} size="sm" dot>{label}</Badge>;
 };

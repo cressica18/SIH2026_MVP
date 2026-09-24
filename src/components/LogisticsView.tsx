@@ -19,7 +19,12 @@ import {
   ChevronRight,
   Package,
   Layers,
+  Sparkles,
 } from 'lucide-react';
+import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from './ui/Card';
+import { Button } from './ui/Button';
+import { Badge, StatusBadge } from './ui/Badge';
+import { EmptyState } from './ui/EmptyState';
 
 interface LogisticsViewProps {
   logistics: LogisticsProfile;
@@ -91,27 +96,28 @@ export const LogisticsView: React.FC<LogisticsViewProps> = ({
     <div className="space-y-6">
       
       {/* Logistics Header Banner */}
-      <div className="bg-gradient-to-br from-amber-800 via-stone-900 to-stone-950 text-white rounded-3xl p-5 sm:p-7 shadow-lg shadow-amber-950/20">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div className="space-y-1.5">
-            <div className="flex items-center gap-2">
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-600/60 text-amber-200 border border-amber-500/40">
+      <Card variant="elevated" padding="lg" className="bg-gradient-to-br from-amber-900 via-stone-900 to-stone-950 text-white border-none shadow-xl">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 flex-wrap">
+              <Badge variant="warning" size="sm" className="bg-amber-500/20 text-amber-200 border-amber-500/40">
+                <Truck className="w-3 h-3" />
                 Logistics Carrier Partner
-              </span>
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 flex items-center gap-1">
+              </Badge>
+              <Badge variant="success" size="sm" className="bg-emerald-500/20 text-emerald-300 border-emerald-500/40">
                 <Leaf className="w-3.5 h-3.5" />
-                Pooled Route Optimization (NN Heuristic)
-              </span>
+                Pooled Route Optimization (VRP)
+              </Badge>
             </div>
-            <h2 className="text-xl sm:text-2xl font-black text-white">
+            <CardTitle className="text-xl sm:text-2xl font-black text-white tracking-tight">
               {logistics.name}
-            </h2>
-            <p className="text-xs sm:text-sm text-stone-300">
+            </CardTitle>
+            <CardDescription className="text-xs sm:text-sm text-stone-300">
               Vehicle: {logistics.vehicleType} • Service Radius: {logistics.serviceRadiusKm} km • Base: {logistics.district}, {logistics.state}
-            </p>
+            </CardDescription>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-wrap">
             <div className="px-4 py-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/15 text-center">
               <p className="text-[11px] text-stone-300 font-medium">Fleet Fuel Savings</p>
               <p className="text-base font-black text-amber-400">
@@ -126,55 +132,62 @@ export const LogisticsView: React.FC<LogisticsViewProps> = ({
             </div>
           </div>
         </div>
-      </div>
+      </Card>
 
       {/* Create Pool Section */}
       {unassignedOrders.length > 0 && (
-        <div className="bg-white rounded-3xl p-5 border border-stone-200 shadow-sm space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-bold text-stone-900 flex items-center gap-2">
-              <Package className="w-5 h-5 text-amber-600" />
-              Unassigned Confirmed Orders
-            </h3>
-            <button
+        <Card variant="bordered" padding="md" className="space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                <Package className="w-5 h-5 text-amber-600" />
+                <span>Unassigned Confirmed Orders in Corridor</span>
+              </CardTitle>
+              <CardDescription>
+                Select multiple farmgate harvest orders to cluster into a high-efficiency vehicle pickup route.
+              </CardDescription>
+            </div>
+            <Button
+              variant="primary"
               onClick={handleCreatePoolClick}
               disabled={selectedOrdersForPool.length === 0 || isCreatingPool}
-              className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white text-sm font-bold rounded-xl shadow-xs transition-colors"
+              loading={isCreatingPool}
             >
-              {isCreatingPool ? 'Creating Pool...' : `Create Optimized Pool (${selectedOrdersForPool.length})`}
-            </button>
+              <Layers className="w-4 h-4" />
+              <span>Create Optimized Pool ({selectedOrdersForPool.length})</span>
+            </Button>
           </div>
 
           {poolError && (
-            <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800 font-medium">
+            <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800 font-semibold">
               {poolError}
             </div>
           )}
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            {unassignedOrders.map(order => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+            {unassignedOrders.map((order) => (
               <div
                 key={order.id}
                 onClick={() => toggleOrderSelection(order.id)}
                 className={`p-4 rounded-2xl border cursor-pointer transition-all ${
                   selectedOrdersForPool.includes(order.id)
-                    ? 'bg-emerald-50 border-emerald-500 shadow-sm'
-                    : 'bg-stone-50 border-stone-200 hover:border-emerald-300'
+                    ? 'bg-emerald-50/80 border-emerald-500 shadow-xs'
+                    : 'bg-stone-50/60 border-stone-200/80 hover:border-emerald-300'
                 }`}
               >
                 <div className="flex justify-between items-start mb-2">
                   <span className="font-bold text-stone-900 text-sm">{order.crop}</span>
-                  <span className="text-xs font-mono bg-white px-2 py-0.5 rounded border">{order.id}</span>
+                  <span className="text-xs font-mono bg-white px-2 py-0.5 rounded border border-stone-200 font-bold">{order.id}</span>
                 </div>
                 <div className="text-xs text-stone-600 space-y-1">
-                  <p>Load: <span className="font-semibold text-stone-900">{order.quantityKg} kg</span></p>
-                  <p className="truncate">From: {order.sellerVillage}, {order.sellerDistrict}</p>
-                  <p className="truncate">To: {order.deliveryAddress.split(',')[0]}</p>
+                  <p>Payload: <span className="font-semibold text-stone-900">{order.quantityKg} kg</span></p>
+                  <p className="truncate">Pickup: {order.sellerVillage}, {order.sellerDistrict}</p>
+                  <p className="truncate">Delivery: {order.deliveryAddress.split(',')[0]}</p>
                 </div>
               </div>
             ))}
           </div>
-        </div>
+        </Card>
       )}
 
       {/* Pools & Route Optimizer Section */}
@@ -183,14 +196,12 @@ export const LogisticsView: React.FC<LogisticsViewProps> = ({
           
           {/* Left: Pool Overview & Capacity Card */}
           <div className="lg:col-span-1 space-y-4">
-            <div className="bg-white rounded-2xl border border-stone-200 p-5 shadow-xs space-y-4">
+            <Card variant="bordered" padding="md" className="space-y-4">
               <div className="flex items-center justify-between">
-                <span className="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-stone-900 text-amber-300">
+                <span className="px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-stone-900 text-amber-300">
                   {currentPool.id}
                 </span>
-                <span className="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800">
-                  {currentPool.status.replace('_', ' ')}
-                </span>
+                <StatusBadge status={currentPool.status} />
               </div>
 
               <div>
@@ -203,7 +214,7 @@ export const LogisticsView: React.FC<LogisticsViewProps> = ({
               </div>
 
               {/* Capacity Progress Bar */}
-              <div className="p-3.5 bg-stone-50 rounded-xl border border-stone-100 space-y-2">
+              <div className="p-3.5 bg-stone-50 rounded-xl border border-stone-200/80 space-y-2">
                 <div className="flex justify-between text-xs font-semibold text-stone-700">
                   <span>Vehicle Payload Utilization:</span>
                   <span className="font-bold text-stone-900">
@@ -211,7 +222,7 @@ export const LogisticsView: React.FC<LogisticsViewProps> = ({
                     {Math.round((currentPool.totalWeightKg / currentPool.maxCapacityKg) * 100)}%)
                   </span>
                 </div>
-                <div className="w-full h-3 bg-stone-200 rounded-full overflow-hidden">
+                <div className="w-full h-2.5 bg-stone-200 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-gradient-to-r from-emerald-500 to-teal-600 rounded-full transition-all"
                     style={{
@@ -222,22 +233,22 @@ export const LogisticsView: React.FC<LogisticsViewProps> = ({
                     }}
                   />
                 </div>
-                <p className="text-[11px] text-emerald-800 font-medium flex items-center gap-1">
+                <p className="text-[11px] text-emerald-800 font-semibold flex items-center gap-1 pt-0.5">
                   <Leaf className="w-3.5 h-3.5 text-emerald-600" />
                   {currentPool.orderIds.length > 1
                     ? `Consolidating ${currentPool.orderIds.length} pickups reduces empty haulage miles.`
-                    : 'Single pickup — no pooling savings.'}
+                    : 'Single pickup lot.'}
                 </p>
               </div>
 
               {/* Vehicle & Driver Details */}
-              <div className="text-xs space-y-1.5 p-3 bg-stone-50 rounded-xl border border-stone-100 text-stone-700">
+              <div className="text-xs space-y-2 p-3 bg-stone-50 rounded-xl border border-stone-200/80 text-stone-700">
                 <div className="flex justify-between">
-                  <span className="text-stone-400">Assigned Carrier:</span>
+                  <span className="text-stone-400 font-medium">Assigned Carrier:</span>
                   <span className="font-bold text-stone-900">{currentPool.vehicleAssigned}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-stone-400">Driver Contact:</span>
+                  <span className="text-stone-400 font-medium">Driver Contact:</span>
                   <span className="font-bold text-emerald-700">{currentPool.driverName} ({currentPool.driverPhone})</span>
                 </div>
               </div>
@@ -245,51 +256,55 @@ export const LogisticsView: React.FC<LogisticsViewProps> = ({
               {/* Status Action Controls */}
               <div className="space-y-2 pt-2">
                 {currentPool.status !== 'in_transit' && currentPool.status !== 'delivered' && (
-                  <button
+                  <Button
+                    variant="primary"
+                    fullWidth
                     onClick={() => onUpdatePoolStatus(currentPool.id, 'in_transit')}
-                    className="w-full py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs rounded-xl shadow-xs transition-all cursor-pointer flex items-center justify-center gap-2"
+                    className="bg-amber-600 hover:bg-amber-700 text-white"
                   >
                     <Truck className="w-4 h-4" />
                     <span>Dispatch Carrier (Mark In-Transit)</span>
-                  </button>
+                  </Button>
                 )}
 
                 {currentPool.status === 'in_transit' && (
-                  <button
+                  <Button
+                    variant="primary"
+                    fullWidth
                     onClick={() => onUpdatePoolStatus(currentPool.id, 'delivered')}
-                    className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-xs transition-all cursor-pointer flex items-center justify-center gap-2"
                   >
                     <CheckCircle2 className="w-4 h-4" />
                     <span>Confirm All Stops Delivered</span>
-                  </button>
+                  </Button>
                 )}
 
                 {currentPool.status === 'delivered' && (
-                  <div className="p-2.5 bg-emerald-50 border border-emerald-200 rounded-xl text-center text-xs font-bold text-emerald-900">
-                    Route Completed & Settled
+                  <div className="p-2.5 bg-emerald-50 border border-emerald-200 rounded-xl text-center text-xs font-bold text-emerald-900 flex items-center justify-center gap-1.5">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                    <span>Route Completed & Settled</span>
                   </div>
                 )}
               </div>
 
-            </div>
+            </Card>
           </div>
 
           {/* Right: Capacitated VRP Route Stops & Visual Map */}
           <div className="lg:col-span-2 space-y-4">
-            <div className="bg-white rounded-2xl border border-stone-200 p-5 shadow-xs space-y-4">
+            <Card variant="bordered" padding="md" className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="font-bold text-base text-stone-900 flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2">
                     <Navigation className="w-5 h-5 text-emerald-600" />
                     <span>Optimized Waypoint Sequence (NN Heuristic)</span>
-                  </h3>
-                  <p className="text-xs text-stone-500">
-                    Stops calculated to minimize vehicle turnaround and maximize fuel economy
-                  </p>
+                  </CardTitle>
+                  <CardDescription>
+                    Waypoints ordered to minimize vehicle turnaround time and fuel expenditure.
+                  </CardDescription>
                 </div>
-                <span className="px-2.5 py-1 bg-stone-100 rounded-xl text-xs font-semibold text-stone-700">
+                <Badge variant="neutral" size="sm">
                   {currentPool.routeStops.length} Waypoints
-                </span>
+                </Badge>
               </div>
 
               {/* Waypoint Route List */}
@@ -300,12 +315,12 @@ export const LogisticsView: React.FC<LogisticsViewProps> = ({
                     className={`relative p-4 rounded-xl border transition-colors ${
                       stop.completed
                         ? 'bg-emerald-50/50 border-emerald-200'
-                        : 'bg-white border-stone-200 shadow-xs'
+                        : 'bg-white border-stone-200 shadow-2xs'
                     }`}
                   >
                     {/* Node Dot */}
                     <div
-                      className={`absolute -left-[19px] top-4 w-4 h-4 rounded-full border-2 flex items-center justify-center text-[9px] font-bold ${
+                      className={`absolute -left-[19px] top-4 w-4 h-4 rounded-full border-2 flex items-center justify-center text-[9px] font-extrabold ${
                         stop.completed
                           ? 'bg-emerald-600 border-white text-white'
                           : 'bg-white border-emerald-600 text-emerald-800'
@@ -317,15 +332,12 @@ export const LogisticsView: React.FC<LogisticsViewProps> = ({
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                       <div>
                         <div className="flex items-center gap-2">
-                          <span
-                            className={`px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider ${
-                              stop.stopType === 'pickup'
-                                ? 'bg-amber-100 text-amber-800'
-                                : 'bg-blue-100 text-blue-800'
-                            }`}
+                          <Badge
+                            variant={stop.stopType === 'pickup' ? 'warning' : 'info'}
+                            size="sm"
                           >
-                            {stop.stopType}
-                          </span>
+                            {stop.stopType === 'pickup' ? 'Pickup' : 'Dropoff'}
+                          </Badge>
                           <span className="font-bold text-sm text-stone-900">
                             {stop.locationName}
                           </span>
@@ -333,7 +345,7 @@ export const LogisticsView: React.FC<LogisticsViewProps> = ({
                         <p className="text-xs text-stone-600 mt-1">
                           Contact: <span className="font-semibold text-stone-800">{stop.farmerOrBuyerName}</span> ({stop.contactPhone})
                         </p>
-                        <p className="text-xs text-stone-500 mt-0.5">
+                        <p className="text-xs text-stone-500 mt-0.5 font-medium">
                           Load: {stop.quantityKg} kg • {stop.crop}
                         </p>
                       </div>
@@ -345,12 +357,13 @@ export const LogisticsView: React.FC<LogisticsViewProps> = ({
                             Completed
                           </span>
                         ) : (
-                          <button
+                          <Button
+                            size="sm"
+                            variant="primary"
                             onClick={() => onCompleteStop(currentPool.id, stop.id)}
-                            className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg cursor-pointer transition-colors shadow-xs"
                           >
                             Mark Stop Done
-                          </button>
+                          </Button>
                         )}
                       </div>
                     </div>
@@ -358,37 +371,43 @@ export const LogisticsView: React.FC<LogisticsViewProps> = ({
                 ))}
               </div>
 
-              {/* Route Map Simulation Schematic — derived from backend stops */}
+              {/* Route Map Simulation Schematic */}
               <div className="p-4 bg-stone-900 rounded-2xl text-white space-y-2 text-xs">
                 <div className="flex items-center justify-between text-stone-300">
-                  <span className="font-bold text-emerald-400">
+                  <span className="font-bold text-emerald-400 flex items-center gap-1.5">
+                    <Navigation className="w-4 h-4" />
                     Route Corridor ({currentPool.routeStops.length} stops)
                   </span>
-                  <span>Capacity: {currentPool.vehicleAssigned}</span>
+                  <span>Vehicle: {currentPool.vehicleAssigned}</span>
                 </div>
                 <div className="p-3 bg-stone-800/80 rounded-xl border border-stone-700 flex flex-wrap gap-2 items-center text-[11px] text-stone-300 font-mono">
-                  {currentPool.routeStops.map((stop, idx) => {
+                  {currentPool.routeStops.map((stop) => {
                     const isCompleted = stop.completed;
-                    const prefix = stop.stopType === 'pickup' ? '🖑' : '📦';
                     return (
-                      <span key={stop.id} className={`px-2 py-1 rounded ${
-                        isCompleted ? 'bg-emerald-700/30' : 'bg-stone-700'
-                      }`}>
-                        {prefix} {stop.locationName}
+                      <span
+                        key={stop.id}
+                        className={`px-2.5 py-1 rounded-lg font-bold flex items-center gap-1.5 ${
+                          isCompleted ? 'bg-emerald-800/50 text-emerald-300 border border-emerald-700/50' : 'bg-stone-700 text-stone-200'
+                        }`}
+                      >
+                        {stop.stopType === 'pickup' ? (
+                          <Package className="w-3.5 h-3.5 text-amber-400" />
+                        ) : (
+                          <MapPin className="w-3.5 h-3.5 text-sky-400" />
+                        )}
+                        <span>{stop.locationName}</span>
                       </span>
                     );
                   })}
                 </div>
               </div>
 
-            </div>
+            </Card>
           </div>
 
         </div>
       ) : (
-        <div className="p-8 text-center text-stone-500 bg-white rounded-2xl border border-stone-200">
-          No active logistics pickup pools currently open.
-        </div>
+        <EmptyState variant="pools" />
       )}
 
     </div>

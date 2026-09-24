@@ -1,5 +1,10 @@
 import React, { useState } from 'react';
 import { useAuth } from '../lib/auth-context';
+import { Sprout, ShoppingCart, Truck, ShieldCheck, User, MapPin, Building2, CheckCircle2 } from 'lucide-react';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from './ui/Card';
+import { Button } from './ui/Button';
+import { Input } from './ui/Input';
+import { Select } from './ui/Select';
 
 export function OnboardingScreen({ onComplete }: { onComplete: (profile: any) => void }) {
   const { user } = useAuth();
@@ -79,78 +84,95 @@ export function OnboardingScreen({ onComplete }: { onComplete: (profile: any) =>
     }
   };
 
+  const roleIcon = user?.role === 'farmer' ? <Sprout className="w-6 h-6 text-emerald-600" /> :
+                   user?.role === 'buyer' ? <ShoppingCart className="w-6 h-6 text-blue-600" /> :
+                   user?.role === 'logistics' ? <Truck className="w-6 h-6 text-amber-600" /> :
+                   <ShieldCheck className="w-6 h-6 text-purple-600" />;
+
   return (
-    <div className="min-h-screen bg-stone-100 flex items-center justify-center p-6">
-      <div className="max-w-md w-full bg-white p-8 rounded-2xl shadow-xl">
-        <h2 className="text-2xl font-bold text-emerald-800 mb-6">Complete Your Profile</h2>
-        <p className="text-sm text-stone-600 mb-6">
-          Welcome to Vasundhara! Please fill in some details to get started as a {user?.role}.
-        </p>
-
-        {error && <div className="p-3 bg-rose-50 text-rose-600 text-sm rounded-lg mb-4">{error}</div>}
-
-        <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-950 via-stone-900 to-slate-900 flex items-center justify-center p-4 sm:p-6">
+      <Card variant="elevated" padding="lg" className="max-w-md w-full bg-white shadow-2xl space-y-5">
+        <div className="flex items-center gap-3 border-b border-stone-100 pb-4">
+          <div className="p-3 bg-stone-50 rounded-2xl border border-stone-200 shrink-0">
+            {roleIcon}
+          </div>
           <div>
-            <label className="block text-sm font-semibold text-stone-700 mb-1">Full Name</label>
-            <input
+            <CardTitle className="text-xl font-black text-stone-900">Complete Profile</CardTitle>
+            <CardDescription className="text-xs">
+              Fill in your registration details as a <span className="font-bold text-stone-900 capitalize">{user?.role}</span>.
+            </CardDescription>
+          </div>
+        </div>
+
+        {error && (
+          <div className="p-3 bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold rounded-xl">
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-4 text-xs sm:text-sm">
+          <div>
+            <label className="block text-xs font-bold text-stone-700 mb-1">Full Name</label>
+            <Input
               required
-              className="w-full border border-stone-300 rounded-lg p-2.5 text-sm"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              placeholder="e.g. Ramesh Patil"
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-semibold text-stone-700 mb-1">State</label>
-            <input
-              required
-              className="w-full border border-stone-300 rounded-lg p-2.5 text-sm"
-              value={state}
-              onChange={(e) => setState(e.target.value)}
-              placeholder="e.g. Maharashtra"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-semibold text-stone-700 mb-1">District</label>
-            <input
-              required
-              className="w-full border border-stone-300 rounded-lg p-2.5 text-sm"
-              value={district}
-              onChange={(e) => setDistrict(e.target.value)}
-              placeholder="e.g. Pune"
-            />
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-bold text-stone-700 mb-1">State</label>
+              <Input
+                required
+                value={state}
+                onChange={(e) => setState(e.target.value)}
+                placeholder="e.g. Maharashtra"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-stone-700 mb-1">District</label>
+              <Input
+                required
+                value={district}
+                onChange={(e) => setDistrict(e.target.value)}
+                placeholder="e.g. Nashik"
+              />
+            </div>
           </div>
 
           {user?.role === 'farmer' && (
             <>
               <div>
-                <label className="block text-sm font-semibold text-stone-700 mb-1">Village</label>
-                <input
+                <label className="block text-xs font-bold text-stone-700 mb-1">Village</label>
+                <Input
                   required
-                  className="w-full border border-stone-300 rounded-lg p-2.5 text-sm"
                   value={village}
                   onChange={(e) => setVillage(e.target.value)}
+                  placeholder="e.g. Pimpalgaon"
                 />
               </div>
-              <div>
-                <label className="block text-sm font-semibold text-stone-700 mb-1">Land Size (Acres)</label>
-                <input
-                  required
-                  type="number"
-                  step="0.1"
-                  className="w-full border border-stone-300 rounded-lg p-2.5 text-sm"
-                  value={landSizeAcres}
-                  onChange={(e) => setLandSizeAcres(e.target.value)}
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-stone-700 mb-1">Primary Crops (comma separated)</label>
-                <input
-                  required
-                  className="w-full border border-stone-300 rounded-lg p-2.5 text-sm"
-                  value={primaryCrops}
-                  onChange={(e) => setPrimaryCrops(e.target.value)}
-                />
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-stone-700 mb-1">Land Size (Acres)</label>
+                  <Input
+                    required
+                    type="number"
+                    step="0.1"
+                    value={landSizeAcres}
+                    onChange={(e) => setLandSizeAcres(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-stone-700 mb-1">Primary Crops</label>
+                  <Input
+                    required
+                    value={primaryCrops}
+                    onChange={(e) => setPrimaryCrops(e.target.value)}
+                    placeholder="Tomato, Onion"
+                  />
+                </div>
               </div>
             </>
           )}
@@ -158,25 +180,25 @@ export function OnboardingScreen({ onComplete }: { onComplete: (profile: any) =>
           {user?.role === 'buyer' && (
             <>
               <div>
-                <label className="block text-sm font-semibold text-stone-700 mb-1">Business Name</label>
-                <input
+                <label className="block text-xs font-bold text-stone-700 mb-1">Business Name</label>
+                <Input
                   required
-                  className="w-full border border-stone-300 rounded-lg p-2.5 text-sm"
                   value={businessName}
                   onChange={(e) => setBusinessName(e.target.value)}
+                  placeholder="e.g. Joshi Processing Pvt Ltd"
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-stone-700 mb-1">Buyer Type</label>
-                <select
-                  className="w-full border border-stone-300 rounded-lg p-2.5 text-sm"
+                <label className="block text-xs font-bold text-stone-700 mb-1">Buyer Type</label>
+                <Select
+                  options={[
+                    { value: 'consumer', label: 'Consumer / Individual' },
+                    { value: 'processor', label: 'Food Processor' },
+                    { value: 'retailer', label: 'Retailer / Wholesaler' },
+                  ]}
                   value={buyerType}
                   onChange={(e) => setBuyerType(e.target.value)}
-                >
-                  <option value="consumer">Consumer</option>
-                  <option value="processor">Processor</option>
-                  <option value="retailer">Retailer</option>
-                </select>
+                />
               </div>
             </>
           )}
@@ -184,46 +206,48 @@ export function OnboardingScreen({ onComplete }: { onComplete: (profile: any) =>
           {user?.role === 'logistics' && (
             <>
               <div>
-                <label className="block text-sm font-semibold text-stone-700 mb-1">Vehicle Type</label>
-                <input
+                <label className="block text-xs font-bold text-stone-700 mb-1">Vehicle Type</label>
+                <Input
                   required
-                  className="w-full border border-stone-300 rounded-lg p-2.5 text-sm"
                   value={vehicleType}
                   onChange={(e) => setVehicleType(e.target.value)}
+                  placeholder="e.g. Bolero Pickup (1.5 Ton)"
                 />
               </div>
-              <div>
-                <label className="block text-sm font-semibold text-stone-700 mb-1">Capacity (Kg)</label>
-                <input
-                  required
-                  type="number"
-                  className="w-full border border-stone-300 rounded-lg p-2.5 text-sm"
-                  value={capacityKg}
-                  onChange={(e) => setCapacityKg(e.target.value)}
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-stone-700 mb-1">Service Radius (Km)</label>
-                <input
-                  required
-                  type="number"
-                  className="w-full border border-stone-300 rounded-lg p-2.5 text-sm"
-                  value={serviceRadiusKm}
-                  onChange={(e) => setServiceRadiusKm(e.target.value)}
-                />
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-stone-700 mb-1">Capacity (Kg)</label>
+                  <Input
+                    required
+                    type="number"
+                    value={capacityKg}
+                    onChange={(e) => setCapacityKg(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-stone-700 mb-1">Radius (Km)</label>
+                  <Input
+                    required
+                    type="number"
+                    value={serviceRadiusKm}
+                    onChange={(e) => setServiceRadiusKm(e.target.value)}
+                  />
+                </div>
               </div>
             </>
           )}
 
-          <button
+          <Button
             type="submit"
-            disabled={loading}
-            className="w-full mt-6 bg-emerald-600 text-white font-bold py-3 rounded-xl shadow hover:bg-emerald-700 disabled:opacity-50"
+            variant="primary"
+            fullWidth
+            loading={loading}
+            className="mt-4"
           >
-            {loading ? 'Saving...' : 'Complete Profile'}
-          </button>
+            Complete Profile
+          </Button>
         </form>
-      </div>
+      </Card>
     </div>
   );
 }

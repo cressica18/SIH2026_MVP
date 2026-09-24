@@ -21,7 +21,7 @@ import {
   Layers,
   Sparkles,
 } from 'lucide-react';
-import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from './ui/Card';
+import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from './ui/Card';
 import { Button } from './ui/Button';
 import { Badge, StatusBadge } from './ui/Badge';
 import { EmptyState } from './ui/EmptyState';
@@ -101,7 +101,7 @@ export const LogisticsView: React.FC<LogisticsViewProps> = ({
           <div className="space-y-2">
             <div className="flex items-center gap-2 flex-wrap">
               <Badge variant="warning" size="sm" className="bg-amber-500/20 text-amber-200 border-amber-500/40">
-                <Truck className="w-3 h-3" />
+                <Truck className="w-3.5 h-3.5" />
                 Logistics Carrier Partner
               </Badge>
               <Badge variant="success" size="sm" className="bg-emerald-500/20 text-emerald-300 border-emerald-500/40">
@@ -112,21 +112,21 @@ export const LogisticsView: React.FC<LogisticsViewProps> = ({
             <CardTitle className="text-xl sm:text-2xl font-black text-white tracking-tight">
               {logistics.name}
             </CardTitle>
-            <CardDescription className="text-xs sm:text-sm text-stone-300">
+            <CardDescription className="text-xs sm:text-sm text-stone-200 font-semibold">
               Vehicle: {logistics.vehicleType} • Service Radius: {logistics.serviceRadiusKm} km • Base: {logistics.district}, {logistics.state}
             </CardDescription>
           </div>
 
           <div className="flex items-center gap-3 flex-wrap">
             <div className="px-4 py-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/15 text-center">
-              <p className="text-[11px] text-stone-300 font-medium">Fleet Fuel Savings</p>
-              <p className="text-base font-black text-amber-400">
+              <p className="text-[11px] text-stone-200 font-semibold">Fleet Fuel Savings</p>
+              <p className="text-base font-black text-amber-300">
                 ~{avgFuelSavings}% Saved
               </p>
             </div>
             <div className="px-4 py-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/15 text-center">
-              <p className="text-[11px] text-stone-300 font-medium">Carbon Abated</p>
-              <p className="text-base font-black text-emerald-400">
+              <p className="text-[11px] text-stone-200 font-semibold">Carbon Abated</p>
+              <p className="text-base font-black text-emerald-300">
                 {totalCarbonReduced.toFixed(1)} kg CO₂
               </p>
             </div>
@@ -143,7 +143,7 @@ export const LogisticsView: React.FC<LogisticsViewProps> = ({
                 <Package className="w-5 h-5 text-amber-600" />
                 <span>Unassigned Confirmed Orders in Corridor</span>
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-stone-600 font-medium">
                 Select multiple farmgate harvest orders to cluster into a high-efficiency vehicle pickup route.
               </CardDescription>
             </div>
@@ -171,18 +171,18 @@ export const LogisticsView: React.FC<LogisticsViewProps> = ({
                 onClick={() => toggleOrderSelection(order.id)}
                 className={`p-4 rounded-2xl border cursor-pointer transition-all ${
                   selectedOrdersForPool.includes(order.id)
-                    ? 'bg-emerald-50/80 border-emerald-500 shadow-xs'
-                    : 'bg-stone-50/60 border-stone-200/80 hover:border-emerald-300'
+                    ? 'bg-emerald-50 border-emerald-500 shadow-xs'
+                    : 'bg-stone-50 border-stone-200 hover:border-emerald-400'
                 }`}
               >
                 <div className="flex justify-between items-start mb-2">
                   <span className="font-bold text-stone-900 text-sm">{order.crop}</span>
-                  <span className="text-xs font-mono bg-white px-2 py-0.5 rounded border border-stone-200 font-bold">{order.id}</span>
+                  <span className="text-xs font-mono bg-white px-2 py-0.5 rounded border border-stone-300 font-bold text-stone-900">{order.id}</span>
                 </div>
-                <div className="text-xs text-stone-600 space-y-1">
-                  <p>Payload: <span className="font-semibold text-stone-900">{order.quantityKg} kg</span></p>
-                  <p className="truncate">Pickup: {order.sellerVillage}, {order.sellerDistrict}</p>
-                  <p className="truncate">Delivery: {order.deliveryAddress.split(',')[0]}</p>
+                <div className="text-xs text-stone-700 space-y-1 font-medium">
+                  <p>Payload: <span className="font-bold text-stone-900">{order.quantityKg} kg</span></p>
+                  <p className="truncate">Pickup: <span className="font-bold text-stone-900">{order.sellerVillage}, {order.sellerDistrict}</span></p>
+                  <p className="truncate">Delivery: <span className="font-bold text-stone-900">{order.deliveryAddress.split(',')[0]}</span></p>
                 </div>
               </div>
             ))}
@@ -208,16 +208,16 @@ export const LogisticsView: React.FC<LogisticsViewProps> = ({
                 <h3 className="font-bold text-base text-stone-900">
                   {currentPool.clusterRegion}
                 </h3>
-                <p className="text-xs text-stone-500 mt-0.5">
+                <p className="text-xs text-stone-600 font-medium mt-0.5">
                   Pooled Date: {currentPool.date} • {currentPool.orderIds.length} Combined Orders
                 </p>
               </div>
 
               {/* Capacity Progress Bar */}
-              <div className="p-3.5 bg-stone-50 rounded-xl border border-stone-200/80 space-y-2">
-                <div className="flex justify-between text-xs font-semibold text-stone-700">
+              <div className="p-3.5 bg-stone-50 rounded-xl border border-stone-200 space-y-2">
+                <div className="flex justify-between text-xs font-bold text-stone-800">
                   <span>Vehicle Payload Utilization:</span>
-                  <span className="font-bold text-stone-900">
+                  <span className="font-black text-stone-900">
                     {currentPool.totalWeightKg} / {currentPool.maxCapacityKg} kg (
                     {Math.round((currentPool.totalWeightKg / currentPool.maxCapacityKg) * 100)}%)
                   </span>
@@ -233,7 +233,7 @@ export const LogisticsView: React.FC<LogisticsViewProps> = ({
                     }}
                   />
                 </div>
-                <p className="text-[11px] text-emerald-800 font-semibold flex items-center gap-1 pt-0.5">
+                <p className="text-[11px] text-emerald-900 font-semibold flex items-center gap-1 pt-0.5">
                   <Leaf className="w-3.5 h-3.5 text-emerald-600" />
                   {currentPool.orderIds.length > 1
                     ? `Consolidating ${currentPool.orderIds.length} pickups reduces empty haulage miles.`
@@ -242,14 +242,14 @@ export const LogisticsView: React.FC<LogisticsViewProps> = ({
               </div>
 
               {/* Vehicle & Driver Details */}
-              <div className="text-xs space-y-2 p-3 bg-stone-50 rounded-xl border border-stone-200/80 text-stone-700">
+              <div className="text-xs space-y-2 p-3 bg-stone-50 rounded-xl border border-stone-200 text-stone-800 font-medium">
                 <div className="flex justify-between">
-                  <span className="text-stone-400 font-medium">Assigned Carrier:</span>
+                  <span className="text-stone-600 font-semibold">Assigned Carrier:</span>
                   <span className="font-bold text-stone-900">{currentPool.vehicleAssigned}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-stone-400 font-medium">Driver Contact:</span>
-                  <span className="font-bold text-emerald-700">{currentPool.driverName} ({currentPool.driverPhone})</span>
+                  <span className="text-stone-600 font-semibold">Driver Contact:</span>
+                  <span className="font-bold text-emerald-800">{currentPool.driverName} ({currentPool.driverPhone})</span>
                 </div>
               </div>
 
@@ -298,7 +298,7 @@ export const LogisticsView: React.FC<LogisticsViewProps> = ({
                     <Navigation className="w-5 h-5 text-emerald-600" />
                     <span>Optimized Waypoint Sequence (NN Heuristic)</span>
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-stone-600 font-medium">
                     Waypoints ordered to minimize vehicle turnaround time and fuel expenditure.
                   </CardDescription>
                 </div>
@@ -308,19 +308,19 @@ export const LogisticsView: React.FC<LogisticsViewProps> = ({
               </div>
 
               {/* Waypoint Route List */}
-              <div className="relative pl-6 space-y-4 before:absolute before:left-3 before:top-3 before:bottom-3 before:w-0.5 before:bg-emerald-200">
+              <div className="relative pl-6 space-y-4 before:absolute before:left-3 before:top-3 before:bottom-3 before:w-0.5 before:bg-emerald-300">
                 {currentPool.routeStops.map((stop, idx) => (
                   <div
                     key={stop.id}
                     className={`relative p-4 rounded-xl border transition-colors ${
                       stop.completed
-                        ? 'bg-emerald-50/50 border-emerald-200'
+                        ? 'bg-emerald-50 border-emerald-300'
                         : 'bg-white border-stone-200 shadow-2xs'
                     }`}
                   >
                     {/* Node Dot */}
                     <div
-                      className={`absolute -left-[19px] top-4 w-4 h-4 rounded-full border-2 flex items-center justify-center text-[9px] font-extrabold ${
+                      className={`absolute -left-[19px] top-4 w-4 h-4 rounded-full border-2 flex items-center justify-center text-[9px] font-black ${
                         stop.completed
                           ? 'bg-emerald-600 border-white text-white'
                           : 'bg-white border-emerald-600 text-emerald-800'
@@ -342,17 +342,17 @@ export const LogisticsView: React.FC<LogisticsViewProps> = ({
                             {stop.locationName}
                           </span>
                         </div>
-                        <p className="text-xs text-stone-600 mt-1">
-                          Contact: <span className="font-semibold text-stone-800">{stop.farmerOrBuyerName}</span> ({stop.contactPhone})
+                        <p className="text-xs text-stone-700 mt-1 font-semibold">
+                          Contact: <span className="font-bold text-stone-900">{stop.farmerOrBuyerName}</span> ({stop.contactPhone})
                         </p>
-                        <p className="text-xs text-stone-500 mt-0.5 font-medium">
+                        <p className="text-xs text-stone-600 mt-0.5 font-bold">
                           Load: {stop.quantityKg} kg • {stop.crop}
                         </p>
                       </div>
 
                       <div className="flex items-center gap-2">
                         {stop.completed ? (
-                          <span className="text-xs font-bold text-emerald-700 flex items-center gap-1 bg-emerald-100/80 px-2.5 py-1 rounded-lg">
+                          <span className="text-xs font-bold text-emerald-800 flex items-center gap-1 bg-emerald-100/90 px-2.5 py-1 rounded-lg border border-emerald-300">
                             <CheckCircle2 className="w-3.5 h-3.5" />
                             Completed
                           </span>
@@ -378,22 +378,22 @@ export const LogisticsView: React.FC<LogisticsViewProps> = ({
                     <Navigation className="w-4 h-4" />
                     Route Corridor ({currentPool.routeStops.length} stops)
                   </span>
-                  <span>Vehicle: {currentPool.vehicleAssigned}</span>
+                  <span className="font-mono text-stone-300 font-bold">Vehicle: {currentPool.vehicleAssigned}</span>
                 </div>
-                <div className="p-3 bg-stone-800/80 rounded-xl border border-stone-700 flex flex-wrap gap-2 items-center text-[11px] text-stone-300 font-mono">
+                <div className="p-3 bg-stone-800 rounded-xl border border-stone-700 flex flex-wrap gap-2 items-center text-[11px] text-stone-200 font-mono">
                   {currentPool.routeStops.map((stop) => {
                     const isCompleted = stop.completed;
                     return (
                       <span
                         key={stop.id}
                         className={`px-2.5 py-1 rounded-lg font-bold flex items-center gap-1.5 ${
-                          isCompleted ? 'bg-emerald-800/50 text-emerald-300 border border-emerald-700/50' : 'bg-stone-700 text-stone-200'
+                          isCompleted ? 'bg-emerald-800/80 text-emerald-200 border border-emerald-600' : 'bg-stone-700 text-stone-100'
                         }`}
                       >
                         {stop.stopType === 'pickup' ? (
-                          <Package className="w-3.5 h-3.5 text-amber-400" />
+                          <Package className="w-3.5 h-3.5 text-amber-300" />
                         ) : (
-                          <MapPin className="w-3.5 h-3.5 text-sky-400" />
+                          <MapPin className="w-3.5 h-3.5 text-sky-300" />
                         )}
                         <span>{stop.locationName}</span>
                       </span>

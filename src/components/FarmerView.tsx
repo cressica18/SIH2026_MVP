@@ -35,7 +35,6 @@ import {
   ExternalLink,
   ChevronRight,
   TrendingUp,
-  Image,
   FileText,
   Filter,
   MoreVertical,
@@ -55,6 +54,7 @@ import { Badge, StatusBadge } from './ui/Badge';
 import { Modal } from './ui/Modal';
 import { EmptyState } from './ui/EmptyState';
 import { LoadingState } from './ui/LoadingState';
+import { ImageWithFallback } from './ui/ImageWithFallback';
 
 interface FarmerViewProps {
   farmer: FarmerProfile;
@@ -316,26 +316,26 @@ export const FarmerView: React.FC<FarmerViewProps> = ({
               </Badge>
             </div>
             <CardTitle className="text-xl sm:text-2xl font-black text-white tracking-tight">{farmer.name}</CardTitle>
-            <p className="text-xs sm:text-sm text-emerald-200 flex items-center gap-1.5 font-medium">
-              <MapPin className="w-3.5 h-3.5" />
+            <p className="text-xs sm:text-sm text-emerald-100 flex items-center gap-1.5 font-semibold">
+              <MapPin className="w-3.5 h-3.5 text-emerald-300" />
               {farmer.village}, {farmer.district}, {farmer.state} · {farmer.landSizeAcres} Acres Farm
             </p>
           </div>
 
           <div className="flex items-center gap-3 flex-wrap">
             <div className="px-4 py-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/15 text-center">
-              <p className="text-[11px] text-emerald-200 font-medium">Trust Reputation</p>
+              <p className="text-[11px] text-emerald-200 font-semibold">Trust Reputation</p>
               <p className="text-base font-black text-amber-300 flex items-center justify-center gap-1">
                 <Star className="w-4 h-4 fill-amber-300 text-amber-300" />
                 <span>{farmer.reputationScore} / 5.0</span>
               </p>
-              <p className="text-[10px] text-emerald-300">{farmer.totalOrdersFulfilled} fulfilled</p>
+              <p className="text-[10px] text-emerald-200 font-medium">{farmer.totalOrdersFulfilled} fulfilled</p>
             </div>
 
             <div className="px-4 py-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/15 text-center">
-              <p className="text-[11px] text-emerald-200 font-medium">AI Eligible Advance</p>
+              <p className="text-[11px] text-emerald-200 font-semibold">AI Eligible Advance</p>
               <p className="text-base font-black text-white">₹{riskAssessment.eligibleAdvanceAmount.toLocaleString('en-IN')}</p>
-              <p className="text-[10px] text-emerald-300">{riskAssessment.riskTier}</p>
+              <p className="text-[10px] text-emerald-200 font-medium">{riskAssessment.riskTier}</p>
             </div>
 
             <Button
@@ -359,7 +359,7 @@ export const FarmerView: React.FC<FarmerViewProps> = ({
             className={`flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer whitespace-nowrap ${
               activeTab === tab.id
                 ? 'bg-emerald-600 text-white shadow-sm'
-                : 'text-stone-600 hover:bg-stone-100 hover:text-stone-900'
+                : 'text-stone-700 hover:bg-stone-100 hover:text-stone-900'
             }`}
           >
             {tab.icon}
@@ -511,9 +511,10 @@ function ListingTab({
           {listings.map((item) => (
             <Card key={item.id} variant="bordered" hover padding="none" className="overflow-hidden">
               <div className="relative h-44 bg-stone-100 overflow-hidden">
-                <img
+                <ImageWithFallback
                   src={item.imageUrl}
                   alt={item.crop}
+                  fallbackTitle={item.crop}
                   className="w-full h-full object-cover"
                   loading="lazy"
                 />
@@ -532,33 +533,33 @@ function ListingTab({
                 <div className="flex items-start justify-between gap-2">
                   <div>
                     <h4 className="font-bold text-base text-stone-900">{item.crop}</h4>
-                    <p className="text-xs text-stone-500">{item.variety}</p>
+                    <p className="text-xs text-stone-600 font-medium">{item.variety}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-xs text-stone-400 font-medium">Expected Price</p>
+                    <p className="text-xs text-stone-500 font-semibold">Expected Price</p>
                     <p className="text-base font-black text-emerald-700">₹{item.priceExpected}/kg</p>
                   </div>
                 </div>
 
-                <div className="p-2.5 bg-stone-50 rounded-xl border border-stone-100 text-xs space-y-1">
-                  <div className="flex items-center justify-between text-stone-600">
-                    <span>Available Batch:</span>
+                <div className="p-2.5 bg-stone-50 rounded-xl border border-stone-200 text-xs space-y-1">
+                  <div className="flex items-center justify-between text-stone-700">
+                    <span className="font-medium">Available Batch:</span>
                     <span className="font-bold text-stone-900">{item.quantityKg} kg ({item.quantityKg / 100} Qtl)</span>
                   </div>
-                  <div className="flex items-center justify-between text-stone-600">
-                    <span>AI Price Range:</span>
-                    <span className="font-bold text-emerald-700">₹{item.priceAi.min} – ₹{item.priceAi.max}/kg</span>
+                  <div className="flex items-center justify-between text-stone-700">
+                    <span className="font-medium">AI Price Range:</span>
+                    <span className="font-bold text-emerald-800">₹{item.priceAi.min} – ₹{item.priceAi.max}/kg</span>
                   </div>
-                  <div className="flex items-center justify-between text-stone-600">
-                    <span>CNN Quality:</span>
+                  <div className="flex items-center justify-between text-stone-700">
+                    <span className="font-medium">CNN Quality:</span>
                     <span className="font-bold text-stone-900">{item.quality.confidence}% Confidence</span>
                   </div>
                 </div>
 
-                <div className="text-[11px] text-stone-400 flex items-center justify-between pt-1">
-                  <span>Added {item.createdAt}</span>
+                <div className="text-[11px] text-stone-500 flex items-center justify-between pt-1">
+                  <span className="font-medium">Added {item.createdAt}</span>
                   <div className="flex items-center gap-2">
-                    <span className="text-emerald-700 font-bold">
+                    <span className="text-emerald-800 font-bold">
                       {item.createdVia === 'voice' ? 'Voice' : 'Text'}
                     </span>
                     {item.status === 'active' && onUpdateListingStatus && (
@@ -592,7 +593,7 @@ function OrdersTab({
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <CardTitle>Orders & Transaction Lifecycle</CardTitle>
-        <span className="text-xs text-stone-500 font-medium">Identity reveals automatically upon confirmation</span>
+        <span className="text-xs text-stone-600 font-semibold">Identity reveals automatically upon confirmation</span>
       </div>
 
       {orders.length === 0 ? (
@@ -612,28 +613,28 @@ function OrdersTab({
                     </Badge>
                   )}
                 </div>
-                <span className="text-xs text-stone-400 font-medium">Created: {ord.createdAt}</span>
+                <span className="text-xs text-stone-500 font-semibold">Created: {ord.createdAt}</span>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs sm:text-sm">
                 <div>
-                  <span className="text-stone-400 block text-xs">Harvest Item:</span>
+                  <span className="text-stone-500 block text-xs font-semibold">Harvest Item:</span>
                   <span className="font-bold text-stone-900">{ord.crop} ({ord.variety})</span>
-                  <span className="text-stone-500 block text-xs">{ord.quantityKg} kg @ ₹{ord.agreedPricePerKg}/kg</span>
+                  <span className="text-stone-600 block text-xs font-medium">{ord.quantityKg} kg @ ₹{ord.agreedPricePerKg}/kg</span>
                 </div>
 
                 <div>
-                  <span className="text-stone-400 block text-xs">Total Settlement:</span>
-                  <span className="font-black text-emerald-700 text-base">₹{ord.totalAmount.toLocaleString('en-IN')}</span>
-                  <span className="text-stone-500 block text-xs">Direct Bank Transfer / AEPS</span>
+                  <span className="text-stone-500 block text-xs font-semibold">Total Settlement:</span>
+                  <span className="font-black text-emerald-800 text-base">₹{ord.totalAmount.toLocaleString('en-IN')}</span>
+                  <span className="text-stone-600 block text-xs font-medium">Direct Bank Transfer / AEPS</span>
                 </div>
 
                 <div>
-                  <span className="text-stone-400 block text-xs">Buyer / Procurement:</span>
+                  <span className="text-stone-500 block text-xs font-semibold">Buyer / Procurement:</span>
                   <span className="font-bold text-stone-900">{ord.buyerName}</span>
-                  <span className="text-stone-500 block text-xs">{ord.buyerType}</span>
+                  <span className="text-stone-600 block text-xs font-medium">{ord.buyerType}</span>
                   {ord.identityRevealed && (
-                    <span className="text-emerald-700 font-bold flex items-center gap-1 mt-0.5 text-xs">
+                    <span className="text-emerald-800 font-bold flex items-center gap-1 mt-0.5 text-xs">
                       <Phone className="w-3.5 h-3.5" />
                       {ord.buyerPhone}
                     </span>
@@ -642,13 +643,13 @@ function OrdersTab({
               </div>
 
               {ord.identityRevealed && (
-                <div className="p-3 bg-blue-50/80 border border-blue-200 rounded-xl text-xs text-blue-950 space-y-1">
+                <div className="p-3 bg-blue-50 border border-blue-200 rounded-xl text-xs text-blue-950 space-y-1">
                   <p className="font-bold flex items-center gap-1.5 text-blue-900">
                     <ShieldCheck className="w-4 h-4 text-blue-700" />
                     Trade Confirmed: Mutual Identity Unlocked
                   </p>
-                  <p className="text-stone-600">
-                    Buyer delivery address: <span className="font-semibold text-stone-900">{ord.deliveryAddress}</span>. Logistics carrier handles farmgate dispatch.
+                  <p className="text-stone-700">
+                    Buyer delivery address: <span className="font-bold text-stone-900">{ord.deliveryAddress}</span>. Logistics carrier handles farmgate dispatch.
                   </p>
                 </div>
               )}
@@ -687,9 +688,9 @@ function SchemesTab({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <CardTitle>Government Schemes Matched to Your Profile</CardTitle>
-          <p className="text-xs text-stone-500 mt-0.5">Eligibility checked for: {farmer.state} · {farmer.landSizeAcres} Acres · {farmer.primaryCrops.join(', ')}</p>
+          <p className="text-xs text-stone-600 font-medium mt-0.5">Eligibility checked for: {farmer.state} · {farmer.landSizeAcres} Acres · {farmer.primaryCrops.join(', ')}</p>
         </div>
-        <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
+        <span className="text-xs font-bold text-emerald-800 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-300">
           {filteredSchemes.length} scheme{filteredSchemes.length !== 1 ? 's' : ''} matched
         </span>
       </div>
@@ -699,10 +700,10 @@ function SchemesTab({
           <button
             key={cat}
             onClick={() => setSchemeCategory(cat)}
-            className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors border cursor-pointer ${
+            className={`px-3 py-1 rounded-full text-xs font-bold transition-colors border cursor-pointer ${
               schemeCategory === cat
                 ? 'bg-emerald-600 text-white border-emerald-600'
-                : 'bg-white text-stone-600 border-stone-300 hover:border-emerald-400 hover:text-emerald-700'
+                : 'bg-white text-stone-700 border-stone-300 hover:border-emerald-400 hover:text-emerald-800'
             }`}
           >
             {cat}
@@ -722,18 +723,18 @@ function SchemesTab({
                   <Badge variant="success" size="sm">Eligible</Badge>
                 </div>
                 <CardTitle className="text-base">{sch.title}</CardTitle>
-                <p className="text-stone-600 leading-relaxed text-xs sm:text-sm">{sch.description}</p>
+                <p className="text-stone-700 leading-relaxed text-xs sm:text-sm font-medium">{sch.description}</p>
                 {sch.eligibilityReason && (
-                  <div className="p-2.5 bg-emerald-50 rounded-xl text-xs text-emerald-950 border border-emerald-100">
-                    <span className="font-bold">Why you qualify: </span>{sch.eligibilityReason}
+                  <div className="p-2.5 bg-emerald-50 rounded-xl text-xs text-emerald-950 border border-emerald-200">
+                    <span className="font-bold text-emerald-900">Why you qualify: </span>{sch.eligibilityReason}
                   </div>
                 )}
-                <div className="p-2.5 bg-stone-50 rounded-xl text-xs font-bold text-emerald-900 border border-stone-100">Benefit: {sch.benefitAmount}</div>
+                <div className="p-2.5 bg-stone-50 rounded-xl text-xs font-bold text-emerald-900 border border-stone-200">Benefit: {sch.benefitAmount}</div>
               </div>
 
-              <CardFooter className="text-xs text-stone-500">
-                <span>Deadline: {sch.applicationDeadline}</span>
-                <a href={sch.sourceUrl} target="_blank" rel="noreferrer" className="text-emerald-700 hover:text-emerald-800 font-bold flex items-center gap-1 ml-auto">
+              <CardFooter className="text-xs text-stone-600">
+                <span className="font-semibold">Deadline: {sch.applicationDeadline}</span>
+                <a href={sch.sourceUrl} target="_blank" rel="noreferrer" className="text-emerald-700 hover:text-emerald-900 font-bold flex items-center gap-1 ml-auto">
                   <span>Apply / Details</span>
                   <ExternalLink className="w-3.5 h-3.5" />
                 </a>
@@ -767,7 +768,7 @@ function FinanceTab({
             <div>
               <Badge variant="info" size="sm">AI Harvest Working Capital</Badge>
               <CardTitle className="text-xl mt-1">Pre-Harvest & Liquidity Advance</CardTitle>
-              <p className="text-xs text-stone-500 mt-0.5">Automated risk scoring based on fulfillment history, APMC volatility index, and produce quality.</p>
+              <p className="text-xs text-stone-600 font-medium mt-0.5">Automated risk scoring based on fulfillment history, APMC volatility index, and produce quality.</p>
             </div>
             <Button
               size="lg"
@@ -798,21 +799,21 @@ function FinanceTab({
 
         <CardContent className="space-y-4">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="p-3.5 bg-stone-50 rounded-2xl border border-stone-100">
-              <p className="text-xs text-stone-500 font-medium">Eligible Advance</p>
-              <p className="text-lg font-black text-emerald-700 mt-1">₹{riskAssessment.eligibleAdvanceAmount.toLocaleString('en-IN')}</p>
+            <div className="p-3.5 bg-stone-50 rounded-2xl border border-stone-200">
+              <p className="text-xs text-stone-600 font-semibold">Eligible Advance</p>
+              <p className="text-lg font-black text-emerald-800 mt-1">₹{riskAssessment.eligibleAdvanceAmount.toLocaleString('en-IN')}</p>
             </div>
-            <div className="p-3.5 bg-stone-50 rounded-2xl border border-stone-100">
-              <p className="text-xs text-stone-500 font-medium">Risk Score</p>
+            <div className="p-3.5 bg-stone-50 rounded-2xl border border-stone-200">
+              <p className="text-xs text-stone-600 font-semibold">Risk Score</p>
               <p className="text-lg font-black text-stone-900 mt-1">{riskAssessment.riskScore} / 100</p>
             </div>
-            <div className="p-3.5 bg-stone-50 rounded-2xl border border-stone-100">
-              <p className="text-xs text-stone-500 font-medium">Fulfillment Rate</p>
-              <p className="text-sm font-bold text-stone-800 mt-1">{riskAssessment.factors.fulfillmentRate}</p>
+            <div className="p-3.5 bg-stone-50 rounded-2xl border border-stone-200">
+              <p className="text-xs text-stone-600 font-semibold">Fulfillment Rate</p>
+              <p className="text-sm font-bold text-stone-900 mt-1">{riskAssessment.factors.fulfillmentRate}</p>
             </div>
-            <div className="p-3.5 bg-stone-50 rounded-2xl border border-stone-100">
-              <p className="text-xs text-stone-500 font-medium">Reputation Score</p>
-              <p className="text-sm font-bold text-amber-600 mt-1 flex items-center gap-1">
+            <div className="p-3.5 bg-stone-50 rounded-2xl border border-stone-200">
+              <p className="text-xs text-stone-600 font-semibold">Reputation Score</p>
+              <p className="text-sm font-bold text-amber-700 mt-1 flex items-center gap-1">
                 <Star className="w-4 h-4 fill-amber-500 text-amber-500" />
                 <span>{riskAssessment.factors.reputationScore} / 5.0</span>
               </p>
@@ -821,7 +822,7 @@ function FinanceTab({
 
           <div className="p-4 bg-teal-50/70 border border-teal-200 rounded-2xl text-xs text-teal-950 space-y-1">
             <p className="font-bold text-teal-900">AI Credit Model Explanation:</p>
-            <p className="leading-relaxed text-stone-700">{riskAssessment.explanation}</p>
+            <p className="leading-relaxed text-stone-800 font-medium">{riskAssessment.explanation}</p>
           </div>
 
           {advances.length > 0 && (
@@ -833,8 +834,8 @@ function FinanceTab({
                     <div key={adv.id} className="flex justify-between items-center p-3.5 rounded-2xl border border-stone-200 bg-white shadow-2xs">
                       <div>
                         <p className="font-black text-stone-900 text-sm">₹{adv.amountRequested.toLocaleString('en-IN')}</p>
-                        <p className="text-xs text-stone-500 font-mono">Ref: {adv.aepsTxnRef || adv.id}</p>
-                        {adv.purpose && <p className="text-[11px] text-stone-400 font-medium">{adv.purpose}</p>}
+                        <p className="text-xs text-stone-600 font-mono">Ref: {adv.aepsTxnRef || adv.id}</p>
+                        {adv.purpose && <p className="text-[11px] text-stone-500 font-medium">{adv.purpose}</p>}
                       </div>
                       <div className="flex items-center gap-2">
                         {adv.status === 'requested' && (
@@ -842,7 +843,7 @@ function FinanceTab({
                             size="sm"
                             variant="outline"
                             onClick={() => onOpenAepsModal(adv.amountRequested, adv.id)}
-                            className="text-xs border-teal-600 text-teal-700 hover:bg-teal-50 flex items-center gap-1 font-bold"
+                            className="text-xs border-teal-600 text-teal-800 hover:bg-teal-50 flex items-center gap-1 font-bold"
                           >
                             <Fingerprint className="w-3.5 h-3.5" />
                             <span>Cash Out (AEPS)</span>
@@ -941,7 +942,7 @@ function SafetyTab({
         <div className="p-3 bg-rose-100 text-rose-700 rounded-2xl"><AlertTriangle className="w-6 h-6" /></div>
         <div>
           <CardTitle className="text-lg">{t.safety.title}</CardTitle>
-          <p className="text-xs text-stone-500">{t.safety.subheading}</p>
+          <p className="text-xs text-stone-600 font-medium">{t.safety.subheading}</p>
         </div>
       </div>
 
@@ -950,11 +951,11 @@ function SafetyTab({
           <ShieldCheck className="w-4 h-4 text-rose-600" />
           100% Guaranteed Confidentiality
         </p>
-        <p className="text-rose-800 leading-relaxed">{t.safety.guarantee}</p>
+        <p className="text-rose-800 leading-relaxed font-medium">{t.safety.guarantee}</p>
       </div>
 
       {safetyError && (
-        <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800 flex items-center gap-2 font-medium">
+        <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800 flex items-center gap-2 font-semibold">
           <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
           <span>{safetyError}</span>
         </div>
@@ -969,7 +970,7 @@ function SafetyTab({
       ) : (
         <form onSubmit={handleSafetySubmit} className="space-y-4 text-xs sm:text-sm">
           <div>
-            <label className="block text-xs font-bold text-stone-700 mb-1">Issue Category</label>
+            <label className="block text-xs font-bold text-stone-800 mb-1">Issue Category</label>
             <Select
               options={SAFETY_CATEGORIES.map(c => ({ value: c.value, label: c.label }))}
               value={safetyCategory}
@@ -979,7 +980,7 @@ function SafetyTab({
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-stone-700 mb-1">Name / Description of Entity Involved</label>
+            <label className="block text-xs font-bold text-stone-800 mb-1">Name / Description of Entity Involved</label>
             <Input
               placeholder="e.g. Sub-agent at Pimpalgaon gate, Trader X"
               value={safetyEntity}
@@ -988,7 +989,7 @@ function SafetyTab({
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-stone-700 mb-1">Describe what happened</label>
+            <label className="block text-xs font-bold text-stone-800 mb-1">Describe what happened</label>
             <Textarea
               rows={4}
               required
@@ -1006,7 +1007,7 @@ function SafetyTab({
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSafetyAnonymous(e.target.checked)}
               className="w-4 h-4 text-rose-600 rounded-sm focus:ring-rose-500 cursor-pointer"
             />
-            <label htmlFor="anonCheck" className="text-xs font-bold text-stone-700 cursor-pointer">
+            <label htmlFor="anonCheck" className="text-xs font-bold text-stone-800 cursor-pointer">
               Submit 100% Anonymously (Do not associate my farmer ID)
             </label>
           </div>
@@ -1091,7 +1092,7 @@ function CreateListingModal({
     >
       <div className="space-y-5 text-xs sm:text-sm">
         {publishError && (
-          <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800 flex items-center gap-2 font-medium">
+          <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800 flex items-center gap-2 font-semibold">
             <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
             <span>{publishError}</span>
           </div>
@@ -1102,9 +1103,9 @@ function CreateListingModal({
             <p className="text-xs font-bold text-emerald-950">
               {isRecording ? t.farmer.listening : t.farmer.tapToSpeak}
             </p>
-            <p className="text-[11px] text-emerald-800 font-medium">{t.farmer.speakPrompt}</p>
+            <p className="text-[11px] text-emerald-800 font-semibold">{t.farmer.speakPrompt}</p>
             {speechTranscript && (
-              <p className="text-xs font-mono font-bold text-stone-900 bg-white/90 px-2.5 py-1 rounded-lg border border-emerald-200 inline-block mt-1">
+              <p className="text-xs font-mono font-bold text-stone-900 bg-white px-2.5 py-1 rounded-lg border border-emerald-300 inline-block mt-1">
                 "{speechTranscript}"
               </p>
             )}
@@ -1125,7 +1126,7 @@ function CreateListingModal({
         {/* Form Input Slots */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
           <div>
-            <label className="block font-bold text-stone-700 mb-1">Crop</label>
+            <label className="block font-bold text-stone-800 mb-1">Crop</label>
             <Select
               options={[
                 { value: 'Tomato', label: 'Tomato (टमाटर)' },
@@ -1142,7 +1143,7 @@ function CreateListingModal({
           </div>
 
           <div>
-            <label className="block font-bold text-stone-700 mb-1">Variety</label>
+            <label className="block font-bold text-stone-800 mb-1">Variety</label>
             <Input
               value={varietyInput}
               onChange={(e) => setVarietyInput(e.target.value)}
@@ -1151,7 +1152,7 @@ function CreateListingModal({
           </div>
 
           <div>
-            <label className="block font-bold text-stone-700 mb-1">Quantity (kg)</label>
+            <label className="block font-bold text-stone-800 mb-1">Quantity (kg)</label>
             <Input
               type="number"
               value={quantityInput}
@@ -1160,29 +1161,29 @@ function CreateListingModal({
               min={50}
               className="w-full"
             />
-            <span className="text-[10px] text-stone-400 font-medium mt-0.5 block">= {quantityInput / 100} Quintal</span>
+            <span className="text-[10px] text-stone-500 font-semibold mt-0.5 block">= {quantityInput / 100} Quintal</span>
           </div>
 
           <div>
-            <label className="block font-bold text-stone-700 mb-1">Expected Price (₹/kg)</label>
+            <label className="block font-bold text-stone-800 mb-1">Expected Price (₹/kg)</label>
             <Input
               type="number"
               value={priceInput}
               onChange={(e) => setPriceInput(Number(e.target.value))}
               step={0.5}
               min={5}
-              className="w-full text-emerald-800"
+              className="w-full text-emerald-800 font-bold"
             />
           </div>
         </div>
 
         {/* Photo Upload & CNN Quality Assessment */}
         <div className="space-y-2">
-          <label className="block text-xs font-bold text-stone-700">Produce Photo (for CNN Quality Assessment)</label>
+          <label className="block text-xs font-bold text-stone-800">Produce Photo (for CNN Quality Assessment)</label>
 
           <div className="relative w-full h-36 rounded-xl overflow-hidden border border-stone-200 bg-stone-50">
             {selectedPhotoUrl && (
-              <img src={selectedPhotoUrl} alt="Produce photo" className="w-full h-full object-cover" />
+              <ImageWithFallback src={selectedPhotoUrl} alt="Produce photo" fallbackTitle={cropInput} className="w-full h-full object-cover" />
             )}
             <div className="absolute top-2 left-2">
               {isAssessingQuality ? (
@@ -1196,11 +1197,11 @@ function CreateListingModal({
           </div>
 
           <div className="flex items-center gap-2">
-            <label htmlFor="photo-upload" className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-xl cursor-pointer transition-colors">
+            <label htmlFor="photo-upload" className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 rounded-xl cursor-pointer transition-colors">
               <Camera className="w-3.5 h-3.5" /> Upload Photo
             </label>
             <input id="photo-upload" type="file" accept="image/*" capture="environment" className="hidden" onChange={handlePhotoFileChange} />
-            <span className="text-[11px] text-stone-400 font-medium">or choose demo photo:</span>
+            <span className="text-[11px] text-stone-500 font-medium">or choose demo photo:</span>
           </div>
 
           {DEMO_PHOTOS[cropInput] && (
@@ -1212,12 +1213,12 @@ function CreateListingModal({
                   onClick={() => { setSelectedPhotoUrl(demo.url); setPhotoBase64(''); }}
                   className={`shrink-0 flex flex-col items-center gap-1 p-1 rounded-xl border-2 transition-all cursor-pointer ${
                     selectedPhotoUrl === demo.url
-                      ? 'border-emerald-500 shadow-sm'
+                      ? 'border-emerald-500 shadow-sm bg-emerald-50/50'
                       : 'border-stone-200 hover:border-stone-300'
                   }`}
                 >
-                  <img src={demo.url} alt={demo.label} className="w-16 h-12 object-cover rounded-lg" loading="lazy" />
-                  <span className="text-[10px] text-stone-600 font-bold">{demo.label}</span>
+                  <ImageWithFallback src={demo.url} alt={demo.label} fallbackTitle={demo.label} className="w-16 h-12 object-cover rounded-lg" loading="lazy" />
+                  <span className="text-[10px] text-stone-700 font-bold">{demo.label}</span>
                 </button>
               ))}
             </div>
@@ -1235,20 +1236,20 @@ function CreateListingModal({
               <span className="font-bold text-amber-900">{aiPriceBand.confidence}% Confidence</span>
             </div>
 
-            <div className="flex items-center justify-between text-xs font-mono font-bold bg-white p-2 rounded-xl border border-amber-200/80">
-              <span className="text-stone-500">Min: ₹{aiPriceBand.min}/kg</span>
-              <span className="text-emerald-700 text-sm">Fair: ₹{aiPriceBand.fair}/kg</span>
-              <span className="text-stone-500">Max: ₹{aiPriceBand.max}/kg</span>
+            <div className="flex items-center justify-between text-xs font-mono font-bold bg-white p-2 rounded-xl border border-amber-200">
+              <span className="text-stone-600">Min: ₹{aiPriceBand.min}/kg</span>
+              <span className="text-emerald-800 text-sm">Fair: ₹{aiPriceBand.fair}/kg</span>
+              <span className="text-stone-600">Max: ₹{aiPriceBand.max}/kg</span>
             </div>
 
-            <p className="text-[11px] text-amber-900 font-medium">Benchmark: {aiPriceBand.benchmarkMandi}. Wholesale prices are currently trending {aiPriceBand.trend}.</p>
+            <p className="text-[11px] text-amber-950 font-medium">Benchmark: {aiPriceBand.benchmarkMandi}. Wholesale prices are currently trending {aiPriceBand.trend}.</p>
           </div>
         )}
 
         {/* Quality Assessment */}
         {isAssessingQuality && (
           <div className="p-3.5 bg-stone-50 border border-stone-200 rounded-2xl space-y-2 animate-pulse">
-            <div className="flex items-center gap-2 text-xs text-stone-500 font-bold">
+            <div className="flex items-center gap-2 text-xs text-stone-600 font-bold">
               <Camera className="w-4 h-4 text-emerald-600" />
               <span>MobileNet CNN analysing produce quality...</span>
             </div>
@@ -1276,26 +1277,26 @@ function CreateListingModal({
             </div>
 
             <div className="grid grid-cols-3 gap-2 text-center text-xs">
-              <div className="bg-white p-1.5 rounded-lg border border-stone-100">
-                <p className="text-[10px] text-stone-400 font-medium">Color Uniformity</p>
-                <p className="font-bold text-stone-800">{qualityGrade.colorUniformity}%</p>
+              <div className="bg-white p-1.5 rounded-lg border border-stone-200">
+                <p className="text-[10px] text-stone-500 font-semibold">Color Uniformity</p>
+                <p className="font-bold text-stone-900">{qualityGrade.colorUniformity}%</p>
               </div>
-              <div className="bg-white p-1.5 rounded-lg border border-stone-100">
-                <p className="text-[10px] text-stone-400 font-medium">Firmness</p>
-                <p className="font-bold text-stone-800">{qualityGrade.firmnessScore}%</p>
+              <div className="bg-white p-1.5 rounded-lg border border-stone-200">
+                <p className="text-[10px] text-stone-500 font-semibold">Firmness</p>
+                <p className="font-bold text-stone-900">{qualityGrade.firmnessScore}%</p>
               </div>
-              <div className="bg-white p-1.5 rounded-lg border border-stone-100">
-                <p className="text-[10px] text-stone-400 font-medium">Defect %</p>
-                <p className={`font-bold ${qualityGrade.surfaceDefects <= 8 ? 'text-emerald-700' : qualityGrade.surfaceDefects <= 18 ? 'text-amber-600' : 'text-rose-600'}`}>{qualityGrade.surfaceDefects}%</p>
+              <div className="bg-white p-1.5 rounded-lg border border-stone-200">
+                <p className="text-[10px] text-stone-500 font-semibold">Defect %</p>
+                <p className={`font-bold ${qualityGrade.surfaceDefects <= 8 ? 'text-emerald-800' : qualityGrade.surfaceDefects <= 18 ? 'text-amber-700' : 'text-rose-700'}`}>{qualityGrade.surfaceDefects}%</p>
               </div>
             </div>
 
-            <p className="text-[11px] text-stone-600 leading-relaxed font-medium">{qualityGrade.notes}</p>
+            <p className="text-[11px] text-stone-700 leading-relaxed font-medium">{qualityGrade.notes}</p>
           </div>
         )}
 
         {/* Anonymous Shield Notice */}
-        <div className="p-3 bg-stone-50 border border-stone-200 rounded-xl text-[11px] text-stone-600 flex items-start gap-2">
+        <div className="p-3 bg-stone-50 border border-stone-200 rounded-xl text-[11px] text-stone-700 flex items-start gap-2">
           <ShieldCheck className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" />
           <p>
             {t.farmer.anonShieldNotice} Your listing will be published under Anonymous ID <span className="font-mono font-bold text-stone-900">{farmer.anonSellerId}</span>.

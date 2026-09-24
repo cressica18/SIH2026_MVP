@@ -19,13 +19,13 @@ export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
     ref
   ) => {
     const variantStyles = {
-      default: 'bg-stone-100 text-stone-700 border-stone-200',
-      success: 'bg-emerald-50 text-emerald-800 border-emerald-200/80',
-      warning: 'bg-amber-50 text-amber-800 border-amber-200/80',
-      danger: 'bg-rose-50 text-rose-800 border-rose-200/80',
-      info: 'bg-sky-50 text-sky-800 border-sky-200/80',
-      neutral: 'bg-stone-100 text-stone-700 border-stone-200',
-      pending: 'bg-amber-50 text-amber-800 border-amber-200/80',
+      default: 'bg-stone-100 text-stone-800 border-stone-300 font-bold',
+      success: 'bg-emerald-50 text-emerald-900 border-emerald-300 font-bold',
+      warning: 'bg-amber-50 text-amber-900 border-amber-300 font-bold',
+      danger: 'bg-rose-50 text-rose-900 border-rose-300 font-bold',
+      info: 'bg-sky-50 text-sky-900 border-sky-300 font-bold',
+      neutral: 'bg-stone-100 text-stone-800 border-stone-300 font-bold',
+      pending: 'bg-amber-50 text-amber-900 border-amber-300 font-bold',
     };
 
     const sizeStyles = {
@@ -38,12 +38,12 @@ export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
       <span
         ref={ref}
         className={`
-          inline-flex items-center font-bold rounded-full border tracking-tight shadow-2xs
+          inline-flex items-center rounded-full border tracking-tight shadow-2xs select-none
           ${variantStyles[variant]} ${sizeStyles[size]} ${className}
         `}
         {...props}
       >
-        {dot && <span className="w-1.5 h-1.5 rounded-full bg-current opacity-80" aria-hidden="true" />}
+        {dot && <span className="w-1.5 h-1.5 rounded-full bg-current opacity-90" aria-hidden="true" />}
         {children}
       </span>
     );

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, Fragment } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
 import { createPortal } from 'react-dom';
 
@@ -13,14 +13,6 @@ export interface ModalProps {
   closeOnOverlayClick?: boolean;
   closeOnEscape?: boolean;
 }
-
-export const sizeStyles = {
-  sm: 'max-w-sm',
-  md: 'max-w-md',
-  lg: 'max-w-lg',
-  xl: 'max-w-xl',
-  full: 'max-w-4xl',
-};
 
 export const Modal: React.FC<ModalProps> = ({
   isOpen,
@@ -71,7 +63,7 @@ export const Modal: React.FC<ModalProps> = ({
         previousActiveElement.current?.focus();
       };
     }
-  }, [isOpen, closeOnEscape]);
+  }, [isOpen, closeOnEscape, onClose]);
 
   if (!isOpen) return null;
 
@@ -85,14 +77,14 @@ export const Modal: React.FC<ModalProps> = ({
 
   const modalContent = (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/60 backdrop-blur-sm animate-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-stone-950/70 backdrop-blur-sm animate-fade-in"
       role="dialog"
       aria-modal="true"
       aria-labelledby={title ? 'modal-title' : undefined}
       aria-describedby={description ? 'modal-description' : undefined}
     >
       <div
-        className="absolute inset-0"
+        className="absolute inset-0 cursor-pointer"
         onClick={closeOnOverlayClick ? onClose : undefined}
         aria-hidden="true"
       />
@@ -100,18 +92,18 @@ export const Modal: React.FC<ModalProps> = ({
       <div
         ref={modalRef}
         tabIndex={-1}
-        className={`relative w-full ${sizeStyles[size]} bg-white rounded-2xl shadow-2xl border border-stone-200 overflow-hidden animate-slide-up`}
+        className={`relative w-full ${sizeStyles[size]} bg-white rounded-3xl shadow-2xl border border-stone-200 overflow-hidden animate-slide-up focus:outline-none flex flex-col max-h-[90vh]`}
       >
         {(title || showCloseButton) && (
-          <div className="flex items-start justify-between px-6 py-4 border-b border-stone-100">
+          <div className="flex items-start justify-between px-6 py-4 border-b border-stone-200 bg-stone-50/80">
             <div className="flex-1 pr-4">
               {title && (
-                <h2 id="modal-title" className="text-lg font-semibold text-stone-900">
+                <h2 id="modal-title" className="text-base sm:text-lg font-bold text-stone-900 tracking-tight">
                   {title}
                 </h2>
               )}
               {description && (
-                <p id="modal-description" className="text-sm text-stone-500 mt-1">
+                <p id="modal-description" className="text-xs sm:text-sm text-stone-600 mt-0.5 leading-relaxed">
                   {description}
                 </p>
               )}
@@ -119,7 +111,7 @@ export const Modal: React.FC<ModalProps> = ({
             {showCloseButton && (
               <button
                 onClick={onClose}
-                className="p-1.5 text-stone-400 hover:text-stone-600 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="p-1.5 text-stone-500 hover:text-stone-900 hover:bg-stone-200/60 rounded-xl transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer"
                 aria-label="Close modal"
               >
                 <X className="w-5 h-5" />
@@ -128,12 +120,12 @@ export const Modal: React.FC<ModalProps> = ({
           </div>
         )}
 
-        <div className="p-6 max-h-[70vh] overflow-y-auto">
+        <div className="p-6 overflow-y-auto">
           {children}
         </div>
       </div>
     </div>
-);
+  );
 
   return createPortal(modalContent, document.body);
 };

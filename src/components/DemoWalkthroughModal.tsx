@@ -166,17 +166,17 @@ export const DemoWalkthroughModal: React.FC<DemoWalkthroughModalProps> = ({
           <div className="flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-amber-300 animate-pulse" />
             <div>
-              <h3 className="text-base sm:text-lg font-bold">
+              <h3 className="text-base sm:text-lg font-black text-white">
                 SIH 2026 Judge Demonstration Guide
               </h3>
-              <p className="text-xs text-emerald-200">
+              <p className="text-xs text-emerald-100 font-semibold">
                 End-to-End Story: 7 Phases of Vasundhara
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-emerald-200 hover:text-white hover:bg-white/10 rounded-full transition-colors cursor-pointer"
+            className="p-1.5 text-emerald-100 hover:text-white hover:bg-white/10 rounded-full transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -192,13 +192,13 @@ export const DemoWalkthroughModal: React.FC<DemoWalkthroughModalProps> = ({
                 idx === currentStepIndex
                   ? 'bg-emerald-600 text-white shadow-xs'
                   : idx < currentStepIndex
-                  ? 'bg-emerald-100 text-emerald-800'
-                  : 'bg-stone-200/70 text-stone-600 hover:bg-stone-300/70'
+                  ? 'bg-emerald-100 text-emerald-900 border border-emerald-300'
+                  : 'bg-stone-200 text-stone-700 hover:bg-stone-300'
               }`}
             >
               <span>{s.stepNumber}</span>
               <span className="hidden sm:inline">
-                {idx < currentStepIndex && <CheckCircle2 className="w-3 h-3 inline ml-0.5" />}
+                {idx < currentStepIndex && <CheckCircle2 className="w-3 h-3 inline ml-0.5 text-emerald-700" />}
               </span>
             </button>
           ))}
@@ -212,7 +212,7 @@ export const DemoWalkthroughModal: React.FC<DemoWalkthroughModalProps> = ({
               {currentStep.icon}
             </div>
             <div>
-              <span className="inline-block text-[11px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md mb-1 border border-emerald-200">
+              <span className="inline-block text-[11px] font-bold uppercase tracking-wider text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md mb-1 border border-emerald-200">
                 Step {currentStep.stepNumber} of 7 • Role: {currentStep.role.toUpperCase()}
               </span>
               <h4 className="text-lg font-bold text-stone-900 leading-snug">
@@ -221,7 +221,7 @@ export const DemoWalkthroughModal: React.FC<DemoWalkthroughModalProps> = ({
             </div>
           </div>
 
-          <p className="text-sm text-stone-700 leading-relaxed bg-stone-50/80 p-3.5 rounded-xl border border-stone-200/60">
+          <p className="text-xs sm:text-sm text-stone-800 leading-relaxed bg-stone-50 p-3.5 rounded-xl border border-stone-200 font-medium">
             {currentStep.narrative}
           </p>
 
@@ -229,10 +229,10 @@ export const DemoWalkthroughModal: React.FC<DemoWalkthroughModalProps> = ({
             <h5 className="text-xs font-bold text-stone-900 uppercase tracking-wider">
               Technical & Architectural Highlights:
             </h5>
-            <ul className="space-y-1.5 text-xs text-stone-700">
+            <ul className="space-y-1.5 text-xs text-stone-800 font-medium">
               {currentStep.keyInnovations.map((item, i) => (
                 <li key={i} className="flex items-start gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-1.5 shrink-0" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 mt-1.5 shrink-0" />
                   <span>{item}</span>
                 </li>
               ))}
@@ -247,7 +247,7 @@ export const DemoWalkthroughModal: React.FC<DemoWalkthroughModalProps> = ({
             <button
               disabled={currentStepIndex === 0}
               onClick={() => setCurrentStepIndex((prev) => Math.max(0, prev - 1))}
-              className="flex items-center gap-1 px-3 py-2 text-xs font-semibold text-stone-700 bg-white border border-stone-300 rounded-xl hover:bg-stone-100 disabled:opacity-40 disabled:pointer-events-none transition-colors cursor-pointer"
+              className="flex items-center gap-1 px-3 py-2 text-xs font-bold text-stone-800 bg-white border border-stone-300 rounded-xl hover:bg-stone-100 disabled:opacity-40 disabled:pointer-events-none transition-colors cursor-pointer"
             >
               <ChevronLeft className="w-4 h-4" />
               Previous
@@ -255,7 +255,7 @@ export const DemoWalkthroughModal: React.FC<DemoWalkthroughModalProps> = ({
             <button
               disabled={currentStepIndex === steps.length - 1}
               onClick={() => setCurrentStepIndex((prev) => Math.min(steps.length - 1, prev + 1))}
-              className="flex items-center gap-1 px-3 py-2 text-xs font-semibold text-stone-700 bg-white border border-stone-300 rounded-xl hover:bg-stone-100 disabled:opacity-40 disabled:pointer-events-none transition-colors cursor-pointer"
+              className="flex items-center gap-1 px-3 py-2 text-xs font-bold text-stone-800 bg-white border border-stone-300 rounded-xl hover:bg-stone-100 disabled:opacity-40 disabled:pointer-events-none transition-colors cursor-pointer"
             >
               Next
               <ChevronRight className="w-4 h-4" />
@@ -264,7 +264,7 @@ export const DemoWalkthroughModal: React.FC<DemoWalkthroughModalProps> = ({
 
           <button
             onClick={handleAction}
-            className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-md shadow-emerald-700/20 transition-all cursor-pointer active:scale-95"
+            className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-black rounded-xl shadow-md shadow-emerald-700/20 transition-all cursor-pointer active:scale-95"
           >
             <span>{currentStep.actionLabel}</span>
             <ExternalLink className="w-4 h-4" />

@@ -67,21 +67,21 @@ export const MarketInsightsModal: React.FC<MarketInsightsModalProps> = ({
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 bg-gradient-to-r from-emerald-800 to-teal-900 text-white">
           <div className="flex items-center gap-2">
-            <div className="p-2 bg-white/10 rounded-xl">
+            <div className="p-2 bg-white/10 rounded-xl border border-white/15">
               <TrendingUp className="w-5 h-5 text-emerald-300" />
             </div>
             <div>
-              <h3 className="text-base sm:text-lg font-bold">
+              <h3 className="text-base sm:text-lg font-black text-white">
                 Agmarknet Mandi Price Intelligence
               </h3>
-              <p className="text-xs text-emerald-200">
+              <p className="text-xs text-emerald-100 font-semibold">
                 Live Mandi trends, arrival volumes & AI price forecasting
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1 text-emerald-200 hover:text-white rounded-full transition-colors cursor-pointer"
+            className="p-1 text-emerald-100 hover:text-white rounded-full transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -91,7 +91,7 @@ export const MarketInsightsModal: React.FC<MarketInsightsModalProps> = ({
         <div className="p-6 overflow-y-auto space-y-5">
           
           {/* Crop Selector Tabs */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-1">
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
             {SEED_MARKET_INSIGHTS.map((m) => (
               <button
                 key={m.crop}
@@ -99,7 +99,7 @@ export const MarketInsightsModal: React.FC<MarketInsightsModalProps> = ({
                 className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
                   selectedCrop === m.crop
                     ? 'bg-emerald-600 text-white shadow-xs'
-                    : 'bg-stone-100 text-stone-700 hover:bg-stone-200'
+                    : 'bg-stone-100 text-stone-800 hover:bg-stone-200 border border-stone-300'
                 }`}
               >
                 {m.crop}
@@ -109,27 +109,27 @@ export const MarketInsightsModal: React.FC<MarketInsightsModalProps> = ({
 
           {/* Key Metric Badges */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="p-3 bg-stone-50 border border-stone-200/80 rounded-2xl">
-              <p className="text-[11px] font-semibold text-stone-500">
+            <div className="p-3 bg-stone-50 border border-stone-200 rounded-2xl">
+              <p className="text-[11px] font-bold text-stone-600">
                 Current Avg Price
               </p>
-              <p className="text-lg font-extrabold text-stone-900 mt-0.5">
+              <p className="text-lg font-black text-stone-900 mt-0.5">
                 ₹{currentInsight.currentAvgPrice}/kg
               </p>
             </div>
 
-            <div className="p-3 bg-stone-50 border border-stone-200/80 rounded-2xl">
-              <p className="text-[11px] font-semibold text-stone-500">
+            <div className="p-3 bg-stone-50 border border-stone-200 rounded-2xl">
+              <p className="text-[11px] font-bold text-stone-600">
                 7-Day Momentum
               </p>
               <div className="flex items-center gap-1 mt-0.5">
                 {currentInsight.changePercent >= 0 ? (
-                  <span className="text-emerald-700 font-extrabold text-sm flex items-center">
+                  <span className="text-emerald-800 font-black text-sm flex items-center">
                     <ArrowUpRight className="w-4 h-4" />
                     +{currentInsight.changePercent}%
                   </span>
                 ) : (
-                  <span className="text-rose-700 font-extrabold text-sm flex items-center">
+                  <span className="text-rose-800 font-black text-sm flex items-center">
                     <ArrowDownRight className="w-4 h-4" />
                     {currentInsight.changePercent}%
                   </span>
@@ -137,21 +137,21 @@ export const MarketInsightsModal: React.FC<MarketInsightsModalProps> = ({
               </div>
             </div>
 
-            <div className="p-3 bg-stone-50 border border-stone-200/80 rounded-2xl">
-              <p className="text-[11px] font-semibold text-stone-500">
+            <div className="p-3 bg-stone-50 border border-stone-200 rounded-2xl">
+              <p className="text-[11px] font-bold text-stone-600">
                 Price Volatility
               </p>
-              <p className="text-sm font-bold text-stone-800 mt-1 flex items-center gap-1">
+              <p className="text-sm font-bold text-stone-900 mt-1 flex items-center gap-1">
                 <Activity className="w-3.5 h-3.5 text-amber-500" />
                 {currentInsight.volatilityIndex}
               </p>
             </div>
 
-            <div className="p-3 bg-stone-50 border border-stone-200/80 rounded-2xl">
-              <p className="text-[11px] font-semibold text-stone-500">
+            <div className="p-3 bg-stone-50 border border-stone-200 rounded-2xl">
+              <p className="text-[11px] font-bold text-stone-600">
                 AI Next-Week Forecast
               </p>
-              <p className="text-lg font-extrabold text-emerald-700 mt-0.5">
+              <p className="text-lg font-black text-emerald-800 mt-0.5">
                 ₹{currentInsight.forecastNextWeek}/kg
               </p>
             </div>
@@ -160,11 +160,11 @@ export const MarketInsightsModal: React.FC<MarketInsightsModalProps> = ({
           {/* SVG Price Line Chart */}
           <div className="p-4 bg-stone-900 text-white rounded-2xl border border-stone-800 space-y-3">
             <div className="flex items-center justify-between text-xs">
-              <div className="flex items-center gap-1.5 text-emerald-400 font-semibold">
+              <div className="flex items-center gap-1.5 text-emerald-400 font-bold">
                 <Calendar className="w-3.5 h-3.5" />
                 <span>Historical 7-Week APMC Mandi Trajectory</span>
               </div>
-              <span className="text-stone-400 text-[11px]">
+              <span className="text-stone-300 text-[11px] font-semibold">
                 Arrivals vs Wholesale Rate
               </span>
             </div>
@@ -190,7 +190,7 @@ export const MarketInsightsModal: React.FC<MarketInsightsModalProps> = ({
                   y1={svgHeight - paddingY}
                   x2={svgWidth - paddingX}
                   y2={svgHeight - paddingY}
-                  stroke="#374151"
+                  stroke="#4b5563"
                   strokeWidth="1"
                   strokeDasharray="4 4"
                 />
@@ -220,7 +220,7 @@ export const MarketInsightsModal: React.FC<MarketInsightsModalProps> = ({
                       x={pt.x}
                       y={pt.y - 10}
                       textAnchor="middle"
-                      fill="#e5e7eb"
+                      fill="#ffffff"
                       fontSize="10"
                       fontWeight="bold"
                     >
@@ -230,8 +230,9 @@ export const MarketInsightsModal: React.FC<MarketInsightsModalProps> = ({
                       x={pt.x}
                       y={svgHeight - 4}
                       textAnchor="middle"
-                      fill="#9ca3af"
+                      fill="#d1d5db"
                       fontSize="9"
+                      fontWeight="bold"
                     >
                       {pt.date}
                     </text>
@@ -242,12 +243,12 @@ export const MarketInsightsModal: React.FC<MarketInsightsModalProps> = ({
           </div>
 
           {/* AI Market Summary */}
-          <div className="p-4 bg-emerald-50/80 border border-emerald-200 rounded-2xl space-y-2">
-            <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-900">
+          <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl space-y-2">
+            <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-950">
               <Sparkles className="w-4 h-4 text-amber-500" />
               <span>AI Market Narrative (Grounded in Agmarknet Data)</span>
             </div>
-            <p className="text-xs sm:text-sm text-stone-700 leading-relaxed">
+            <p className="text-xs sm:text-sm text-stone-800 leading-relaxed font-medium">
               {currentInsight.aiSummary}
             </p>
           </div>
@@ -258,7 +259,7 @@ export const MarketInsightsModal: React.FC<MarketInsightsModalProps> = ({
         <div className="px-6 py-3 bg-stone-50 border-t border-stone-200 flex justify-end">
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-stone-800 hover:bg-stone-900 text-white text-xs font-bold rounded-xl transition-colors cursor-pointer"
+            className="px-4 py-2 bg-stone-900 hover:bg-stone-800 text-white text-xs font-bold rounded-xl transition-colors cursor-pointer"
           >
             Close Insights
           </button>

@@ -110,21 +110,21 @@ export const AepsModal: React.FC<AepsModalProps> = ({
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 bg-gradient-to-r from-teal-800 to-emerald-900 text-white">
           <div className="flex items-center gap-2">
-            <div className="p-1.5 bg-white/10 rounded-lg">
+            <div className="p-1.5 bg-white/10 rounded-lg border border-white/15">
               <Fingerprint className="w-5 h-5 text-teal-200" />
             </div>
             <div>
-              <h3 className="text-base font-bold">
+              <h3 className="text-base font-black text-white">
                 AEPS Biometric Cash-Out Counter
               </h3>
-              <p className="text-xs text-teal-200">
+              <p className="text-xs text-teal-100 font-semibold">
                 Aadhaar Enabled Payment System (Simulated BC Agent)
               </p>
             </div>
           </div>
           <button
             onClick={resetModal}
-            className="p-1 text-teal-200 hover:text-white rounded-full transition-colors cursor-pointer"
+            className="p-1 text-teal-100 hover:text-white rounded-full transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -135,7 +135,7 @@ export const AepsModal: React.FC<AepsModalProps> = ({
           
           {authStep === 'input' && (
             <div className="space-y-4">
-              <div className="p-3 bg-teal-50 border border-teal-200 rounded-xl text-xs text-teal-900 flex items-start gap-2">
+              <div className="p-3 bg-teal-50 border border-teal-200 rounded-xl text-xs text-teal-950 flex items-start gap-2 font-medium">
                 <ShieldCheck className="w-4 h-4 text-teal-700 mt-0.5 shrink-0" />
                 <p>
                   No smartphone or bank branch visit required. Farmers withdraw liquidity directly via village Banking Correspondent (Bank Mitra) using Aadhaar fingerprint.
@@ -143,23 +143,23 @@ export const AepsModal: React.FC<AepsModalProps> = ({
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-stone-700 mb-1">
+                <label className="block text-xs font-bold text-stone-800 mb-1">
                   Beneficiary Account Holder
                 </label>
                 <input
                   type="text"
                   disabled
                   value={farmerName}
-                  className="w-full px-3 py-2 text-sm bg-stone-100 border border-stone-200 rounded-xl text-stone-700 font-semibold"
+                  className="w-full px-3 py-2 text-sm bg-stone-100 border border-stone-300 rounded-xl text-stone-900 font-bold"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-stone-700 mb-1">
+                <label className="block text-xs font-bold text-stone-800 mb-1">
                   Aadhaar Number (Last 4 Digits)
                 </label>
                 <div className="flex items-center gap-2">
-                  <span className="px-3 py-2 bg-stone-100 border border-stone-200 rounded-xl text-stone-500 text-sm tracking-widest font-mono">
+                  <span className="px-3 py-2 bg-stone-100 border border-stone-300 rounded-xl text-stone-600 text-sm tracking-widest font-mono font-bold">
                     •••• ••••
                   </span>
                   <input
@@ -167,17 +167,17 @@ export const AepsModal: React.FC<AepsModalProps> = ({
                     maxLength={4}
                     value={aadhaarLast4}
                     onChange={(e) => setAadhaarLast4(e.target.value.replace(/\D/g, ''))}
-                    className="w-24 px-3 py-2 text-sm font-mono text-center tracking-widest border border-teal-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 font-bold text-stone-800"
+                    className="w-24 px-3 py-2 text-sm font-mono text-center tracking-widest border border-teal-400 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 font-black text-stone-900 bg-white"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-stone-700 mb-1">
+                <label className="block text-xs font-bold text-stone-800 mb-1">
                   Withdrawal Amount (₹)
                 </label>
                 <div className="relative">
-                  <span className="absolute left-3 top-2.5 text-stone-400 font-bold">
+                  <span className="absolute left-3 top-2.5 text-stone-600 font-bold">
                     ₹
                   </span>
                   <input
@@ -187,7 +187,7 @@ export const AepsModal: React.FC<AepsModalProps> = ({
                     step={1000}
                     min={1000}
                     max={50000}
-                    className="w-full pl-8 pr-3 py-2 text-sm font-bold text-stone-900 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    className="w-full pl-8 pr-3 py-2 text-sm font-black text-stone-900 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 bg-white"
                   />
                 </div>
               </div>
@@ -224,7 +224,7 @@ export const AepsModal: React.FC<AepsModalProps> = ({
                 <h4 className="font-bold text-sm text-stone-900">
                   Simulating AEPS Cash-Out...
                 </h4>
-                <p className="text-xs text-stone-500 mt-1">
+                <p className="text-xs text-stone-600 font-medium mt-1">
                   Transmitting to NPCI gateway (SIMULATED — no real banking)
                 </p>
               </div>
@@ -243,18 +243,18 @@ export const AepsModal: React.FC<AepsModalProps> = ({
                 <h4 className="font-bold text-base text-rose-900">
                   AEPS Simulation Failed
                 </h4>
-                <p className="text-xs text-stone-600 mt-0.5">
+                <p className="text-xs text-stone-700 font-medium mt-0.5">
                   {simError || 'An error occurred during AEPS simulation'}
                 </p>
               </div>
-              <div className="p-3.5 bg-stone-50 border border-stone-200 rounded-xl text-left font-mono text-xs space-y-1.5 text-stone-700">
+              <div className="p-3.5 bg-stone-50 border border-stone-200 rounded-xl text-left font-mono text-xs space-y-1.5 text-stone-800">
                 <div className="flex justify-between">
-                  <span className="text-stone-400">Advance ID:</span>
+                  <span className="text-stone-500 font-bold">Advance ID:</span>
                   <span className="font-bold text-stone-900">{advanceId || 'N/A'}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-stone-400">Aadhaar Auth:</span>
-                  <span>•••• •••• {aadhaarLast4} (Simulated)</span>
+                  <span className="text-stone-500 font-bold">Aadhaar Auth:</span>
+                  <span className="font-bold">•••• •••• {aadhaarLast4} (Simulated)</span>
                 </div>
               </div>
               <button
@@ -265,7 +265,7 @@ export const AepsModal: React.FC<AepsModalProps> = ({
               </button>
               <button
                 onClick={resetModal}
-                className="w-full py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold text-xs rounded-xl cursor-pointer transition-colors"
+                className="w-full py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-800 font-bold text-xs rounded-xl cursor-pointer transition-colors"
               >
                 Cancel
               </button>
@@ -281,27 +281,27 @@ export const AepsModal: React.FC<AepsModalProps> = ({
                 <h4 className="font-bold text-base text-emerald-900">
                   AEPS Cash-Out Authenticated!
                 </h4>
-                <p className="text-xs text-stone-600 mt-0.5">
+                <p className="text-xs text-stone-700 font-semibold mt-0.5">
                   ₹{amount.toLocaleString('en-IN')} disbursed in cash by Bank Mitra
                 </p>
               </div>
 
-              <div className="p-3.5 bg-stone-50 border border-stone-200 rounded-xl text-left font-mono text-xs space-y-1.5 text-stone-700">
+              <div className="p-3.5 bg-stone-50 border border-stone-200 rounded-xl text-left font-mono text-xs space-y-1.5 text-stone-800">
                 <div className="flex justify-between">
-                  <span className="text-stone-400">Txn Ref:</span>
-                  <span className="font-bold text-stone-900">{txnRef}</span>
+                  <span className="text-stone-500 font-bold">Txn Ref:</span>
+                  <span className="font-black text-stone-900">{txnRef}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-stone-400">Aadhaar Auth:</span>
-                  <span>•••• •••• {aadhaarLast4} (UIDAI Success)</span>
+                  <span className="text-stone-500 font-bold">Aadhaar Auth:</span>
+                  <span className="font-bold">•••• •••• {aadhaarLast4} (UIDAI Success)</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-stone-400">BC Agent:</span>
-                  <span>BC-PIMPALGAON-04 (MahaGramin Bank)</span>
+                  <span className="text-stone-500 font-bold">BC Agent:</span>
+                  <span className="font-bold text-stone-900">BC-PIMPALGAON-04 (MahaGramin Bank)</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-stone-400">Timestamp:</span>
-                  <span>{new Date().toLocaleTimeString()}</span>
+                  <span className="text-stone-500 font-bold">Timestamp:</span>
+                  <span className="font-bold">{new Date().toLocaleTimeString()}</span>
                 </div>
               </div>
 
@@ -314,8 +314,8 @@ export const AepsModal: React.FC<AepsModalProps> = ({
             </div>
           )}
 
-          <div className="pt-2 border-t border-stone-100 text-[11px] text-stone-400 flex items-center gap-1.5 justify-center">
-            <AlertCircle className="w-3.5 h-3.5" />
+          <div className="pt-2 border-t border-stone-200 text-[11px] text-stone-600 font-medium flex items-center gap-1.5 justify-center">
+            <AlertCircle className="w-3.5 h-3.5 text-teal-600 shrink-0" />
             <span>Simulated AEPS interface with mock NPCI settlement. No real banking integration.</span>
           </div>
 

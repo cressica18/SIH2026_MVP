@@ -763,10 +763,20 @@ function FinanceTab({
             <Button
               size="lg"
               onClick={() => {
-                if (onRequestAdvance) {
-                  onRequestAdvance(riskAssessment.eligibleAdvanceAmount, 'Pre-Harvest Liquidity', true);
+                const existingRequested = advances.find((a) => a.status === 'requested');
+                if (existingRequested) {
+                  onOpenAepsModal(existingRequested.amountRequested, existingRequested.id);
                 } else {
-                  onOpenAepsModal(riskAssessment.eligibleAdvanceAmount);
+                  const activeTotal = advances
+                    .filter((a) => a.status === 'requested' || a.status === 'disbursed')
+                    .reduce((sum, a) => sum + a.amountRequested, 0);
+                  const remaining = Math.max(0, riskAssessment.eligibleAdvanceAmount - activeTotal);
+                  const amtToRequest = remaining > 0 ? remaining : riskAssessment.eligibleAdvanceAmount;
+                  if (onRequestAdvance) {
+                    onRequestAdvance(amtToRequest, 'Pre-Harvest Liquidity', true);
+                  } else {
+                    onOpenAepsModal(amtToRequest);
+                  }
                 }
               }}
               className="bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white font-semibold"

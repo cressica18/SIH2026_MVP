@@ -67,8 +67,19 @@ export function getProfile(req: AuthRequest, res: Response): void {
       return;
     }
     res.json({ profile });
+  } else if (role === 'admin') {
+    res.json({
+      profile: {
+        id: userId,
+        phone: user.phone,
+        name: 'Admin User',
+        role: 'admin',
+        language: 'en',
+        createdAt: new Date().toISOString(),
+      },
+    });
   } else {
-    res.status(403).json({ error: 'Admin profiles are managed separately.' });
+    res.status(403).json({ error: 'Invalid user role' });
   }
 }
 

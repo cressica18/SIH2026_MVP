@@ -278,6 +278,13 @@ export const FarmerView: React.FC<FarmerViewProps> = ({
       if (success) {
         setShowCreateModal(false);
         setSpeechTranscript('');
+        setCropInput('Tomato');
+        setVarietyInput('Abhinav Hybrid');
+        setQuantityInput(2000);
+        setPriceInput(18);
+        setPhotoBase64('');
+        setSelectedPhotoUrl('https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=600&auto=format&fit=crop&q=80');
+        setPublishError(null);
         setActiveTab('listings');
       } else {
         setPublishError('Failed to publish listing. Please check your connection and try again.');

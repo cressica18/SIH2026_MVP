@@ -149,6 +149,9 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
       const success = await onPlaceOrder(newOrder);
       if (success) {
         setSelectedListing(null);
+        setOrderQuantity(1000);
+        setDeliveryAddress('Plot 44, Food Park MIDC, Pune, Maharashtra');
+        setOrderError(null);
         setActiveTab('orders');
       } else {
         setOrderError('Failed to place order. Please check quantity or try again.');
@@ -168,6 +171,8 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
       const success = await onRateFarmer(ratingOrderId, selectedStarRating);
       if (success) {
         setRatingOrderId(null);
+        setSelectedStarRating(5);
+        setRatingError(null);
       } else {
         setRatingError('Failed to submit rating. Order must be settled first.');
       }

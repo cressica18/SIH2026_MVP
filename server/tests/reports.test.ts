@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, beforeAll } from 'vitest';
 import request from 'supertest';
 import app from '../src/app';
 import { generateAccessToken } from '../src/core/security';
-import { SEED_FARMERS, SEED_BUYERS, SEED_ORDERS, SEED_SAFETY_REPORTS } from '../src/data/seedData';
+import { SEED_FARMERS, SEED_BUYERS, SEED_ORDERS } from '../src/data/seedData';
 import { store, createStore } from '../src/data/store';
 import { createReport, getAllReports, updateReportStatus, validateReportInput } from '../src/services/reportService';
 

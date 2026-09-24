@@ -128,12 +128,12 @@ export const OtpScreen: React.FC<OtpScreenProps> = ({
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-5 bg-gradient-to-r from-emerald-800 to-teal-900 text-white">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center shrink-0 border border-white/15">
               <Sprout className="w-6 h-6 text-emerald-300" />
             </div>
             <div>
-              <h1 className="text-base font-black tracking-tight">Vasundhara / वसुंधरा</h1>
-              <p className="text-xs text-emerald-200 font-medium">
+              <h1 className="text-base font-black tracking-tight text-white">Vasundhara / वसुंधरा</h1>
+              <p className="text-xs text-emerald-100 font-semibold">
                 {t.appName} — {t.tagline}
               </p>
             </div>
@@ -142,8 +142,8 @@ export const OtpScreen: React.FC<OtpScreenProps> = ({
 
         <div className="p-6 space-y-5">
           {/* Quick Demo Login Bar for Judges */}
-          <div className="p-3.5 bg-amber-50/80 border border-amber-200/90 rounded-2xl space-y-2">
-            <div className="flex items-center gap-1.5 text-xs font-bold text-amber-950">
+          <div className="p-3.5 bg-amber-50 border border-amber-300 rounded-2xl space-y-2">
+            <div className="flex items-center gap-1.5 text-xs font-extrabold text-amber-950">
               <Sparkles className="w-4 h-4 text-amber-600 shrink-0" />
               <span>SIH Demo Mode — Instant Role Switcher</span>
             </div>
@@ -151,7 +151,7 @@ export const OtpScreen: React.FC<OtpScreenProps> = ({
               <button
                 type="button"
                 onClick={() => handleQuickDemoLogin('farmer')}
-                className="flex items-center gap-2 px-3 py-2 bg-white border border-amber-200 hover:border-amber-400 hover:bg-amber-100/50 text-stone-800 rounded-xl font-bold transition-all cursor-pointer shadow-2xs"
+                className="flex items-center gap-2 px-3 py-2 bg-white border border-stone-300 hover:border-amber-400 hover:bg-amber-100/60 text-stone-900 rounded-xl font-bold transition-all cursor-pointer shadow-2xs"
               >
                 <Sprout className="w-4 h-4 text-emerald-600" />
                 <span>Farmer</span>
@@ -159,7 +159,7 @@ export const OtpScreen: React.FC<OtpScreenProps> = ({
               <button
                 type="button"
                 onClick={() => handleQuickDemoLogin('buyer')}
-                className="flex items-center gap-2 px-3 py-2 bg-white border border-amber-200 hover:border-amber-400 hover:bg-amber-100/50 text-stone-800 rounded-xl font-bold transition-all cursor-pointer shadow-2xs"
+                className="flex items-center gap-2 px-3 py-2 bg-white border border-stone-300 hover:border-amber-400 hover:bg-amber-100/60 text-stone-900 rounded-xl font-bold transition-all cursor-pointer shadow-2xs"
               >
                 <ShoppingCart className="w-4 h-4 text-blue-600" />
                 <span>Buyer</span>
@@ -167,7 +167,7 @@ export const OtpScreen: React.FC<OtpScreenProps> = ({
               <button
                 type="button"
                 onClick={() => handleQuickDemoLogin('logistics')}
-                className="flex items-center gap-2 px-3 py-2 bg-white border border-amber-200 hover:border-amber-400 hover:bg-amber-100/50 text-stone-800 rounded-xl font-bold transition-all cursor-pointer shadow-2xs"
+                className="flex items-center gap-2 px-3 py-2 bg-white border border-stone-300 hover:border-amber-400 hover:bg-amber-100/60 text-stone-900 rounded-xl font-bold transition-all cursor-pointer shadow-2xs"
               >
                 <Truck className="w-4 h-4 text-amber-600" />
                 <span>Logistics</span>
@@ -175,7 +175,7 @@ export const OtpScreen: React.FC<OtpScreenProps> = ({
               <button
                 type="button"
                 onClick={() => handleQuickDemoLogin('admin')}
-                className="flex items-center gap-2 px-3 py-2 bg-white border border-amber-200 hover:border-amber-400 hover:bg-amber-100/50 text-stone-800 rounded-xl font-bold transition-all cursor-pointer shadow-2xs"
+                className="flex items-center gap-2 px-3 py-2 bg-white border border-stone-300 hover:border-amber-400 hover:bg-amber-100/60 text-stone-900 rounded-xl font-bold transition-all cursor-pointer shadow-2xs"
               >
                 <ShieldCheck className="w-4 h-4 text-purple-600" />
                 <span>Admin</span>
@@ -184,14 +184,14 @@ export const OtpScreen: React.FC<OtpScreenProps> = ({
           </div>
 
           {/* Language Selector */}
-          <div className="flex items-center gap-2 p-3 bg-stone-50 border border-stone-200 rounded-xl text-xs font-semibold text-stone-700">
-            <Globe className="w-4 h-4 text-emerald-600" />
+          <div className="flex items-center gap-2 p-3 bg-stone-50 border border-stone-300 rounded-xl text-xs font-bold text-stone-800">
+            <Globe className="w-4 h-4 text-emerald-600 shrink-0" />
             <label htmlFor="lang-select">Interface Language</label>
             <select
               id="lang-select"
               value={language}
               onChange={(e) => setLanguage(e.target.value as typeof language)}
-              className="ml-auto bg-transparent text-xs font-bold text-stone-900 focus:outline-none cursor-pointer"
+              className="ml-auto bg-white border border-stone-300 rounded-lg px-2 py-1 text-xs font-bold text-stone-900 focus:outline-none cursor-pointer"
             >
               <option value="en">English (EN)</option>
               <option value="hi">हिंदी (HI)</option>
@@ -205,11 +205,11 @@ export const OtpScreen: React.FC<OtpScreenProps> = ({
           {!showOtpInput && (
             <div className="space-y-3">
               <div>
-                <label htmlFor="phone-input" className="block text-xs font-bold text-stone-700 mb-1.5">
+                <label htmlFor="phone-input" className="block text-xs font-bold text-stone-800 mb-1.5">
                   Phone Number / मोबाईल नंबर
                 </label>
                 <div className="relative">
-                  <Phone className="w-4 h-4 text-stone-400 absolute left-3 top-3.5" />
+                  <Phone className="w-4 h-4 text-stone-500 absolute left-3 top-3.5" />
                   <input
                     type="tel"
                     id="phone-input"
@@ -217,7 +217,7 @@ export const OtpScreen: React.FC<OtpScreenProps> = ({
                     onChange={(e) => setPhone(e.target.value)}
                     onKeyDown={(e) => handleKeyDown(e, handleSendOtp)}
                     placeholder="+91 98765 43210"
-                    className="w-full pl-9 pr-4 py-2.5 text-sm font-bold bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all text-stone-900"
+                    className="w-full pl-9 pr-4 py-2.5 text-sm font-bold bg-white border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all text-stone-900 placeholder:text-stone-500"
                     maxLength={15}
                     inputMode="tel"
                   />
@@ -239,22 +239,22 @@ export const OtpScreen: React.FC<OtpScreenProps> = ({
           {/* OTP Input */}
           {showOtpInput && (
             <div className="space-y-3">
-              <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-900 flex flex-col gap-1 font-medium">
+              <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-950 flex flex-col gap-1 font-semibold">
                 <span>OTP sent to <strong className="font-bold text-stone-900">{pendingPhone || phone}</strong></span>
                 {devOtpHint && (
-                  <span className="text-stone-500 font-semibold">{devOtpHint}</span>
+                  <span className="text-stone-600 font-bold">{devOtpHint}</span>
                 )}
               </div>
 
               <div>
                 <div className="flex justify-between items-center mb-1.5">
-                  <label htmlFor="otp-input" className="block text-xs font-bold text-stone-700">
+                  <label htmlFor="otp-input" className="block text-xs font-bold text-stone-800">
                     Enter 6-digit OTP
                   </label>
                   <button
                     type="button"
                     onClick={() => setOtp('123456')}
-                    className="text-[11px] font-bold text-emerald-700 hover:underline cursor-pointer"
+                    className="text-[11px] font-bold text-emerald-800 hover:underline cursor-pointer"
                   >
                     Auto-fill Test OTP (123456)
                   </button>
@@ -268,7 +268,7 @@ export const OtpScreen: React.FC<OtpScreenProps> = ({
                   placeholder="123456"
                   maxLength={6}
                   inputMode="numeric"
-                  className="w-full px-4 py-3 text-2xl font-black tracking-[0.5em] text-stone-900 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-center transition-all bg-stone-50"
+                  className="w-full px-4 py-3 text-2xl font-black tracking-[0.5em] text-stone-900 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-center transition-all bg-white"
                 />
               </div>
 
@@ -284,7 +284,7 @@ export const OtpScreen: React.FC<OtpScreenProps> = ({
 
               <button
                 onClick={() => { setShowOtpInput(false); setOtp(''); setError(''); }}
-                className="w-full py-2 text-xs font-semibold text-stone-500 hover:text-stone-800 transition-colors cursor-pointer"
+                className="w-full py-2 text-xs font-bold text-stone-600 hover:text-stone-900 transition-colors cursor-pointer"
               >
                 ← Use a different phone number
               </button>
@@ -293,14 +293,14 @@ export const OtpScreen: React.FC<OtpScreenProps> = ({
 
           {/* Error */}
           {error && (
-            <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800 font-bold">
+            <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-900 font-extrabold">
               {error}
             </div>
           )}
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-3 bg-stone-50 border-t border-stone-100 text-[11px] text-stone-500 text-center font-medium">
+        <div className="px-6 py-3 bg-stone-50 border-t border-stone-200 text-[11px] text-stone-600 text-center font-semibold">
           Secure OTP login — your identity stays anonymous until trade confirmation.
         </div>
       </div>

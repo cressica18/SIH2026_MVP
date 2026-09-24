@@ -7,4 +7,5 @@ export * from './EmptyState';
 export * from './LoadingState';
 export * from './Modal';
 export * from './Table';
+export * from './ImageWithFallback';
 export { Textarea } from './Input';

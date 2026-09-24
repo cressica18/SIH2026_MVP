@@ -33,6 +33,7 @@ import { Modal } from './ui/Modal';
 import { Input } from './ui/Input';
 import { Select } from './ui/Select';
 import { EmptyState } from './ui/EmptyState';
+import { ImageWithFallback } from './ui/ImageWithFallback';
 
 interface BuyerViewProps {
   buyer: BuyerProfile;
@@ -210,7 +211,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
             <CardTitle className="text-xl sm:text-2xl font-black text-white tracking-tight">
               {buyer.businessName || buyer.name}
             </CardTitle>
-            <CardDescription className="text-xs sm:text-sm text-blue-200">
+            <CardDescription className="text-xs sm:text-sm text-blue-200 font-semibold">
               Procurement Location: {buyer.district}, {buyer.state} • Type: {buyer.buyerType.toUpperCase()}
             </CardDescription>
           </div>
@@ -258,7 +259,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                   <Sparkles className="w-5 h-5 text-amber-500" />
                   <CardTitle>{t.buyer.recommendedForYou}</CardTitle>
                 </div>
-                <span className="text-xs text-stone-500 font-medium">
+                <span className="text-xs text-stone-600 font-semibold">
                   Ranked by Price Fit, Quality Grade & Proximity
                 </span>
               </div>
@@ -269,11 +270,12 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                     key={`rec_${item.id}`}
                     variant="bordered"
                     padding="sm"
-                    className="bg-gradient-to-br from-amber-50/50 to-emerald-50/30 border-amber-200/80 flex flex-col sm:flex-row gap-4"
+                    className="bg-gradient-to-br from-amber-50/60 to-emerald-50/40 border-amber-300 flex flex-col sm:flex-row gap-4"
                   >
-                    <img
+                    <ImageWithFallback
                       src={item.imageUrl}
                       alt={item.crop}
+                      fallbackTitle={item.crop}
                       className="w-full sm:w-36 h-36 rounded-xl object-cover shrink-0"
                     />
                     <div className="space-y-2 flex-1 min-w-0">
@@ -281,7 +283,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                         <Badge variant="neutral" size="sm" className="font-mono bg-stone-900 text-amber-300">
                           {item.anonSellerId}
                         </Badge>
-                        <Badge variant="warning" size="sm" className="bg-amber-500 text-white flex items-center gap-1 border-none shadow-2xs">
+                        <Badge variant="warning" size="sm" className="bg-amber-500 text-white flex items-center gap-1 border-none shadow-2xs font-extrabold">
                           <Sparkles className="w-3 h-3" />
                           {item.matchScore}% Match
                         </Badge>
@@ -291,16 +293,16 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                         <h4 className="font-bold text-base text-stone-900">
                           {item.crop} - {item.variety}
                         </h4>
-                        <p className="text-xs text-stone-500">
+                        <p className="text-xs text-stone-600 font-medium">
                           {item.village}, {item.district} ({item.distanceKm} km away)
                         </p>
                       </div>
 
                       <div className="flex items-center justify-between text-xs pt-1">
-                        <span className="font-black text-emerald-700 text-base">
+                        <span className="font-black text-emerald-800 text-base">
                           ₹{item.priceExpected}/kg
                         </span>
-                        <span className="text-stone-500 font-medium">
+                        <span className="text-stone-700 font-bold">
                           Lot: {item.quantityKg} kg
                         </span>
                         <Button
@@ -322,13 +324,13 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
           <Card variant="bordered" padding="sm">
             <div className="flex flex-col sm:flex-row items-center gap-3">
               <div className="relative flex-1 w-full">
-                <Search className="w-4 h-4 text-stone-400 absolute left-3 top-3" />
+                <Search className="w-4 h-4 text-stone-500 absolute left-3 top-3" />
                 <input
                   type="text"
                   placeholder="Search by crop, variety, or district..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2 text-xs font-semibold bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full pl-9 pr-3 py-2 text-xs font-semibold bg-white border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-stone-900 placeholder:text-stone-500"
                 />
               </div>
 
@@ -336,7 +338,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                 <select
                   value={selectedCrop}
                   onChange={(e) => setSelectedCrop(e.target.value)}
-                  className="px-3 py-2 text-xs font-semibold bg-stone-50 border border-stone-200 rounded-xl focus:outline-none cursor-pointer"
+                  className="px-3 py-2 text-xs font-bold bg-white border border-stone-300 rounded-xl focus:outline-none cursor-pointer text-stone-800"
                 >
                   <option value="All">All Crops</option>
                   <option value="Tomato">Tomato</option>
@@ -349,14 +351,14 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                 <select
                   value={selectedGrade}
                   onChange={(e) => setSelectedGrade(e.target.value)}
-                  className="px-3 py-2 text-xs font-semibold bg-stone-50 border border-stone-200 rounded-xl focus:outline-none cursor-pointer"
+                  className="px-3 py-2 text-xs font-bold bg-white border border-stone-300 rounded-xl focus:outline-none cursor-pointer text-stone-800"
                 >
                   <option value="All">All Quality Grades</option>
                   <option value="A">Grade A Only</option>
                   <option value="B">Grade B & Above</option>
                 </select>
 
-                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-medium whitespace-nowrap">
+                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-stone-50 border border-stone-300 rounded-xl text-xs font-bold text-stone-800 whitespace-nowrap">
                   <span>Max: ₹{maxPrice}/kg</span>
                   <input
                     type="range"
@@ -387,9 +389,10 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                 >
                   <div>
                     <div className="relative h-44 bg-stone-100 overflow-hidden">
-                      <img
+                      <ImageWithFallback
                         src={item.imageUrl}
                         alt={item.crop}
+                        fallbackTitle={item.crop}
                         className="w-full h-full object-cover"
                       />
                       <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
@@ -415,41 +418,41 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                           <h4 className="font-bold text-base text-stone-900">
                             {item.crop}
                           </h4>
-                          <p className="text-xs text-stone-500">
+                          <p className="text-xs text-stone-600 font-medium">
                             {item.variety} • {item.district}, {item.state}
                           </p>
                         </div>
                         <div className="text-right">
-                          <p className="text-xs text-stone-400 font-medium">
+                          <p className="text-xs text-stone-500 font-semibold">
                             Offer Price
                           </p>
-                          <p className="text-base font-black text-emerald-700">
+                          <p className="text-base font-black text-emerald-800">
                             ₹{item.priceExpected}/kg
                           </p>
                         </div>
                       </div>
 
-                      <div className="p-2.5 bg-stone-50 rounded-xl border border-stone-100 text-xs space-y-1">
-                        <div className="flex items-center justify-between text-stone-600">
-                          <span>Total Lot Size:</span>
+                      <div className="p-2.5 bg-stone-50 rounded-xl border border-stone-200 text-xs space-y-1">
+                        <div className="flex items-center justify-between text-stone-700">
+                          <span className="font-medium">Total Lot Size:</span>
                           <span className="font-bold text-stone-900">{item.quantityKg} kg</span>
                         </div>
-                        <div className="flex items-center justify-between text-stone-600">
-                          <span>AI Mandi Fair Price:</span>
-                          <span className="font-bold text-emerald-700">₹{item.priceAi.fair}/kg</span>
+                        <div className="flex items-center justify-between text-stone-700">
+                          <span className="font-medium">AI Mandi Fair Price:</span>
+                          <span className="font-bold text-emerald-800">₹{item.priceAi.fair}/kg</span>
                         </div>
-                        <div className="flex items-center justify-between text-stone-600">
-                          <span>CNN Quality:</span>
+                        <div className="flex items-center justify-between text-stone-700">
+                          <span className="font-medium">CNN Quality:</span>
                           <span className={`font-bold ${
-                            item.quality.grade === 'A' ? 'text-emerald-700' :
-                            item.quality.grade === 'B' ? 'text-amber-600' :
-                            'text-rose-600'
+                            item.quality.grade === 'A' ? 'text-emerald-800' :
+                            item.quality.grade === 'B' ? 'text-amber-700' :
+                            'text-rose-700'
                           }`}>{item.quality.freshnessLabel} ({item.quality.confidence}%)</span>
                         </div>
                       </div>
 
-                      <div className="p-2 bg-blue-50/70 rounded-lg text-[11px] text-blue-950 flex items-center gap-1.5 border border-blue-100">
-                        <ShieldCheck className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                      <div className="p-2 bg-blue-50 rounded-lg text-[11px] text-blue-950 flex items-center gap-1.5 border border-blue-200 font-medium">
+                        <ShieldCheck className="w-3.5 h-3.5 text-blue-700 shrink-0" />
                         <span>Anonymous seller. Details unlock upon order confirm.</span>
                       </div>
                     </CardContent>
@@ -478,7 +481,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <CardTitle>Procurement Orders & Identity Reveal Tracker</CardTitle>
-            <span className="text-xs text-stone-500 font-medium">
+            <span className="text-xs text-stone-600 font-semibold">
               Contract state machine with real-time settlement
             </span>
           </div>
@@ -502,50 +505,50 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                         </Badge>
                       )}
                     </div>
-                    <span className="text-xs text-stone-400 font-medium">
+                    <span className="text-xs text-stone-500 font-semibold">
                       Created: {ord.createdAt}
                     </span>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs sm:text-sm">
                     <div>
-                      <span className="text-stone-400 block text-xs">Harvest Item:</span>
+                      <span className="text-stone-500 block text-xs font-semibold">Harvest Item:</span>
                       <span className="font-bold text-stone-900">
                         {ord.crop} ({ord.variety})
                       </span>
-                      <span className="text-stone-500 block text-xs">
+                      <span className="text-stone-600 block text-xs font-medium">
                         {ord.quantityKg} kg @ ₹{ord.agreedPricePerKg}/kg
                       </span>
                     </div>
 
                     <div>
-                      <span className="text-stone-400 block text-xs">Payable Amount:</span>
-                      <span className="font-black text-emerald-700 text-base">
+                      <span className="text-stone-500 block text-xs font-semibold">Payable Amount:</span>
+                      <span className="font-black text-emerald-800 text-base">
                         ₹{ord.totalAmount.toLocaleString('en-IN')}
                       </span>
-                      <span className="text-stone-500 block text-xs">
+                      <span className="text-stone-600 block text-xs font-medium">
                         Settlement at Farmgate
                       </span>
                     </div>
 
                     <div>
-                      <span className="text-stone-400 block text-xs">Seller Information:</span>
+                      <span className="text-stone-500 block text-xs font-semibold">Seller Information:</span>
                       <span className="font-mono font-bold text-stone-900 text-xs">
                         {ord.anonSellerId}
                       </span>
                       {ord.identityRevealed && ord.sellerRealName ? (
-                        <div className="mt-1 space-y-0.5 text-xs text-emerald-900 font-semibold">
+                        <div className="mt-1 space-y-0.5 text-xs text-emerald-950 font-semibold">
                           <p className="flex items-center gap-1">
-                            <User className="w-3.5 h-3.5 text-emerald-700" />
+                            <User className="w-3.5 h-3.5 text-emerald-800" />
                             <span>{ord.sellerRealName} ({ord.sellerVillage}, {ord.sellerDistrict})</span>
                           </p>
-                          <p className="flex items-center gap-1 text-emerald-700">
+                          <p className="flex items-center gap-1 text-emerald-800 font-bold">
                             <Phone className="w-3.5 h-3.5" />
                             <span>{ord.sellerPhone}</span>
                           </p>
                         </div>
                       ) : (
-                        <p className="text-stone-400 italic text-xs">
+                        <p className="text-stone-500 italic text-xs font-medium">
                           Hidden until farmer confirms
                         </p>
                       )}
@@ -560,7 +563,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                         <p className="font-bold text-emerald-900">
                           Identity Reveal Complete: Direct Farmer Contact Unlocked
                         </p>
-                        <p className="text-stone-600 mt-0.5">
+                        <p className="text-stone-700 mt-0.5 font-medium">
                           You can coordinate dispatch directly with farmer <span className="font-bold text-stone-900">{ord.sellerRealName}</span> at <span className="font-bold text-stone-900">{ord.sellerPhone}</span>.
                         </p>
                       </div>
@@ -588,7 +591,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                         variant="secondary"
                         size="sm"
                         onClick={() => setRatingOrderId(ord.id)}
-                        className="bg-amber-50 text-amber-800 border-amber-200 hover:bg-amber-100"
+                        className="bg-amber-50 text-amber-900 border-amber-300 hover:bg-amber-100"
                       >
                         <Star className="w-3.5 h-3.5 text-amber-600 fill-current" />
                         <span>Rate Farmer Fulfillment</span>
@@ -612,7 +615,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
         {selectedListing && (
           <div className="space-y-4 text-xs sm:text-sm">
             {orderError && (
-              <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800 flex items-center gap-2">
+              <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800 flex items-center gap-2 font-semibold">
                 <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
                 <span>{orderError}</span>
               </div>
@@ -623,23 +626,23 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                 <ShieldCheck className="w-4 h-4 text-blue-700" />
                 Farmer Approval Required
               </p>
-              <p className="text-stone-600 text-xs">
+              <p className="text-stone-700 text-xs font-medium">
                 By requesting lot procurement, order status becomes <span className="font-bold text-stone-900">Pending</span>. Seller identity reveals automatically once the farmer confirms.
               </p>
             </div>
 
             <div>
-              <span className="text-stone-400 block font-medium text-xs">Selected Harvest Lot:</span>
+              <span className="text-stone-500 block font-semibold text-xs">Selected Harvest Lot:</span>
               <p className="text-sm font-bold text-stone-900">
                 {selectedListing.crop} ({selectedListing.variety}) - Grade {selectedListing.quality.grade}
               </p>
-              <p className="text-stone-500 text-xs">
+              <p className="text-stone-600 text-xs font-medium">
                 Seller: {selectedListing.anonSellerId} • District: {selectedListing.district}
               </p>
             </div>
 
             <div>
-              <label className="block font-bold text-stone-700 mb-1 text-xs">
+              <label className="block font-bold text-stone-800 mb-1 text-xs">
                 Procurement Quantity (kg)
               </label>
               <input
@@ -649,37 +652,37 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                 step={50}
                 value={orderQuantity}
                 onChange={(e) => setOrderQuantity(Number(e.target.value))}
-                className="w-full px-3 py-2 text-sm font-bold border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 text-sm font-bold border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-stone-900 bg-white"
               />
-              <span className="text-[10px] text-stone-400 mt-0.5 block">
+              <span className="text-[10px] text-stone-500 mt-0.5 block font-semibold">
                 Max Available in Lot: {selectedListing.quantityKg} kg
               </span>
             </div>
 
             <div>
-              <label className="block font-bold text-stone-700 mb-1 text-xs">
+              <label className="block font-bold text-stone-800 mb-1 text-xs">
                 Delivery Destination Address
               </label>
               <input
                 type="text"
                 value={deliveryAddress}
                 onChange={(e) => setDeliveryAddress(e.target.value)}
-                className="w-full px-3 py-2 text-xs sm:text-sm font-medium border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 text-xs sm:text-sm font-semibold border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-stone-900 bg-white"
               />
             </div>
 
             <div className="p-3 bg-stone-50 rounded-xl border border-stone-200 space-y-1 font-mono text-xs">
-              <div className="flex justify-between text-stone-600">
+              <div className="flex justify-between text-stone-700">
                 <span>Unit Offer Price:</span>
-                <span>₹{selectedListing.priceExpected}/kg</span>
+                <span className="font-bold">₹{selectedListing.priceExpected}/kg</span>
               </div>
-              <div className="flex justify-between text-stone-600">
+              <div className="flex justify-between text-stone-700">
                 <span>Quantity Requested:</span>
-                <span>{orderQuantity} kg</span>
+                <span className="font-bold">{orderQuantity} kg</span>
               </div>
               <div className="flex justify-between text-stone-900 font-bold text-sm pt-1 border-t border-stone-200">
                 <span>Total Payable Amount:</span>
-                <span className="text-emerald-700">₹{(orderQuantity * selectedListing.priceExpected).toLocaleString('en-IN')}</span>
+                <span className="text-emerald-800 font-black">₹{(orderQuantity * selectedListing.priceExpected).toLocaleString('en-IN')}</span>
               </div>
             </div>
 
@@ -708,7 +711,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
       >
         <div className="space-y-4 text-center">
           {ratingError && (
-            <div className="p-2.5 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800 flex items-center gap-1.5 text-left">
+            <div className="p-2.5 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800 flex items-center gap-1.5 text-left font-semibold">
               <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
               <span>{ratingError}</span>
             </div>

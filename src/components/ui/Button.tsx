@@ -25,9 +25,9 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
     const variantStyles = {
       primary: 'bg-emerald-600 text-white hover:bg-emerald-700 focus:ring-emerald-500 shadow-sm shadow-emerald-600/20 active:bg-emerald-800',
-      secondary: 'bg-stone-100 text-stone-900 hover:bg-stone-200/90 focus:ring-stone-400 active:bg-stone-300 border border-stone-200/60',
-      outline: 'bg-white border border-stone-300/90 text-stone-700 hover:bg-stone-50 hover:border-stone-400 focus:ring-stone-400 shadow-2xs',
-      ghost: 'bg-transparent text-stone-600 hover:bg-stone-100 focus:ring-stone-400 active:bg-stone-200',
+      secondary: 'bg-stone-100 text-stone-900 hover:bg-stone-200 focus:ring-stone-400 active:bg-stone-300 border border-stone-300',
+      outline: 'bg-white border border-stone-300 text-stone-800 hover:bg-stone-50 hover:border-stone-400 focus:ring-emerald-500 shadow-2xs',
+      ghost: 'bg-transparent text-stone-700 hover:bg-stone-100 hover:text-stone-900 focus:ring-emerald-500 active:bg-stone-200',
       danger: 'bg-rose-600 text-white hover:bg-rose-700 focus:ring-rose-500 shadow-sm shadow-rose-600/20 active:bg-rose-800',
     };
 

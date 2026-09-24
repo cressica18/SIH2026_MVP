@@ -90,29 +90,29 @@ export function OnboardingScreen({ onComplete }: { onComplete: (profile: any) =>
                    <ShieldCheck className="w-6 h-6 text-purple-600" />;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-950 via-stone-900 to-slate-900 flex items-center justify-center p-4 sm:p-6">
-      <Card variant="elevated" padding="lg" className="max-w-md w-full bg-white shadow-2xl space-y-5">
-        <div className="flex items-center gap-3 border-b border-stone-100 pb-4">
-          <div className="p-3 bg-stone-50 rounded-2xl border border-stone-200 shrink-0">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-950 via-stone-900 to-slate-900 flex items-center justify-center p-4 sm:p-6 selection:bg-emerald-500 selection:text-white">
+      <Card variant="elevated" padding="lg" className="max-w-md w-full bg-white shadow-2xl space-y-5 border border-stone-200">
+        <div className="flex items-center gap-3 border-b border-stone-200 pb-4">
+          <div className="p-3 bg-stone-50 rounded-2xl border border-stone-300 shrink-0">
             {roleIcon}
           </div>
           <div>
             <CardTitle className="text-xl font-black text-stone-900">Complete Profile</CardTitle>
-            <CardDescription className="text-xs">
+            <CardDescription className="text-xs text-stone-600 font-semibold">
               Fill in your registration details as a <span className="font-bold text-stone-900 capitalize">{user?.role}</span>.
             </CardDescription>
           </div>
         </div>
 
         {error && (
-          <div className="p-3 bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold rounded-xl">
+          <div className="p-3 bg-rose-50 border border-rose-200 text-rose-900 text-xs font-bold rounded-xl">
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4 text-xs sm:text-sm">
           <div>
-            <label className="block text-xs font-bold text-stone-700 mb-1">Full Name</label>
+            <label className="block text-xs font-bold text-stone-800 mb-1">Full Name</label>
             <Input
               required
               value={name}
@@ -123,7 +123,7 @@ export function OnboardingScreen({ onComplete }: { onComplete: (profile: any) =>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-bold text-stone-700 mb-1">State</label>
+              <label className="block text-xs font-bold text-stone-800 mb-1">State</label>
               <Input
                 required
                 value={state}
@@ -132,7 +132,7 @@ export function OnboardingScreen({ onComplete }: { onComplete: (profile: any) =>
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-stone-700 mb-1">District</label>
+              <label className="block text-xs font-bold text-stone-800 mb-1">District</label>
               <Input
                 required
                 value={district}
@@ -145,7 +145,7 @@ export function OnboardingScreen({ onComplete }: { onComplete: (profile: any) =>
           {user?.role === 'farmer' && (
             <>
               <div>
-                <label className="block text-xs font-bold text-stone-700 mb-1">Village</label>
+                <label className="block text-xs font-bold text-stone-800 mb-1">Village</label>
                 <Input
                   required
                   value={village}
@@ -155,7 +155,7 @@ export function OnboardingScreen({ onComplete }: { onComplete: (profile: any) =>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-stone-700 mb-1">Land Size (Acres)</label>
+                  <label className="block text-xs font-bold text-stone-800 mb-1">Land Size (Acres)</label>
                   <Input
                     required
                     type="number"
@@ -165,7 +165,7 @@ export function OnboardingScreen({ onComplete }: { onComplete: (profile: any) =>
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-stone-700 mb-1">Primary Crops</label>
+                  <label className="block text-xs font-bold text-stone-800 mb-1">Primary Crops</label>
                   <Input
                     required
                     value={primaryCrops}
@@ -180,7 +180,7 @@ export function OnboardingScreen({ onComplete }: { onComplete: (profile: any) =>
           {user?.role === 'buyer' && (
             <>
               <div>
-                <label className="block text-xs font-bold text-stone-700 mb-1">Business Name</label>
+                <label className="block text-xs font-bold text-stone-800 mb-1">Business Name</label>
                 <Input
                   required
                   value={businessName}
@@ -189,7 +189,7 @@ export function OnboardingScreen({ onComplete }: { onComplete: (profile: any) =>
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold text-stone-700 mb-1">Buyer Type</label>
+                <label className="block text-xs font-bold text-stone-800 mb-1">Buyer Type</label>
                 <Select
                   options={[
                     { value: 'consumer', label: 'Consumer / Individual' },
@@ -206,7 +206,7 @@ export function OnboardingScreen({ onComplete }: { onComplete: (profile: any) =>
           {user?.role === 'logistics' && (
             <>
               <div>
-                <label className="block text-xs font-bold text-stone-700 mb-1">Vehicle Type</label>
+                <label className="block text-xs font-bold text-stone-800 mb-1">Vehicle Type</label>
                 <Input
                   required
                   value={vehicleType}
@@ -216,7 +216,7 @@ export function OnboardingScreen({ onComplete }: { onComplete: (profile: any) =>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-stone-700 mb-1">Capacity (Kg)</label>
+                  <label className="block text-xs font-bold text-stone-800 mb-1">Capacity (Kg)</label>
                   <Input
                     required
                     type="number"
@@ -225,7 +225,7 @@ export function OnboardingScreen({ onComplete }: { onComplete: (profile: any) =>
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-stone-700 mb-1">Radius (Km)</label>
+                  <label className="block text-xs font-bold text-stone-800 mb-1">Radius (Km)</label>
                   <Input
                     required
                     type="number"

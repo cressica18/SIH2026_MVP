@@ -29,7 +29,8 @@ export const OtpScreen: React.FC<OtpScreenProps> = ({
     if (pendingPhone) {
       setPhone(pendingPhone);
       setShowOtpInput(true);
-      setDevOtpHint('Use OTP 123456 or click Auto-fill below');
+      setOtp('123456');
+      setDevOtpHint('Auto-filled test OTP 123456');
     }
   }, [pendingPhone]);
 

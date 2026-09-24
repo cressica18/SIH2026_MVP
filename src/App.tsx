@@ -38,7 +38,7 @@ import { OtpScreen } from './app/(auth)/otp-screen';
 import { OnboardingScreen } from './components/OnboardingScreen';
 
 export default function App() {
-  const { isAuthenticated, user, isLoading: isAuthLoading } = useAuth();
+  const { isAuthenticated, user, switchRole, isLoading: isAuthLoading } = useAuth();
   const [isProfileLoading, setIsProfileLoading] = useState(false);
 
   // Global State
@@ -683,12 +683,17 @@ export default function App() {
   };
 
   // Jump to step from 7-Step Demo Story Modal
-  const handleJumpToStep = (role: Role, tabName?: string) => {
-    setCurrentRole(role);
+  const handleJumpToStep = async (role: Role, tabName?: string) => {
     if (role === 'farmer' && tabName) setFarmerSubTab(tabName);
     if (role === 'buyer' && tabName) setBuyerSubTab(tabName);
     if (role === 'logistics' && tabName) setLogisticsSubTab(tabName);
     if (role === 'admin' && tabName) setAdminSubTab(tabName);
+
+    if (user?.role !== role) {
+      await switchRole(role);
+    } else {
+      setCurrentRole(role);
+    }
   };
 
   const handleAepsSuccess = async (amount: number, txnRef: string) => {

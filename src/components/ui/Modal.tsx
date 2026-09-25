@@ -77,7 +77,7 @@ export const Modal: React.FC<ModalProps> = ({
 
   const modalContent = (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-stone-950/70 backdrop-blur-sm animate-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-earth-950/70 backdrop-blur-sm animate-fade-in"
       role="dialog"
       aria-modal="true"
       aria-labelledby={title ? 'modal-title' : undefined}
@@ -92,18 +92,18 @@ export const Modal: React.FC<ModalProps> = ({
       <div
         ref={modalRef}
         tabIndex={-1}
-        className={`relative w-full ${sizeStyles[size]} bg-white rounded-3xl shadow-2xl border border-stone-200 overflow-hidden animate-slide-up focus:outline-none flex flex-col max-h-[90vh]`}
+        className={`relative w-full ${sizeStyles[size]} bg-white rounded-3xl shadow-2xl border border-earth-200 overflow-hidden animate-slide-up focus:outline-none flex flex-col max-h-[90vh]`}
       >
         {(title || showCloseButton) && (
-          <div className="flex items-start justify-between px-6 py-4 border-b border-stone-200 bg-stone-50/80">
+          <div className="flex items-start justify-between px-6 py-4 border-b border-earth-100 bg-earth-50/80">
             <div className="flex-1 pr-4">
               {title && (
-                <h2 id="modal-title" className="text-base sm:text-lg font-bold text-stone-900 tracking-tight">
+                <h2 id="modal-title" className="text-base sm:text-lg font-bold text-earth-900 tracking-tight">
                   {title}
                 </h2>
               )}
               {description && (
-                <p id="modal-description" className="text-xs sm:text-sm text-stone-600 mt-0.5 leading-relaxed">
+                <p id="modal-description" className="text-xs sm:text-sm text-earth-500 mt-0.5 leading-relaxed">
                   {description}
                 </p>
               )}
@@ -111,7 +111,7 @@ export const Modal: React.FC<ModalProps> = ({
             {showCloseButton && (
               <button
                 onClick={onClose}
-                className="p-1.5 text-stone-500 hover:text-stone-900 hover:bg-stone-200/60 rounded-xl transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer"
+                className="p-1.5 text-earth-500 hover:text-earth-900 hover:bg-earth-200/60 rounded-xl transition-colors focus:outline-none focus:ring-2 focus:ring-agri-500 cursor-pointer"
                 aria-label="Close modal"
               >
                 <X className="w-5 h-5" />

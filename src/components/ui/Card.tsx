@@ -1,7 +1,7 @@
 import React, { forwardRef } from 'react';
 
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
-  variant?: 'default' | 'bordered' | 'elevated';
+  variant?: 'default' | 'bordered' | 'elevated' | 'agri' | 'earth' | 'harvest' | 'sky' | 'alert';
   padding?: 'none' | 'sm' | 'md' | 'lg';
   hover?: boolean;
 }
@@ -20,8 +20,13 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
   ) => {
     const variantStyles = {
       default: 'bg-white',
-      bordered: 'bg-white border border-stone-200/90 shadow-2xs',
-      elevated: 'bg-white shadow-lg shadow-stone-900/5 border border-stone-200/60',
+      bordered: 'bg-white border border-earth-200/90 shadow-sm',
+      elevated: 'bg-white shadow-lg shadow-earth-900/5 border border-earth-200/60',
+      agri: 'bg-gradient-to-br from-agri-50 to-agri-100 border border-agri-200/90 shadow-sm',
+      earth: 'bg-gradient-to-br from-earth-50 to-earth-100 border border-earth-200/90 shadow-sm',
+      harvest: 'bg-gradient-to-br from-harvest-50 to-harvest-100 border border-harvest-200/90 shadow-sm',
+      sky: 'bg-gradient-to-br from-sky-50 to-sky-100 border border-sky-200/90 shadow-sm',
+      alert: 'bg-gradient-to-br from-alert-50 to-alert-100 border border-alert-200/90 shadow-sm',
     };
 
     const paddingStyles = {
@@ -32,7 +37,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
     };
 
     const hoverStyles = hover
-      ? 'hover:shadow-md hover:border-emerald-300 transition-all duration-200 cursor-pointer'
+      ? 'hover:shadow-md hover:border-agri-300 transition-all duration-200 cursor-pointer'
       : '';
 
     return (
@@ -53,7 +58,7 @@ export interface CardHeaderProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 export const CardHeader = forwardRef<HTMLDivElement, CardHeaderProps>(
   ({ className = '', children, ...props }, ref) => (
-    <div ref={ref} className={`mb-4 pb-4 border-b border-stone-100 ${className}`} {...props}>
+    <div ref={ref} className={`mb-4 pb-4 border-b border-earth-100 ${className}`} {...props}>
       {children}
     </div>
   )
@@ -65,7 +70,7 @@ export interface CardTitleProps extends React.HTMLAttributes<HTMLHeadingElement>
 
 export const CardTitle = forwardRef<HTMLHeadingElement, CardTitleProps>(
   ({ className = '', children, ...props }, ref) => (
-    <h3 ref={ref} className={`text-base sm:text-lg font-bold text-stone-900 tracking-tight ${className}`} {...props}>
+    <h3 ref={ref} className={`text-base sm:text-lg font-bold text-earth-900 tracking-tight ${className}`} {...props}>
       {children}
     </h3>
   )
@@ -77,7 +82,7 @@ export interface CardDescriptionProps extends React.HTMLAttributes<HTMLParagraph
 
 export const CardDescription = forwardRef<HTMLParagraphElement, CardDescriptionProps>(
   ({ className = '', children, ...props }, ref) => (
-    <p ref={ref} className={`text-xs sm:text-sm text-stone-500 mt-1 leading-relaxed ${className}`} {...props}>
+    <p ref={ref} className={`text-xs sm:text-sm text-earth-500 mt-1 leading-relaxed ${className}`} {...props}>
       {children}
     </p>
   )
@@ -101,7 +106,7 @@ export interface CardFooterProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 export const CardFooter = forwardRef<HTMLDivElement, CardFooterProps>(
   ({ className = '', children, ...props }, ref) => (
-    <div ref={ref} className={`mt-4 pt-4 border-t border-stone-100 flex items-center justify-between gap-2 ${className}`} {...props}>
+    <div ref={ref} className={`mt-4 pt-4 border-t border-earth-100 flex items-center justify-between gap-2 ${className}`} {...props}>
       {children}
     </div>
   )

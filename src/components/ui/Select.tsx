@@ -37,9 +37,9 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
     return (
       <div className={fullWidth ? 'w-full' : ''}>
         {label && (
-          <label htmlFor={selectId} className="block text-xs sm:text-sm font-bold text-stone-800 mb-1.5">
+          <label htmlFor={selectId} className="block text-xs sm:text-sm font-semibold text-earth-800 mb-1.5">
             {label}
-            {required && <span className="text-rose-500 ml-1" aria-hidden="true">*</span>}
+            {required && <span className="text-alert-500 ml-1" aria-hidden="true">*</span>}
           </label>
         )}
         <div className="relative">
@@ -52,11 +52,11 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
             aria-describedby={error ? `${selectId}-error` : hint ? `${selectId}-hint` : undefined}
             className={`
               w-full rounded-xl border appearance-none transition-colors duration-150 cursor-pointer
-              pl-4 pr-10 py-2.5 text-sm font-semibold
+              pl-4 pr-10 py-2.5 text-sm font-medium
               ${error
-                ? 'border-rose-400 text-stone-900 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20'
-                : 'border-stone-300 text-stone-900 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20'}
-              ${disabled ? 'bg-stone-100 cursor-not-allowed text-stone-500' : 'bg-white hover:border-stone-400'}
+                ? 'border-alert-400 text-earth-900 focus:border-alert-500 focus:ring-2 focus:ring-alert-500/20'
+                : 'border-earth-300 text-earth-900 focus:border-agri-500 focus:ring-2 focus:ring-agri-500/20'}
+              ${disabled ? 'bg-earth-100 cursor-not-allowed text-earth-500' : 'bg-white hover:border-earth-400'}
               ${className}
             `}
             {...props}
@@ -72,19 +72,19 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
               </option>
             ))}
           </select>
-          <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-stone-500">
+          <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-earth-500">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>
           </div>
         </div>
         {error && (
-          <p id={`${selectId}-error`} className="mt-1.5 text-xs sm:text-sm font-semibold text-rose-600" role="alert">
+          <p id={`${selectId}-error`} className="mt-1.5 text-xs sm:text-sm font-semibold text-alert-600" role="alert">
             {error}
           </p>
         )}
         {hint && !error && (
-          <p id={`${selectId}-hint`} className="mt-1.5 text-xs text-stone-600 font-medium">
+          <p id={`${selectId}-hint`} className="mt-1.5 text-xs text-earth-500 font-medium">
             {hint}
           </p>
         )}

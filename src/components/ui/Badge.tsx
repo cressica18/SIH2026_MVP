@@ -1,7 +1,7 @@
 import React from 'react';
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
-  variant?: 'default' | 'success' | 'warning' | 'danger' | 'info' | 'neutral' | 'pending';
+  variant?: 'default' | 'success' | 'warning' | 'danger' | 'info' | 'neutral' | 'pending' | 'agri';
   size?: 'sm' | 'md' | 'lg';
   dot?: boolean;
 }
@@ -19,13 +19,14 @@ export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
     ref
   ) => {
     const variantStyles = {
-      default: 'bg-stone-100 text-stone-800 border-stone-300 font-bold',
-      success: 'bg-emerald-50 text-emerald-900 border-emerald-300 font-bold',
-      warning: 'bg-amber-50 text-amber-900 border-amber-300 font-bold',
-      danger: 'bg-rose-50 text-rose-900 border-rose-300 font-bold',
+      default: 'bg-earth-100 text-earth-800 border-earth-300 font-bold',
+      success: 'bg-agri-50 text-agri-900 border-agri-300 font-bold',
+      warning: 'bg-harvest-50 text-harvest-900 border-harvest-300 font-bold',
+      danger: 'bg-alert-50 text-alert-900 border-alert-300 font-bold',
       info: 'bg-sky-50 text-sky-900 border-sky-300 font-bold',
-      neutral: 'bg-stone-100 text-stone-800 border-stone-300 font-bold',
-      pending: 'bg-amber-50 text-amber-900 border-amber-300 font-bold',
+      neutral: 'bg-earth-100 text-earth-800 border-earth-300 font-bold',
+      pending: 'bg-harvest-50 text-harvest-900 border-harvest-300 font-bold',
+      agri: 'bg-agri-100 text-agri-800 border-agri-300 font-bold',
     };
 
     const sizeStyles = {
@@ -38,7 +39,7 @@ export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
       <span
         ref={ref}
         className={`
-          inline-flex items-center rounded-full border tracking-tight shadow-2xs select-none
+          inline-flex items-center rounded-full border tracking-tight shadow-xs select-none
           ${variantStyles[variant]} ${sizeStyles[size]} ${className}
         `}
         {...props}
@@ -54,11 +55,11 @@ Badge.displayName = 'Badge';
 
 export interface StatusBadgeProps {
   status: string;
-  variant?: 'default' | 'success' | 'warning' | 'danger' | 'info' | 'pending' | 'neutral';
+  variant?: 'default' | 'success' | 'warning' | 'danger' | 'info' | 'pending' | 'neutral' | 'agri';
 }
 
 export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, variant }) => {
-  const statusVariants: Record<string, 'success' | 'warning' | 'danger' | 'info' | 'pending' | 'default' | 'neutral'> = {
+  const statusVariants: Record<string, 'success' | 'warning' | 'danger' | 'info' | 'pending' | 'default' | 'neutral' | 'agri'> = {
     active: 'success',
     pending: 'warning',
     matched: 'info',

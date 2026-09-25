@@ -1,49 +1,58 @@
 import React, { forwardRef } from 'react';
 
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
-  variant?: 'default' | 'bordered' | 'elevated' | 'agri' | 'earth' | 'harvest' | 'sky' | 'alert';
+  variant?: 'default' | 'elevated' | 'outlined' | 'panel' | 'farmer' | 'buyer' | 'logistics' | 'admin' | 'subtle' | 'subtle-harvest' | 'subtle-forest' | 'subtle-teal' | 'subtle-copper';
   padding?: 'none' | 'sm' | 'md' | 'lg';
   hover?: boolean;
+  interactive?: boolean;
 }
 
 export const Card = forwardRef<HTMLDivElement, CardProps>(
   (
     {
-      variant = 'bordered',
+      variant = 'outlined',
       padding = 'md',
       hover = false,
+      interactive = false,
       className = '',
       children,
       ...props
     },
     ref
   ) => {
-    const variantStyles = {
-      default: 'bg-white',
-      bordered: 'bg-white border border-earth-200/90 shadow-sm',
-      elevated: 'bg-white shadow-lg shadow-earth-900/5 border border-earth-200/60',
-      agri: 'bg-gradient-to-br from-agri-50 to-agri-100 border border-agri-200/90 shadow-sm',
-      earth: 'bg-gradient-to-br from-earth-50 to-earth-100 border border-earth-200/90 shadow-sm',
-      harvest: 'bg-gradient-to-br from-harvest-50 to-harvest-100 border border-harvest-200/90 shadow-sm',
-      sky: 'bg-gradient-to-br from-sky-50 to-sky-100 border border-sky-200/90 shadow-sm',
-      alert: 'bg-gradient-to-br from-alert-50 to-alert-100 border border-alert-200/90 shadow-sm',
+    const variantStyles: Record<string, string> = {
+      default: 'bg-bg-850 border border-bg-750',
+      outlined: 'bg-bg-850 border border-bg-750',
+      elevated: 'bg-bg-800 border border-bg-700 shadow-lg',
+      panel: 'bg-bg-800 border border-bg-700',
+      farmer: 'bg-gradient-card-forest border border-forest-800',
+      buyer: 'bg-gradient-card-teal border border-teal-800',
+      logistics: 'bg-gradient-card-harvest border border-harvest-800',
+      admin: 'bg-gradient-card-sage border border-sage-800',
+      subtle: 'bg-bg-800 border border-bg-700',
+      'subtle-harvest': 'bg-gradient-card-harvest/50 border border-harvest-800/50',
+      'subtle-forest': 'bg-gradient-card-forest/50 border border-forest-800/50',
+      'subtle-teal': 'bg-gradient-card-teal/50 border border-teal-800/50',
+      'subtle-copper': 'bg-gradient-card-copper/50 border border-copper-800/50',
     };
 
     const paddingStyles = {
       none: '',
-      sm: 'p-3.5',
+      sm: 'p-4',
       md: 'p-5',
       lg: 'p-6 sm:p-7',
     };
 
-    const hoverStyles = hover
-      ? 'hover:shadow-md hover:border-agri-300 transition-all duration-200 cursor-pointer'
+    const hoverStyles = (hover || interactive)
+      ? 'transition-all duration-200 hover:shadow-lg hover:border-sage-600 hover:-translate-y-0.5'
       : '';
+
+    const cursorStyles = interactive ? 'cursor-pointer' : '';
 
     return (
       <div
         ref={ref}
-        className={`${variantStyles[variant]} ${paddingStyles[padding]} rounded-2xl ${hoverStyles} ${className}`}
+        className={`${variantStyles[variant] || variantStyles.outlined} ${paddingStyles[padding as keyof typeof paddingStyles] || paddingStyles.md} rounded-xl ${hoverStyles} ${cursorStyles} ${className}`}
         {...props}
       >
         {children}
@@ -58,7 +67,11 @@ export interface CardHeaderProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 export const CardHeader = forwardRef<HTMLDivElement, CardHeaderProps>(
   ({ className = '', children, ...props }, ref) => (
-    <div ref={ref} className={`mb-4 pb-4 border-b border-earth-100 ${className}`} {...props}>
+    <div
+      ref={ref}
+      className={`mb-4 pb-4 border-b border-bg-700 ${className}`}
+      {...props}
+    >
       {children}
     </div>
   )
@@ -70,7 +83,11 @@ export interface CardTitleProps extends React.HTMLAttributes<HTMLHeadingElement>
 
 export const CardTitle = forwardRef<HTMLHeadingElement, CardTitleProps>(
   ({ className = '', children, ...props }, ref) => (
-    <h3 ref={ref} className={`text-base sm:text-lg font-bold text-earth-900 tracking-tight ${className}`} {...props}>
+    <h3
+      ref={ref}
+      className={`text-base sm:text-lg font-semibold text-cream-50 tracking-tight ${className}`}
+      {...props}
+    >
       {children}
     </h3>
   )
@@ -82,7 +99,11 @@ export interface CardDescriptionProps extends React.HTMLAttributes<HTMLParagraph
 
 export const CardDescription = forwardRef<HTMLParagraphElement, CardDescriptionProps>(
   ({ className = '', children, ...props }, ref) => (
-    <p ref={ref} className={`text-xs sm:text-sm text-earth-500 mt-1 leading-relaxed ${className}`} {...props}>
+    <p
+      ref={ref}
+      className={`text-sm text-cream-400 mt-1 leading-relaxed ${className}`}
+      {...props}
+    >
       {children}
     </p>
   )
@@ -106,7 +127,11 @@ export interface CardFooterProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 export const CardFooter = forwardRef<HTMLDivElement, CardFooterProps>(
   ({ className = '', children, ...props }, ref) => (
-    <div ref={ref} className={`mt-4 pt-4 border-t border-earth-100 flex items-center justify-between gap-2 ${className}`} {...props}>
+    <div
+      ref={ref}
+      className={`mt-4 pt-4 border-t border-bg-700 flex items-center justify-between gap-2 ${className}`}
+      {...props}
+    >
       {children}
     </div>
   )

@@ -1,8 +1,8 @@
 import React from 'react';
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
-  variant?: 'default' | 'success' | 'warning' | 'danger' | 'info' | 'neutral' | 'pending' | 'agri';
-  size?: 'sm' | 'md' | 'lg';
+  variant?: 'default' | 'success' | 'warning' | 'danger' | 'info' | 'harvest' | 'forest' | 'teal' | 'copper' | 'cream' | 'pending';
+  size?: 'xs' | 'sm' | 'md' | 'lg';
   dot?: boolean;
 }
 
@@ -10,7 +10,7 @@ export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
   (
     {
       variant = 'default',
-      size = 'md',
+      size = 'sm',
       dot = false,
       className = '',
       children,
@@ -18,29 +18,33 @@ export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
     },
     ref
   ) => {
-    const variantStyles = {
-      default: 'bg-earth-100 text-earth-800 border-earth-300 font-bold',
-      success: 'bg-agri-50 text-agri-900 border-agri-300 font-bold',
-      warning: 'bg-harvest-50 text-harvest-900 border-harvest-300 font-bold',
-      danger: 'bg-alert-50 text-alert-900 border-alert-300 font-bold',
-      info: 'bg-sky-50 text-sky-900 border-sky-300 font-bold',
-      neutral: 'bg-earth-100 text-earth-800 border-earth-300 font-bold',
-      pending: 'bg-harvest-50 text-harvest-900 border-harvest-300 font-bold',
-      agri: 'bg-agri-100 text-agri-800 border-agri-300 font-bold',
+    const variantStyles: Record<string, string> = {
+      default: 'bg-bg-700 text-cream-300 border-bg-600',
+      success: 'bg-forest-900/50 text-forest-300 border-forest-700',
+      warning: 'bg-harvest-900/50 text-harvest-300 border-harvest-700',
+      danger: 'bg-copper-900/50 text-copper-300 border-copper-700',
+      info: 'bg-teal-900/50 text-teal-300 border-teal-700',
+      harvest: 'bg-harvest-900/50 text-harvest-300 border-harvest-700',
+      forest: 'bg-forest-900/50 text-forest-300 border-forest-700',
+      teal: 'bg-teal-900/50 text-teal-300 border-teal-700',
+      copper: 'bg-copper-900/50 text-copper-300 border-copper-700',
+      cream: 'bg-cream-200 text-bg-900 border-cream-300',
+      pending: 'bg-harvest-900/50 text-harvest-300 border-harvest-700',
     };
 
     const sizeStyles = {
-      sm: 'px-2 py-0.5 text-[11px] gap-1',
-      md: 'px-2.5 py-1 text-xs gap-1.5',
-      lg: 'px-3 py-1.5 text-sm gap-2',
+      xs: 'px-2 py-0.5 text-[10px] gap-1',
+      sm: 'px-2.5 py-0.5 text-xs gap-1.5',
+      md: 'px-3 py-1 text-sm gap-2',
+      lg: 'px-3.5 py-1.5 text-base gap-2.5',
     };
 
     return (
       <span
         ref={ref}
         className={`
-          inline-flex items-center rounded-full border tracking-tight shadow-xs select-none
-          ${variantStyles[variant]} ${sizeStyles[size]} ${className}
+          inline-flex items-center rounded-full border font-medium select-none
+          ${variantStyles[variant] || variantStyles.default} ${sizeStyles[size]} ${className}
         `}
         {...props}
       >
@@ -55,16 +59,16 @@ Badge.displayName = 'Badge';
 
 export interface StatusBadgeProps {
   status: string;
-  variant?: 'default' | 'success' | 'warning' | 'danger' | 'info' | 'pending' | 'neutral' | 'agri';
+  variant?: 'default' | 'success' | 'warning' | 'danger' | 'info' | 'harvest' | 'forest' | 'teal' | 'copper';
 }
 
 export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, variant }) => {
-  const statusVariants: Record<string, 'success' | 'warning' | 'danger' | 'info' | 'pending' | 'default' | 'neutral' | 'agri'> = {
+  const statusVariants: Record<string, 'success' | 'warning' | 'danger' | 'info' | 'default' | 'harvest' | 'forest' | 'teal' | 'copper'> = {
     active: 'success',
     pending: 'warning',
     matched: 'info',
     sold: 'success',
-    withdrawn: 'neutral',
+    withdrawn: 'default',
     confirmed: 'info',
     in_transit: 'info',
     delivered: 'success',

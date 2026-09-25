@@ -3,6 +3,7 @@ import {
   FarmerProfile,
   Listing,
   Order,
+  OrderStatus,
   GovScheme,
   RiskAssessment,
   Language,
@@ -45,6 +46,54 @@ import {
   Star,
   Sprout,
   Building2,
+  User,
+  Award,
+  BarChart2,
+  Wallet,
+  Flag,
+  Home,
+  BadgeCheck,
+  Droplets,
+  Scale,
+  Tag,
+  Hash,
+  GripVertical,
+  Package,
+  CreditCard,
+  Banknote,
+  Receipt,
+  MapPin as MapPinIcon,
+  RotateCcw,
+  CheckCircle,
+  Circle,
+  HelpCircle,
+  ChevronDown,
+  ChevronUp,
+  History,
+  ArrowRight,
+  Lock,
+  Unlock,
+  UserCheck,
+  Warehouse,
+  Calendar,
+  Banknote as BanknoteIcon,
+  CreditCard as CreditCardIcon,
+  Package as PackageIcon,
+  GitBranch,
+  CheckCheck,
+  DollarSign,
+  MapPin as MapPinIcon2,
+  Navigation,
+  CircleDot,
+  Minus,
+  LoaderCircle,
+  ReceiptText,
+  Banknote as BanknoteIcon2,
+  UserPlus,
+  UserMinus,
+  Leaf,
+  Zap,
+  Target,
 } from 'lucide-react';
 import { Button } from './ui/Button';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from './ui/Card';
@@ -79,11 +128,11 @@ interface FarmerViewProps {
 }
 
 const TABS = [
-  { id: 'listings', label: 'My Listings', icon: <FileText className="w-4 h-4" /> },
-  { id: 'orders', label: 'Orders', icon: <ClipboardList className="w-4 h-4" /> },
-  { id: 'schemes', label: 'Schemes', icon: <Building2 className="w-4 h-4" /> },
-  { id: 'finance', label: 'Finance', icon: <IndianRupee className="w-4 h-4" /> },
-  { id: 'safety', label: 'Report', icon: <AlertTriangle className="w-4 h-4" /> },
+  { id: 'listings', label: 'My Listings', icon: FileText },
+  { id: 'orders', label: 'Orders', icon: ClipboardList },
+  { id: 'schemes', label: 'Schemes', icon: Building2 },
+  { id: 'finance', label: 'Finance', icon: Wallet },
+  { id: 'safety', label: 'Report', icon: Flag },
 ] as const;
 
 type TabId = typeof TABS[number]['id'];
@@ -118,6 +167,12 @@ const SAFETY_CATEGORIES = [
   { value: 'Transport Dispute', label: 'Transporter Overcharging or Refusing Pickup' },
 ];
 
+const getGradeVariant = (grade: 'A' | 'B' | 'C') => 
+  grade === 'A' ? 'success' : grade === 'B' ? 'warning' : 'danger';
+
+const getGradeLabel = (grade: 'A' | 'B' | 'C') => 
+  grade === 'A' ? 'Premium' : grade === 'B' ? 'Standard' : 'Basic';
+
 export const FarmerView: React.FC<FarmerViewProps> = ({
   farmer,
   listings,
@@ -137,7 +192,6 @@ export const FarmerView: React.FC<FarmerViewProps> = ({
   const [activeTab, setActiveTab] = useState<TabId>((initialTab as TabId) || 'listings');
   const t = I18N_STRINGS[currentLanguage];
 
-  // Listing creation modal state
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [speechTranscript, setSpeechTranscript] = useState('');
   const [cropInput, setCropInput] = useState('Tomato');
@@ -155,20 +209,17 @@ export const FarmerView: React.FC<FarmerViewProps> = ({
   const [isPublishing, setIsPublishing] = useState(false);
   const [publishError, setPublishError] = useState<string | null>(null);
 
-  // Safety report form state
   const [safetyCategory, setSafetyCategory] = useState<string>('Underpricing & Cartel');
   const [safetyEntity, setSafetyEntity] = useState<string>('');
   const [safetyDescription, setSafetyDescription] = useState<string>('');
   const [safetyAnonymous, setSafetyAnonymous] = useState<boolean>(true);
   const [safetySubmitted, setSafetySubmitted] = useState<boolean>(false);
 
-  // Recalculate AI price band whenever crop or quantity changes
   useEffect(() => {
     const band = getAiPriceRecommendation(cropInput, farmer.district);
     setAiPriceBand(band);
   }, [cropInput, farmer.district]);
 
-  // Trigger quality assessment via CNN API whenever photo or crop changes
   useEffect(() => {
     setIsAssessingQuality(true);
     setQualityGrade(null);
@@ -177,11 +228,9 @@ export const FarmerView: React.FC<FarmerViewProps> = ({
       .finally(() => setIsAssessingQuality(false));
   }, [selectedPhotoUrl, photoBase64, cropInput]);
 
-  // Handle file input: convert to base64 and update photo state
   const handlePhotoFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
     const reader = new FileReader();
     reader.onload = (evt) => {
       const base64 = evt.target?.result as string;
@@ -220,13 +269,11 @@ export const FarmerView: React.FC<FarmerViewProps> = ({
       setPublishError('Crop name is required.');
       return;
     }
-
     const qty = Number(quantityInput);
     if (isNaN(qty) || qty <= 0) {
       setPublishError('Quantity must be a positive number.');
       return;
     }
-
     const price = Number(priceInput);
     if (isNaN(price) || price <= 0) {
       setPublishError('Price expected must be a positive number.');
@@ -301,94 +348,471 @@ export const FarmerView: React.FC<FarmerViewProps> = ({
 
   return (
     <div className="space-y-6">
-      {/* Farmer Profile Header */}
-      <Card variant="agri" padding="lg" className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-agri-700/90 via-agri-800/90 to-earth-900/90" />
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width%3D%2260%22 height%3D%2260%22 viewBox%3D%220 0 60 60%22 xmlns%3D%22http://www.w3.org/2000/svg%22%3E%3Cg fill%3D%22none%22 fill-rule%3D%22evenodd%22%3E%3Cg fill%3D%22%23ffffff%22 fill-opacity%3D%220.03%22%3E%3Cpath d%3D%22M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-50" />
-        <div className="relative flex flex-col md:flex-row md:items-center md:justify-between gap-5">
-          <div className="space-y-3">
-            <div className="flex items-center gap-2 flex-wrap">
-              <Badge variant="success" size="sm" className="bg-white/15 text-white border-white/30 backdrop-blur-sm">
-                <Sprout className="w-3.5 h-3.5" />
-                Verified Farmer
+      {/* Farmer Profile Header - New Dark Theme */}
+      <div className="relative">
+        <div className="absolute inset-0 bg-radial-glow-forest" />
+        
+        <div className="relative grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+          {/* Left: Identity & Location */}
+          <div className="md:col-span-2 space-y-5">
+            {/* Status badges row */}
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge variant="forest" size="sm" className="gap-1.5">
+                <BadgeCheck className="w-3 h-3" />
+                <span>Verified Farmer</span>
               </Badge>
-              <Badge variant="info" size="sm" className="bg-white/15 text-white border-white/30 backdrop-blur-sm font-mono">
-                <ShieldCheck className="w-3.5 h-3.5" />
-                Anon ID: {farmer.anonSellerId}
-              </Badge>
-            </div>
-            <CardTitle className="text-xl sm:text-2xl font-bold text-white tracking-tight">{farmer.name}</CardTitle>
-            <p className="text-xs sm:text-sm text-agri-100 flex items-center gap-1.5 font-medium">
-              <MapPin className="w-3.5 h-3.5 text-agri-300" />
-              {farmer.village}, {farmer.district}, {farmer.state} · {farmer.landSizeAcres} Acres Farm
-            </p>
-          </div>
-
-          <div className="flex items-center gap-3 flex-wrap">
-            <div className="px-4 py-3 bg-white/10 backdrop-blur-md rounded-2xl border border-white/15 text-center min-w-[120px]">
-              <p className="text-[11px] text-agri-200 font-semibold uppercase tracking-wider">Trust Reputation</p>
-              <p className="text-lg font-bold text-white mt-1 flex items-center justify-center gap-1">
-                <Star className="w-5 h-5 fill-harvest-400 text-harvest-400" />
-                <span>{farmer.reputationScore.toFixed(1)} / 5.0</span>
-              </p>
-              <p className="text-[10px] text-agri-200 font-medium mt-0.5">{farmer.totalOrdersFulfilled} fulfilled</p>
-            </div>
-
-            <div className="px-4 py-3 bg-white/10 backdrop-blur-md rounded-2xl border border-white/15 text-center min-w-[120px]">
-              <p className="text-[11px] text-agri-200 font-semibold uppercase tracking-wider">AI Eligible Advance</p>
-              <p className="text-lg font-bold text-white mt-1">₹{riskAssessment.eligibleAdvanceAmount.toLocaleString('en-IN')}</p>
-              <Badge variant="success" size="sm" className="mt-1.5">
-                {riskAssessment.riskTier}
+              <Badge variant="cream" size="sm" className="font-mono gap-1.5">
+                <ShieldCheck className="w-3 h-3" />
+                <span>Anon: {farmer.anonSellerId}</span>
               </Badge>
             </div>
 
+            {/* Name & Location */}
+            <div className="space-y-2">
+              <h1 className="font-display text-2xl sm:text-3xl font-semibold text-cream-50 tracking-tight">
+                {farmer.name}
+              </h1>
+              <div className="flex flex-wrap items-center gap-3 text-sm text-cream-400">
+                <div className="flex items-center gap-1.5">
+                  <MapPin className="w-4 h-4 text-forest-400" />
+                  <span className="font-medium text-cream-300">{farmer.village}</span>
+                  <span className="text-cream-600">·</span>
+                  <span>{farmer.district}</span>
+                  <span className="text-cream-600">·</span>
+                  <span>{farmer.state}</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Home className="w-4 h-4 text-forest-400" />
+                  <span className="font-medium text-cream-300">{farmer.landSizeAcres} acres</span>
+                  <span className="text-cream-600">·</span>
+                  <span className="font-medium">{farmer.primaryCrops.slice(0, 2).join(', ')}</span>
+                  {farmer.primaryCrops.length > 2 && (
+                    <span className="text-cream-500">+{farmer.primaryCrops.length - 2} more</span>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Voice/Add Listing Action - Inline primary action */}
             <Button
               onClick={() => setShowCreateModal(true)}
               size="lg"
-              variant="agri"
-              className="shadow-lg shadow-agri-600/30"
+              variant="forest"
+              className="w-full sm:w-auto mt-2 gap-2"
             >
-              <Mic className="w-4 h-4" />
+              <Mic className="w-5 h-5" />
               <span>Voice / Add Listing</span>
             </Button>
           </div>
-        </div>
-      </Card>
 
-      {/* Navigation Tabs */}
-      <div className="flex items-center gap-1 overflow-x-auto pb-1 border-b border-earth-200 no-scrollbar">
-        {TABS.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id as TabId)}
-            className={`flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer whitespace-nowrap ${
-              activeTab === tab.id
-                ? 'bg-agri-600 text-white shadow-sm'
-                : 'text-earth-700 hover:bg-earth-100 hover:text-earth-900'
-            }`}
-          >
-            {tab.icon}
-            <span>{t.nav[tab.id === 'safety' ? 'safetyReport' : tab.id] || tab.label}</span>
-            {(tab.id === 'listings' && listings.length > 0) || (tab.id === 'orders' && orders.length > 0) || (tab.id === 'schemes' && schemes.length > 0) ? (
-              <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-white/20 text-white">
-                {tab.id === 'listings' ? listings.length : tab.id === 'orders' ? orders.length : schemes.length}
-              </span>
-            ) : null}
-          </button>
-        ))}
+          {/* Right: Key Metrics - Clean metric cards */}
+          <div className="hidden md:block">
+            <div className="grid grid-cols-2 gap-3">
+              {/* Trust Reputation */}
+              <Card variant="farmer" padding="md" className="text-center hover:shadow-lg transition-shadow border-forest-700">
+                <div className="flex items-center justify-center gap-1.5 mb-2">
+                  <Award className="w-5 h-5 text-harvest-400" />
+                  <span className="text-xs font-semibold text-cream-500 uppercase tracking-wider">Trust Score</span>
+                </div>
+                <div className="flex items-center justify-center gap-1 text-2xl font-bold text-cream-50">
+                  <Star className="w-6 h-6 fill-harvest-400 text-harvest-400" />
+                  <span>{farmer.reputationScore.toFixed(1)}</span>
+                  <span className="text-lg font-normal text-cream-500">/ 5.0</span>
+                </div>
+                <p className="text-xs text-cream-500 mt-1">{farmer.totalOrdersFulfilled} orders fulfilled</p>
+              </Card>
+
+              {/* AI Eligible Advance */}
+              <Card variant="subtle-harvest" padding="md" className="text-center hover:shadow-lg transition-shadow border-harvest-700">
+                <div className="flex items-center justify-center gap-1.5 mb-2">
+                  <Wallet className="w-5 h-5 text-harvest-400" />
+                  <span className="text-xs font-semibold text-cream-500 uppercase tracking-wider">Eligible Advance</span>
+                </div>
+                <p className="text-2xl font-bold text-harvest-300">
+                  ₹{riskAssessment.eligibleAdvanceAmount.toLocaleString('en-IN')}
+                </p>
+                <Badge 
+                  variant={riskAssessment.riskTier === 'Low Risk' ? 'success' : riskAssessment.riskTier === 'Moderate Risk' ? 'warning' : 'danger'} 
+                  size="sm" 
+                  className="mt-2"
+                >
+                  {riskAssessment.riskTier}
+                </Badge>
+              </Card>
+            </div>
+
+            {/* Additional context metrics */}
+            <Card variant="panel" padding="md" className="mt-4 space-y-3 border-bg-700">
+              <div className="flex items-center justify-between p-3 bg-bg-750 rounded-lg border border-bg-700">
+                <div className="flex items-center gap-3">
+                  <BarChart2 className="w-5 h-5 text-teal-400" />
+                  <div>
+                    <p className="text-xs text-cream-500 uppercase tracking-wider">Risk Score</p>
+                    <p className="font-semibold text-cream-100">{riskAssessment.riskScore} / 100</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs text-cream-500 uppercase tracking-wider">Fulfillment</p>
+                  <p className="font-semibold text-cream-100">{riskAssessment.factors.fulfillmentRate}</p>
+                </div>
+              </div>
+              <div className="flex items-center justify-between p-3 bg-bg-750 rounded-lg border border-bg-700">
+                <div className="flex items-center gap-3">
+                  <User className="w-5 h-5 text-copper-400" />
+                  <div>
+                    <p className="text-xs text-cream-500 uppercase tracking-wider">Primary Crops</p>
+                    <p className="font-semibold text-cream-100">{farmer.primaryCrops.length} varieties</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs text-cream-500 uppercase tracking-wider">Since</p>
+                  <p className="font-semibold text-cream-100">Active</p>
+                </div>
+              </div>
+            </Card>
+          </div>
+        </div>
+
+        {/* Mobile metrics - shown below on mobile */}
+        <div className="md:hidden mt-6 space-y-3">
+          <div className="grid grid-cols-2 gap-3">
+            <Card variant="farmer" padding="md" className="text-center border-forest-700">
+              <div className="flex items-center justify-center gap-1.5 mb-1">
+                <Award className="w-4 h-4 text-harvest-400" />
+                <span className="text-xs font-semibold text-cream-500 uppercase tracking-wider">Trust Score</span>
+              </div>
+              <div className="flex items-center justify-center gap-1 text-xl font-bold text-cream-50">
+                <Star className="w-5 h-5 fill-harvest-400 text-harvest-400" />
+                <span>{farmer.reputationScore.toFixed(1)}</span>
+                <span className="text-base font-normal text-cream-500">/ 5.0</span>
+              </div>
+              <p className="text-xs text-cream-500 mt-1">{farmer.totalOrdersFulfilled} fulfilled</p>
+            </Card>
+
+            <Card variant="subtle-harvest" padding="md" className="text-center border-harvest-700">
+              <div className="flex items-center justify-center gap-1.5 mb-1">
+                <Wallet className="w-4 h-4 text-harvest-400" />
+                <span className="text-xs font-semibold text-cream-500 uppercase tracking-wider">Eligible Advance</span>
+              </div>
+              <p className="text-xl font-bold text-harvest-300">
+                ₹{riskAssessment.eligibleAdvanceAmount.toLocaleString('en-IN')}
+              </p>
+              <Badge 
+                variant={riskAssessment.riskTier === 'Low Risk' ? 'success' : riskAssessment.riskTier === 'Moderate Risk' ? 'warning' : 'danger'} 
+                size="xs" 
+                className="mt-1.5"
+              >
+                {riskAssessment.riskTier}
+              </Badge>
+            </Card>
+          </div>
+        </div>
+      </div>
+
+      {/* Navigation Tabs - New Dark Theme */}
+      <div className="relative">
+        <nav className="flex items-center gap-1 overflow-x-auto pb-2 border-b border-bg-700 scrollbar-hidden" role="tablist" aria-label="Farmer portal sections">
+          {TABS.map((tab) => {
+            const count = tab.id === 'listings' ? listings.length : tab.id === 'orders' ? orders.length : tab.id === 'schemes' ? schemes.length : 0;
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as TabId)}
+                role="tab"
+                aria-selected={isActive}
+                aria-controls={`panel-${tab.id}`}
+                className={`flex items-center gap-2 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-150 cursor-pointer whitespace-nowrap relative ${
+                  isActive
+                    ? 'text-forest-300 bg-forest-900/30 border border-forest-700'
+                    : 'text-cream-400 hover:text-cream-100 hover:bg-bg-800'
+                }`}
+              >
+                <tab.icon className={`w-4 h-4 ${isActive ? 'text-forest-300' : 'text-cream-500'}`} aria-hidden="true" />
+                <span>{t.nav[tab.id === 'safety' ? 'safetyReport' : tab.id] || tab.label}</span>
+                {count > 0 && (
+                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                    isActive
+                      ? 'bg-forest-700 text-forest-100'
+                      : 'bg-bg-700 text-cream-500'
+                  }`}>
+                    {count}
+                  </span>
+                )}
+                {/* Active indicator */}
+                {isActive && (
+                  <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-0.5 bg-forest-400 rounded-full" />
+                )}
+              </button>
+            );
+          })}
+        </nav>
       </div>
 
       {/* TAB 1: MY LISTINGS */}
       {activeTab === 'listings' && (
-        <ListingTab
-          listings={listings}
-          farmer={farmer}
-          t={t}
-          onAddListing={onAddListing}
-          onUpdateListingStatus={onUpdateListingStatus}
-          showCreateModal={showCreateModal}
-          setShowCreateModal={setShowCreateModal}
-        />
+        <div className="space-y-5" role="feed" aria-label="My harvest listings">
+          {/* Header with title and primary action */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-forest-900/30 border border-forest-700 flex items-center justify-center">
+                <FileText className="w-5 h-5 text-forest-400" />
+              </div>
+              <div>
+                <h2 className="font-display text-xl font-semibold text-cream-50">My Harvest Batches</h2>
+                <p className="text-sm text-cream-400">{listings.length} active listing{listings.length !== 1 ? 's' : ''}</p>
+              </div>
+            </div>
+            <Button 
+              variant="forest" 
+              size="sm" 
+              onClick={() => setShowCreateModal(true)}
+              className="sm:ml-auto"
+            >
+              <Plus className="w-4 h-4" />
+              <span>New Listing</span>
+            </Button>
+          </div>
+
+          {listings.length === 0 ? (
+            /* Empty State */
+            <Card variant="panel" padding="lg" className="text-center border-bg-700">
+              <div className="mx-auto mb-4 w-16 h-16 rounded-xl bg-bg-800 border border-bg-700 flex items-center justify-center">
+                <Sprout className="w-8 h-8 text-forest-400" />
+              </div>
+              <h3 className="font-display text-lg font-semibold text-cream-50 mb-2">No harvest batches yet</h3>
+              <p className="text-cream-400 mb-6 max-w-xs mx-auto">
+                Create your first listing to connect directly with buyers. Use voice input for quick entry.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <Button 
+                  variant="forest" 
+                  size="md" 
+                  onClick={() => setShowCreateModal(true)}
+                  className="w-full sm:w-auto gap-2"
+                >
+                  <Mic className="w-4 h-4" />
+                  <span>Add with Voice</span>
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="md" 
+                  onClick={() => setShowCreateModal(true)}
+                  className="w-full sm:w-auto"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Manual Entry</span>
+                </Button>
+              </div>
+            </Card>
+          ) : (
+            /* Listings Grid */
+            <div className="space-y-3 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-4">
+              {listings.map((item) => (
+                <article 
+                  key={item.id} 
+                  className="group relative"
+                  data-listing-id={item.id}
+                >
+                  <Card variant="panel" padding="none" className="overflow-hidden h-full transition-all duration-200 hover:shadow-xl hover:border-forest-600 border-bg-700">
+                    {/* Image Section - Larger, more prominent */}
+                    <div className="relative aspect-[4/3] overflow-hidden bg-bg-750">
+                      <ImageWithFallback
+                        src={item.imageUrl}
+                        alt={`${item.crop} - ${item.variety}`}
+                        fallbackTitle={item.crop}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+                        loading="lazy"
+                      />
+                      
+                      {/* Grade badge - Top left, always visible */}
+                      <div className="absolute top-3 left-3 flex items-center gap-1.5">
+                        <Badge 
+                          variant={getGradeVariant(item.quality.grade)} 
+                          size="sm" 
+                          className="shadow-lg bg-bg-850/95 border-bg-700 backdrop-blur-sm"
+                          dot
+                        >
+                          Grade {item.quality.grade}
+                          <span className="hidden sm:inline ml-1 text-[10px] font-medium opacity-80">
+                            {getGradeLabel(item.quality.grade)}
+                          </span>
+                        </Badge>
+                      </div>
+
+                      {/* Status badge - Top right */}
+                      <div className="absolute top-3 right-3">
+                        <StatusBadge status={item.status} />
+                      </div>
+
+                      {/* Quality confidence indicator - Bottom left */}
+                      <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between">
+                        <div className="flex items-center gap-2 bg-bg-850/95 backdrop-blur-sm rounded-lg px-3 py-2 shadow-lg border border-bg-700">
+                          <div className="flex items-center gap-1.5">
+                            <span className="w-2 h-2 rounded-full bg-teal-400" />
+                            <span className="text-xs font-medium text-cream-300">
+                              CNN: {item.quality.confidence}%
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-1 text-[10px] text-cream-500 font-mono">
+                            <Hash className="w-3 h-3" />
+                            {item.anonSellerId}
+                          </div>
+                        </div>
+                        
+                        {/* Actions - Always visible, not hover-only */}
+                        <div className="flex items-center gap-1.5">
+                          <Button
+                            variant="ghost"
+                            size="icon-sm"
+                            className="bg-bg-850/95 hover:bg-bg-800 text-cream-400 hover:text-forest-300 shadow-lg rounded-lg border border-bg-700"
+                            aria-label="View details"
+                            onClick={(e) => { e.stopPropagation(); }}
+                          >
+                            <Eye className="w-4 h-4" />
+                          </Button>
+                          {item.status === 'active' && onUpdateListingStatus && (
+                            <Button
+                              variant="ghost"
+                              size="icon-sm"
+                              className="bg-bg-850/95 hover:bg-bg-800 text-cream-400 hover:text-copper-300 shadow-lg rounded-lg border border-bg-700"
+                              aria-label="Withdraw listing"
+                              onClick={(e) => { 
+                                e.stopPropagation(); 
+                                onUpdateListingStatus(item.id, 'withdrawn');
+                              }}
+                            >
+                              <X className="w-4 h-4" />
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Content Section */}
+                    <CardContent className="p-4 space-y-4">
+                      {/* Header: Crop + Variety + Listing ID */}
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-2 flex-wrap mb-1">
+                            <h3 className="font-display text-base font-semibold text-cream-50 truncate">
+                              {item.crop}
+                            </h3>
+                            <Badge variant="cream" size="xs" className="shrink-0">
+                              {item.variety}
+                            </Badge>
+                            <Badge variant="default" size="xs" className="shrink-0 font-mono">
+                              {item.id}
+                            </Badge>
+                          </div>
+                          <div className="flex items-center gap-3 text-xs text-cream-500">
+                            <span className="flex items-center gap-1">
+                              <Droplets className="w-3 h-3" />
+                              {item.createdVia === 'voice' ? 'Voice Entry' : 'Manual Entry'}
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <Clock className="w-3 h-3" />
+                              {item.createdAt}
+                            </span>
+                          </div>
+                        </div>
+                        
+                        {/* Price - Prominent, right-aligned */}
+                        <div className="text-right shrink-0 min-w-[100px]">
+                          <p className="text-[10px] font-semibold text-cream-500 uppercase tracking-wider mb-0.5">
+                            Expected Price
+                          </p>
+                          <p className="font-display text-xl font-bold text-harvest-300">
+                            ₹{item.priceExpected}/kg
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Divider */}
+                      <hr className="border-bg-700" />
+
+                      {/* Metrics Grid - 2x2 layout */}
+                      <div className="grid grid-cols-2 gap-3">
+                        {/* Quantity */}
+                        <div className="p-3 bg-bg-750 rounded-lg border border-bg-700">
+                          <div className="flex items-center gap-2 mb-1">
+                            <Scale className="w-4 h-4 text-forest-400" />
+                            <span className="text-xs font-semibold text-cream-500 uppercase tracking-wider">
+                              Available
+                            </span>
+                          </div>
+                          <p className="font-display text-lg font-bold text-cream-100">
+                            {item.quantityKg.toLocaleString()} kg
+                          </p>
+                          <p className="text-xs text-cream-500">
+                            {(item.quantityKg / 100).toFixed(1)} Quintals
+                          </p>
+                        </div>
+
+                        {/* AI Price Range */}
+                        <div className="p-3 bg-bg-750 rounded-lg border border-bg-700">
+                          <div className="flex items-center gap-2 mb-1">
+                            <Tag className="w-4 h-4 text-harvest-400" />
+                            <span className="text-xs font-semibold text-cream-500 uppercase tracking-wider">
+                              AI Range
+                            </span>
+                          </div>
+                          <p className="font-medium text-cream-100 text-sm">
+                            ₹{item.priceAi.min} – ₹{item.priceAi.max}/kg
+                          </p>
+                          <p className="text-xs text-cream-500">
+                            Fair: ₹{item.priceAi.fair}/kg
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Quality Details Row */}
+                      <div className="p-3 bg-forest-900/30 rounded-lg border border-forest-700">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <BadgeCheck className="w-4 h-4 text-forest-400" />
+                            <span className="text-xs font-semibold text-forest-300 uppercase tracking-wider">
+                              Quality Assessment
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-3 text-xs text-forest-300">
+                            <span className="flex items-center gap-1 font-medium">
+                              <span className="w-1.5 h-1.5 rounded-full bg-forest-400" />
+                              Color: {item.quality.colorUniformity}%
+                            </span>
+                            <span className="flex items-center gap-1 font-medium">
+                              <span className="w-1.5 h-1.5 rounded-full bg-forest-400" />
+                              Firm: {item.quality.firmnessScore}%
+                            </span>
+                            <span className="flex items-center gap-1 font-medium">
+                              <span className={`w-1.5 h-1.5 rounded-full ${
+                                item.quality.surfaceDefects <= 8 ? 'bg-success-500' : 
+                                item.quality.surfaceDefects <= 18 ? 'bg-warning-500' : 'bg-copper-500'
+                              }`} />
+                              Defects: {item.quality.surfaceDefects}%
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Footer: Location + Action */}
+                      <div className="flex items-center justify-between pt-2 border-t border-bg-700">
+                        <div className="flex items-center gap-2 text-xs text-cream-500">
+                          <MapPin className="w-3.5 h-3.5" />
+                          <span>{item.village}, {item.district}</span>
+                        </div>
+                        <span className="text-xs font-medium text-forest-300 flex items-center gap-1">
+                          <GripVertical className="w-3.5 h-3.5" />
+                          {item.status === 'active' ? 'Active' : item.status}
+                        </span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </article>
+              ))}
+            </div>
+          )}
+        </div>
       )}
 
       {/* TAB 2: ORDERS */}
@@ -496,114 +920,30 @@ function ListingTab({
   showCreateModal: boolean;
   setShowCreateModal: (show: boolean) => void;
 }) {
-  return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <CardTitle>My Harvest Batches</CardTitle>
-        <Button variant="outline" size="sm" onClick={() => setShowCreateModal(true)}>
-          <Plus className="w-4 h-4" />
-          <span>New Listing</span>
-        </Button>
-      </div>
-
-      {listings.length === 0 ? (
-        <EmptyState
-          variant="listings"
-          action={<Button onClick={() => setShowCreateModal(true)}><Plus className="w-4 h-4" /> Create Listing</Button>}
-        />
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {listings.map((item) => (
-            <Card key={item.id} variant="bordered" hover padding="none" className="overflow-hidden group">
-              <div className="relative h-44 overflow-hidden bg-earth-50">
-                <ImageWithFallback
-                  src={item.imageUrl}
-                  alt={item.crop}
-                  fallbackTitle={item.crop}
-                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  loading="lazy"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-                <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
-                  <Badge variant={item.quality.grade === 'A' ? 'success' : item.quality.grade === 'B' ? 'warning' : 'danger'} size="sm" className="shadow-md">
-                    Grade {item.quality.grade}
-                  </Badge>
-                  <Badge variant="agri" size="sm" className="font-mono shadow-md">
-                    {item.anonSellerId}
-                  </Badge>
-                </div>
-                <div className="absolute top-2.5 right-2.5">
-                  <StatusBadge status={item.status} />
-                </div>
-                <div className="absolute bottom-2.5 left-2.5 right-2.5 flex justify-between opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                  <div className="flex gap-1.5">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="bg-white/90 text-earth-900 hover:bg-white shadow-md"
-                      aria-label="View listing details"
-                    >
-                      <Eye className="w-3.5 h-3.5" />
-                    </Button>
-                    {item.status === 'active' && onUpdateListingStatus && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="bg-white/90 text-alert-600 hover:bg-white shadow-md"
-                        onClick={() => onUpdateListingStatus(item.id, 'withdrawn')}
-                        aria-label="Withdraw listing"
-                      >
-                        <X className="w-3.5 h-3.5" />
-                      </Button>
-                    )}
-                  </div>
-                  <Badge variant="info" size="sm" className="bg-white/90 text-earth-900 shadow-md font-medium">
-                    {item.createdVia === 'voice' ? 'Voice' : 'Manual'}
-                  </Badge>
-                </div>
-              </div>
-
-              <CardContent className="p-4 space-y-3">
-                <div className="flex items-start justify-between gap-2">
-                  <div className="min-w-0">
-                    <h4 className="font-bold text-base text-earth-900 truncate">{item.crop}</h4>
-                    <p className="text-xs text-earth-500 font-medium truncate">{item.variety}</p>
-                  </div>
-                  <div className="text-right flex-shrink-0">
-                    <p className="text-[11px] text-earth-500 font-semibold uppercase tracking-wider">Expected Price</p>
-                    <p className="text-lg font-bold text-agri-700">₹{item.priceExpected}/kg</p>
-                  </div>
-                </div>
-
-                <div className="p-3 bg-earth-50 rounded-xl border border-earth-200 text-xs space-y-1.5">
-                  <div className="flex items-center justify-between text-earth-700">
-                    <span className="font-medium text-earth-600">Available Batch</span>
-                    <span className="font-bold text-earth-900">{item.quantityKg.toLocaleString()} kg <span className="font-normal text-earth-500">({(item.quantityKg / 100).toFixed(1)} Qtl)</span></span>
-                  </div>
-                  <div className="flex items-center justify-between text-earth-700">
-                    <span className="font-medium text-earth-600">AI Price Range</span>
-                    <span className="font-bold text-agri-700">₹{item.priceAi.min} – ₹{item.priceAi.max}/kg</span>
-                  </div>
-                  <div className="flex items-center justify-between text-earth-700">
-                    <span className="font-medium text-earth-600">CNN Quality</span>
-                    <span className="font-bold text-earth-900">{item.quality.confidence}% Confidence</span>
-                  </div>
-                </div>
-
-                <div className="text-[11px] text-earth-500 flex items-center justify-between pt-1 border-t border-earth-100">
-                  <span className="font-medium">Added {item.createdAt}</span>
-                  <span className="font-medium text-agri-700">
-                    {item.createdVia === 'voice' ? 'Voice' : 'Manual'}
-                  </span>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
-    </div>
-  );
+  // Now using shared functions from parent scope
+  return null; // The main logic moved to parent
 }
+
+const STATUS_STEPS: OrderStatus[] = ['pending', 'confirmed', 'in_transit', 'delivered', 'settled'];
+const STATUS_LABELS: Record<OrderStatus, string> = {
+  pending: 'Pending',
+  confirmed: 'Confirmed',
+  in_transit: 'In Transit',
+  delivered: 'Delivered',
+  settled: 'Settled',
+  matched: 'Matched',
+  disputed: 'Disputed',
+};
+
+const STATUS_ICONS: Record<OrderStatus, React.ReactNode> = {
+  pending: <Clock className="w-4 h-4" />,
+  confirmed: <CheckCircle className="w-4 h-4" />,
+  in_transit: <Truck className="w-4 h-4" />,
+  delivered: <PackageIcon className="w-4 h-4" />,
+  settled: <BanknoteIcon2 className="w-4 h-4" />,
+  matched: <GitBranch className="w-4 h-4" />,
+  disputed: <AlertTriangle className="w-4 h-4" />,
+};
 
 function OrdersTab({
   orders,
@@ -616,84 +956,294 @@ function OrdersTab({
   t: any;
   onUpdateOrderStatus?: (orderId: string, status: string) => void;
 }) {
+  const getStatusIndex = (status: OrderStatus) => STATUS_STEPS.indexOf(status);
+
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <CardTitle>Orders & Transaction Lifecycle</CardTitle>
-        <span className="text-xs text-earth-500 font-medium">Identity reveals automatically upon confirmation</span>
+    <div className="space-y-5">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-lg bg-teal-900/30 border border-teal-700 flex items-center justify-center">
+            <ClipboardList className="w-5 h-5 text-teal-400" />
+          </div>
+          <div>
+            <h2 className="font-display text-xl font-semibold text-cream-50">Orders & Lifecycle</h2>
+            <p className="text-sm text-cream-400">{orders.length} order{orders.length !== 1 ? 's' : ''}</p>
+          </div>
+        </div>
+        <span className="text-xs text-cream-500 font-medium sm:ml-auto">
+          Identity reveals automatically upon confirmation
+        </span>
       </div>
 
+      {/* Empty State */}
       {orders.length === 0 ? (
-        <EmptyState variant="orders" />
+        <Card variant="panel" padding="lg" className="text-center border-bg-700">
+          <div className="mx-auto mb-4 w-16 h-16 rounded-xl bg-bg-800 border border-bg-700 flex items-center justify-center">
+            <ClipboardList className="w-8 h-8 text-teal-400" />
+          </div>
+          <h3 className="font-display text-lg font-semibold text-cream-50 mb-2">No orders yet</h3>
+          <p className="text-cream-400 mb-6 max-w-xs mx-auto">
+            Orders will appear here once buyers commit to your listings. You'll see the full lifecycle from confirmation to settlement.
+          </p>
+        </Card>
       ) : (
-        <div className="space-y-3.5">
-          {orders.map((ord) => (
-            <Card key={ord.id} variant="bordered" padding="md" className="space-y-3">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-earth-100 pb-3">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="font-bold text-sm text-earth-900">Order #{ord.id}</span>
-                  <StatusBadge status={ord.status} />
-                  {ord.identityRevealed && (
-                    <Badge variant="success" size="sm" dot>
-                      <Eye className="w-3 h-3" />
-                      Identity Revealed
-                    </Badge>
-                  )}
-                </div>
-                <span className="text-xs text-earth-500 font-medium">Created: {ord.createdAt}</span>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs sm:text-sm">
-                <div className="p-3 bg-earth-50 rounded-xl border border-earth-200">
-                  <span className="text-earth-500 block text-xs font-semibold uppercase tracking-wider">Harvest Item</span>
-                  <span className="font-bold text-earth-900 block">{ord.crop} ({ord.variety})</span>
-                  <span className="text-earth-600 block text-xs font-medium mt-0.5">{ord.quantityKg} kg @ ₹{ord.agreedPricePerKg}/kg</span>
-                </div>
-
-                <div className="p-3 bg-earth-50 rounded-xl border border-earth-200">
-                  <span className="text-earth-500 block text-xs font-semibold uppercase tracking-wider">Total Settlement</span>
-                  <span className="font-black text-agri-700 text-base block mt-0.5">₹{ord.totalAmount.toLocaleString('en-IN')}</span>
-                  <span className="text-earth-600 block text-xs font-medium mt-0.5">Direct Bank Transfer / AEPS</span>
-                </div>
-
-                <div className="p-3 bg-earth-50 rounded-xl border border-earth-200">
-                  <span className="text-earth-500 block text-xs font-semibold uppercase tracking-wider">Buyer / Procurement</span>
-                  <span className="font-bold text-earth-900 block">{ord.buyerName}</span>
-                  <span className="text-earth-600 block text-xs font-medium mt-0.5">{ord.buyerType}</span>
-                  {ord.identityRevealed && (
-                    <span className="text-agri-700 font-bold flex items-center gap-1 mt-1.5 text-xs">
-                      <Phone className="w-3.5 h-3.5" />
-                      {ord.buyerPhone}
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              {ord.identityRevealed && (
-                <div className="p-3 bg-sky-50 border border-sky-200 rounded-xl text-xs text-sky-950 space-y-1">
-                  <p className="font-bold flex items-center gap-1.5 text-sky-900">
-                    <ShieldCheck className="w-4 h-4 text-sky-700" />
-                    Trade Confirmed: Mutual Identity Unlocked
-                  </p>
-                  <p className="text-earth-700">
-                    Buyer delivery address: <span className="font-bold text-earth-900">{ord.deliveryAddress}</span>. Logistics carrier handles farmgate dispatch.
-                  </p>
-                </div>
-              )}
-
-              {ord.status === 'pending' && onUpdateOrderStatus && (
-                <div className="pt-2 flex justify-end">
-                  <Button variant="agri" size="sm" onClick={() => onUpdateOrderStatus(ord.id, 'confirmed')}>
-                    <ShieldCheck className="w-4 h-4" />
-                    <span>Confirm Order & Reveal Identity</span>
-                  </Button>
-                </div>
-              )}
-            </Card>
-          ))}
+        <div className="space-y-3.5" role="feed" aria-label="Order lifecycle">
+          {orders.map((ord) => {
+            const statusIdx = getStatusIndex(ord.status);
+            const isRevealed = ord.identityRevealed;
+            
+            return (
+              <OrderCard
+                key={ord.id}
+                order={ord}
+                statusIdx={statusIdx}
+                isRevealed={isRevealed}
+                onUpdateOrderStatus={onUpdateOrderStatus}
+              />
+            );
+          })}
         </div>
       )}
     </div>
+  );
+}
+
+function OrderCard({
+  order,
+  statusIdx,
+  isRevealed,
+  onUpdateOrderStatus,
+}: {
+  order: Order;
+  statusIdx: number;
+  isRevealed: boolean;
+  onUpdateOrderStatus?: (orderId: string, status: string) => void;
+}) {
+  const STATUS_VARIANTS: Record<OrderStatus, 'success' | 'warning' | 'danger' | 'info' | 'default' | 'harvest' | 'forest' | 'teal' | 'copper'> = {
+    pending: 'warning',
+    confirmed: 'info',
+    in_transit: 'info',
+    delivered: 'success',
+    settled: 'success',
+    matched: 'info',
+    disputed: 'danger',
+  };
+
+  return (
+    <Card variant="panel" padding="none" className="overflow-hidden border-bg-700">
+      {/* Status Lifecycle Progress Bar */}
+      <div className="relative h-1.5 bg-bg-700">
+        <div 
+          className="absolute top-0 left-0 h-full bg-teal-500 rounded-full transition-all duration-500"
+          style={{ width: `${((statusIdx + 1) / STATUS_STEPS.length) * 100}%` }}
+        />
+        {STATUS_STEPS.map((step, idx) => (
+          <span
+            key={step}
+            className={`absolute top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full border-2 transition-all duration-300 ${
+              idx <= statusIdx 
+                ? 'bg-teal-500 border-teal-500' 
+                : 'bg-bg-850 border-bg-700'
+            }`}
+            style={{ left: `${(idx / (STATUS_STEPS.length - 1)) * 100}%` }}
+          >
+            {idx === statusIdx && <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-bg-850" />}
+          </span>
+        ))}
+      </div>
+
+      {/* Order Content */}
+      <CardContent className="p-4 sm:p-5 space-y-4">
+        {/* Header Row: Order ID + Status + Reveal Badge */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5 flex-wrap">
+            <span className="font-mono text-sm font-semibold text-cream-100">#{order.id}</span>
+            
+            {/* Enhanced Status Badge with Icon */}
+            <Badge 
+              variant={STATUS_VARIANTS[order.status] || 'default'} 
+              size="sm" 
+              dot
+              className="gap-1.5"
+            >
+              {STATUS_ICONS[order.status]}
+              <span className="capitalize">{STATUS_LABELS[order.status] || order.status.replace(/_/g, ' ')}</span>
+            </Badge>
+            
+            {isRevealed && (
+              <Badge variant="success" size="sm" dot className="gap-1.5">
+                <Unlock className="w-3 h-3" />
+                Identity Revealed
+              </Badge>
+            )}
+          </div>
+          <span className="text-xs text-cream-500 font-medium whitespace-nowrap">
+            <Calendar className="w-3.5 h-3.5 inline-block mr-1" />
+            Created: {order.createdAt}
+          </span>
+        </div>
+
+        {/* Main Details Grid - 3 columns on desktop, stacked on mobile */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {/* Harvest Item Column */}
+          <div className="p-3 bg-bg-750 rounded-lg border border-bg-700">
+            <div className="flex items-center gap-2 mb-2">
+              <Package className="w-4 h-4 text-forest-400" />
+              <span className="text-xs font-semibold text-cream-500 uppercase tracking-wider">Harvest Item</span>
+            </div>
+            <p className="font-semibold text-cream-100 text-sm">{order.crop} <span className="font-normal text-cream-500">({order.variety})</span></p>
+            <p className="text-xs text-cream-500 mt-1 font-medium">
+              {order.quantityKg.toLocaleString()} kg @ ₹{order.agreedPricePerKg}/kg
+            </p>
+          </div>
+
+          {/* Settlement Amount Column */}
+          <div className="p-3 bg-teal-900/30 rounded-lg border border-teal-700">
+            <div className="flex items-center gap-2 mb-2">
+              <BanknoteIcon className="w-4 h-4 text-teal-400" />
+              <span className="text-xs font-semibold text-teal-300 uppercase tracking-wider">Total Settlement</span>
+            </div>
+            <p className="font-display text-xl font-bold text-teal-300">
+              ₹{order.totalAmount.toLocaleString('en-IN')}
+            </p>
+            <p className="text-xs text-teal-400 mt-1 font-medium">Direct Bank Transfer / AEPS</p>
+            {order.settledAt && (
+              <p className="text-xs text-teal-500 mt-1">
+                Settled: {order.settledAt}
+              </p>
+            )}
+          </div>
+
+          {/* Buyer / Procurement Column */}
+          <div className="p-3 bg-copper-900/30 rounded-lg border border-copper-700">
+            <div className="flex items-center gap-2 mb-2">
+              <UserCheck className="w-4 h-4 text-copper-400" />
+              <span className="text-xs font-semibold text-copper-300 uppercase tracking-wider">Buyer / Procurement</span>
+            </div>
+            <p className="font-semibold text-cream-100 text-sm">{order.buyerName}</p>
+            <p className="text-xs text-cream-500 font-medium">{order.buyerType}</p>
+            
+            {/* Identity Reveal State */}
+            {isRevealed ? (
+              <div className="mt-2 pt-2 border-t border-copper-700 space-y-1.5 animate-fade-in">
+                <div className="flex items-center gap-1.5 text-xs text-copper-300 font-medium">
+                  <Phone className="w-3.5 h-3.5" />
+                  <span>{order.buyerPhone}</span>
+                </div>
+                <div className="flex items-center gap-1.5 text-xs text-copper-300 font-medium">
+                  <MapPin className="w-3.5 h-3.5" />
+                  <span>{order.deliveryAddress}</span>
+                </div>
+              </div>
+            ) : (
+              <div className="mt-2 pt-2 border-t border-copper-700">
+                <div className="flex items-center gap-1.5 text-xs text-cream-500">
+                  <Lock className="w-3.5 h-3.5" />
+                  <span>Identity locked — reveals on confirmation</span>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Revealed Details Panel - Full width when identity is revealed */}
+        {isRevealed && (
+          <div className="p-3 bg-teal-900/30 border border-teal-700 rounded-lg space-y-1.5 animate-slide-down">
+            <p className="font-semibold text-teal-100 flex items-center gap-1.5 text-sm">
+              <ShieldCheck className="w-4 h-4 text-teal-400" />
+              Trade Confirmed: Mutual Identity Unlocked
+            </p>
+            <p className="text-xs text-cream-400 leading-relaxed">
+              Buyer delivery address: <span className="font-semibold text-cream-100">{order.deliveryAddress}</span>. 
+              Logistics carrier handles farmgate dispatch.
+            </p>
+            {order.poolId && (
+              <p className="text-xs text-teal-300 flex items-center gap-1.5">
+                <GitBranch className="w-3.5 h-3.5" />
+                <span>Assigned to logistics pool: <span className="font-mono font-semibold">{order.poolId}</span></span>
+              </p>
+            )}
+          </div>
+        )}
+
+        {/* Actions - Contextual based on status */}
+        {onUpdateOrderStatus && (
+          <div className="pt-2 flex flex-col sm:flex-row sm:justify-end gap-2 border-t border-bg-700">
+            {order.status === 'pending' && (
+              <Button 
+                variant="forest" 
+                size="sm" 
+                onClick={() => onUpdateOrderStatus(order.id, 'confirmed')}
+                className="gap-2"
+              >
+                <ShieldCheck className="w-4 h-4" />
+                <span>Confirm Order & Reveal Identity</span>
+              </Button>
+            )}
+            {order.status === 'confirmed' && (
+              <Button 
+                variant="secondary" 
+                size="sm" 
+                onClick={() => onUpdateOrderStatus(order.id, 'in_transit')}
+                className="gap-2"
+              >
+                <Truck className="w-4 h-4" />
+                <span>Mark In Transit</span>
+              </Button>
+            )}
+            {order.status === 'delivered' && (
+              <Button 
+                variant="harvest" 
+                size="sm" 
+                onClick={() => onUpdateOrderStatus(order.id, 'settled')}
+                className="gap-2"
+              >
+                <DollarSign className="w-4 h-4" />
+                <span>Mark Settled</span>
+              </Button>
+            )}
+          </div>
+        )}
+
+        {/* Settlement/Payment Info for settled orders */}
+        {order.status === 'settled' && (
+          <div className="p-3 bg-forest-900/30 border border-forest-700 rounded-lg space-y-1.5">
+            <p className="font-semibold text-forest-100 flex items-center gap-1.5 text-sm">
+              <CheckCircle2 className="w-4 h-4 text-forest-400" />
+              Payment Settled
+            </p>
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              <div>
+                <p className="text-cream-500">Amount Received</p>
+                <p className="font-bold text-forest-300">₹{order.totalAmount.toLocaleString('en-IN')}</p>
+              </div>
+              <div>
+                <p className="text-cream-500">Settled On</p>
+                <p className="font-semibold text-cream-100">{order.settledAt || 'N/A'}</p>
+              </div>
+            </div>
+            {order.farmerRating && (
+              <div className="flex items-center gap-1.5 text-xs text-harvest-400">
+                <Star className="w-3.5 h-3.5 fill-harvest-400 text-harvest-400" />
+                <span>Buyer rated you: {order.farmerRating}/5</span>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Disputed State */}
+        {order.status === 'disputed' && (
+          <div className="p-3 bg-copper-900/30 border border-copper-700 rounded-lg space-y-1.5">
+            <p className="font-semibold text-copper-100 flex items-center gap-1.5 text-sm">
+              <AlertTriangle className="w-4 h-4 text-copper-400" />
+              Order Disputed
+            </p>
+            <p className="text-xs text-cream-400">This order has been flagged for review. Admin will investigate.</p>
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 }
 
@@ -715,9 +1265,9 @@ function SchemesTab({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <CardTitle>Government Schemes Matched to Your Profile</CardTitle>
-          <p className="text-xs text-earth-500 font-medium mt-0.5">Eligibility checked for: {farmer.state} · {farmer.landSizeAcres} Acres · {farmer.primaryCrops.join(', ')}</p>
+          <p className="text-xs text-cream-500 font-medium mt-0.5">Eligibility checked for: {farmer.state} · {farmer.landSizeAcres} Acres · {farmer.primaryCrops.join(', ')}</p>
         </div>
-        <span className="text-xs font-bold text-agri-700 bg-agri-50 px-3 py-1 rounded-full border border-agri-200">
+        <span className="text-xs font-bold text-forest-300 bg-forest-900/30 px-3 py-1 rounded-full border border-forest-700">
           {filteredSchemes.length} scheme{filteredSchemes.length !== 1 ? 's' : ''} matched
         </span>
       </div>
@@ -729,8 +1279,8 @@ function SchemesTab({
             onClick={() => setSchemeCategory(cat)}
             className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all border cursor-pointer ${
               schemeCategory === cat
-                ? 'bg-agri-600 text-white border-agri-600 shadow-sm shadow-agri-600/20'
-                : 'bg-white text-earth-700 border-earth-200 hover:border-agri-400 hover:text-agri-700 hover:bg-agri-50'
+                ? 'bg-forest-600 text-bg-950 border-forest-600 shadow-sm shadow-forest-600/20'
+                : 'bg-bg-800 text-cream-300 border-bg-700 hover:border-forest-500 hover:text-forest-300 hover:bg-forest-900/20'
             }`}
           >
             {cat}
@@ -743,25 +1293,25 @@ function SchemesTab({
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {filteredSchemes.map((sch) => (
-            <Card key={sch.id} variant="bordered" padding="md" className="space-y-3 flex flex-col justify-between hover">
+            <Card key={sch.id} variant="outlined" padding="md" className="space-y-3 flex flex-col justify-between hover border-bg-700">
               <div className="space-y-2 text-xs sm:text-sm">
                 <div className="flex items-center justify-between gap-2 flex-wrap">
                   <Badge variant="info" size="sm">{sch.category}</Badge>
                   <Badge variant="success" size="sm">Eligible</Badge>
                 </div>
                 <CardTitle className="text-base">{sch.title}</CardTitle>
-                <p className="text-earth-700 leading-relaxed text-xs sm:text-sm font-medium">{sch.description}</p>
+                <p className="text-cream-300 leading-relaxed text-xs sm:text-sm font-medium">{sch.description}</p>
                 {sch.eligibilityReason && (
-                  <div className="p-2.5 bg-agri-50 rounded-xl text-xs text-agri-950 border border-agri-200">
-                    <span className="font-bold text-agri-900">Why you qualify: </span>{sch.eligibilityReason}
+                  <div className="p-2.5 bg-forest-900/30 rounded-xl text-xs text-forest-100 border border-forest-700">
+                    <span className="font-bold text-forest-300">Why you qualify: </span>{sch.eligibilityReason}
                   </div>
                 )}
-                <div className="p-2.5 bg-earth-50 rounded-xl text-xs font-bold text-agri-800 border border-earth-200">Benefit: {sch.benefitAmount}</div>
+                <div className="p-2.5 bg-harvest-900/30 rounded-xl text-xs font-bold text-harvest-200 border border-harvest-700">Benefit: {sch.benefitAmount}</div>
               </div>
 
-              <CardFooter className="text-xs text-earth-600">
-                <span className="font-semibold">Deadline: {sch.applicationDeadline}</span>
-                <a href={sch.sourceUrl} target="_blank" rel="noreferrer" className="text-agri-700 hover:text-agri-900 font-bold flex items-center gap-1 ml-auto">
+              <CardFooter className="text-xs text-cream-400 font-semibold">
+                <span>Deadline: {sch.applicationDeadline}</span>
+                <a href={sch.sourceUrl} target="_blank" rel="noreferrer" className="text-forest-300 hover:text-forest-100 font-bold flex items-center gap-1 ml-auto">
                   <span>Apply / Details</span>
                   <ExternalLink className="w-3.5 h-3.5" />
                 </a>
@@ -789,17 +1339,17 @@ function FinanceTab({
 }) {
   return (
     <div className="space-y-5">
-      <Card variant="bordered" padding="lg" className="space-y-4">
+      <Card variant="outlined" padding="lg" className="space-y-4 border-bg-700">
         <CardHeader>
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <Badge variant="info" size="sm">AI Harvest Working Capital</Badge>
               <CardTitle className="text-xl mt-1">Pre-Harvest & Liquidity Advance</CardTitle>
-              <p className="text-xs text-earth-500 font-medium mt-0.5">Automated risk scoring based on fulfillment history, APMC volatility index, and produce quality.</p>
+              <p className="text-xs text-cream-500 font-medium mt-0.5">Automated risk scoring based on fulfillment history, APMC volatility index, and produce quality.</p>
             </div>
             <Button
               size="lg"
-              variant="agri"
+              variant="harvest"
               onClick={() => {
                 const existingRequested = advances.find((a) => a.status === 'requested');
                 if (existingRequested) {
@@ -826,43 +1376,43 @@ function FinanceTab({
 
         <CardContent className="space-y-4">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="p-3.5 bg-earth-50 rounded-2xl border border-earth-200">
-              <p className="text-xs text-earth-500 font-semibold uppercase tracking-wider">Eligible Advance</p>
-              <p className="text-lg font-bold text-agri-700 mt-1">₹{riskAssessment.eligibleAdvanceAmount.toLocaleString('en-IN')}</p>
+            <div className="p-3.5 bg-bg-750 rounded-2xl border border-bg-700">
+              <p className="text-xs text-cream-500 font-semibold uppercase tracking-wider">Eligible Advance</p>
+              <p className="text-lg font-bold text-forest-300 mt-1">₹{riskAssessment.eligibleAdvanceAmount.toLocaleString('en-IN')}</p>
             </div>
-            <div className="p-3.5 bg-earth-50 rounded-2xl border border-earth-200">
-              <p className="text-xs text-earth-500 font-semibold uppercase tracking-wider">Risk Score</p>
-              <p className="text-lg font-bold text-earth-900 mt-1">{riskAssessment.riskScore} / 100</p>
+            <div className="p-3.5 bg-bg-750 rounded-2xl border border-bg-700">
+              <p className="text-xs text-cream-500 font-semibold uppercase tracking-wider">Risk Score</p>
+              <p className="text-lg font-bold text-cream-100 mt-1">{riskAssessment.riskScore} / 100</p>
             </div>
-            <div className="p-3.5 bg-earth-50 rounded-2xl border border-earth-200">
-              <p className="text-xs text-earth-500 font-semibold uppercase tracking-wider">Fulfillment Rate</p>
-              <p className="text-sm font-bold text-earth-900 mt-1">{riskAssessment.factors.fulfillmentRate}</p>
+            <div className="p-3.5 bg-bg-750 rounded-2xl border border-bg-700">
+              <p className="text-xs text-cream-500 font-semibold uppercase tracking-wider">Fulfillment Rate</p>
+              <p className="text-sm font-bold text-cream-100 mt-1">{riskAssessment.factors.fulfillmentRate}</p>
             </div>
-            <div className="p-3.5 bg-earth-50 rounded-2xl border border-earth-200">
-              <p className="text-xs text-earth-500 font-semibold uppercase tracking-wider">Reputation Score</p>
-              <p className="text-sm font-bold text-harvest-700 mt-1 flex items-center gap-1">
-                <Star className="w-4 h-4 fill-harvest-500 text-harvest-500" />
+            <div className="p-3.5 bg-bg-750 rounded-2xl border border-bg-700">
+              <p className="text-xs text-cream-500 font-semibold uppercase tracking-wider">Reputation Score</p>
+              <p className="text-sm font-bold text-harvest-300 mt-1 flex items-center gap-1">
+                <Star className="w-4 h-4 fill-harvest-400 text-harvest-400" />
                 <span>{riskAssessment.factors.reputationScore} / 5.0</span>
               </p>
             </div>
           </div>
 
-          <div className="p-4 bg-sky-50 border border-sky-200 rounded-2xl text-xs text-sky-950 space-y-1">
-            <p className="font-bold text-sky-900">AI Credit Model Explanation:</p>
-            <p className="leading-relaxed text-earth-800 font-medium">{riskAssessment.explanation}</p>
+          <div className="p-4 bg-teal-900/30 border border-teal-700 rounded-2xl text-xs text-teal-100 space-y-1">
+            <p className="font-bold text-teal-100">AI Credit Model Explanation:</p>
+            <p className="leading-relaxed text-cream-300 font-medium">{riskAssessment.explanation}</p>
           </div>
 
           {advances.length > 0 && (
-            <div className="pt-4 border-t border-earth-100">
-              <h4 className="font-bold text-earth-900 mb-3 text-sm">Working Capital Request History</h4>
+            <div className="pt-4 border-t border-bg-700">
+              <h4 className="font-bold text-cream-100 mb-3 text-sm">Working Capital Request History</h4>
               <div className="space-y-3">
                 {advances.map((adv) => {
                   return (
-                    <div key={adv.id} className="flex justify-between items-center p-3.5 rounded-2xl border border-earth-200 bg-white shadow-xs">
+                    <div key={adv.id} className="flex justify-between items-center p-3.5 rounded-2xl border border-bg-700 bg-bg-850 shadow-xs">
                       <div>
-                        <p className="font-bold text-earth-900 text-sm">₹{adv.amountRequested.toLocaleString('en-IN')}</p>
-                        <p className="text-xs text-earth-500 font-mono">Ref: {adv.aepsTxnRef || adv.id}</p>
-                        {adv.purpose && <p className="text-[11px] text-earth-500 font-medium">{adv.purpose}</p>}
+                        <p className="font-bold text-cream-100 text-sm">₹{adv.amountRequested.toLocaleString('en-IN')}</p>
+                        <p className="text-xs text-cream-500 font-mono">Ref: {adv.aepsTxnRef || adv.id}</p>
+                        {adv.purpose && <p className="text-[11px] text-cream-500 font-medium">{adv.purpose}</p>}
                       </div>
                       <div className="flex items-center gap-2">
                         {adv.status === 'requested' && (
@@ -870,7 +1420,7 @@ function FinanceTab({
                             size="sm"
                             variant="outline"
                             onClick={() => onOpenAepsModal(adv.amountRequested, adv.id)}
-                            className="text-xs border-agri-600 text-agri-800 hover:bg-agri-50 flex items-center gap-1 font-bold"
+                            className="text-xs border-forest-500 text-forest-300 hover:bg-forest-900/30 flex items-center gap-1 font-bold"
                           >
                             <Fingerprint className="w-3.5 h-3.5" />
                             <span>Cash Out (AEPS)</span>
@@ -964,40 +1514,40 @@ function SafetyTab({
   };
 
   return (
-    <Card variant="alert" padding="lg" className="max-w-2xl mx-auto space-y-4">
+    <Card variant="subtle-copper" padding="lg" className="max-w-2xl mx-auto space-y-4 border-copper-700">
       <div className="flex items-center gap-3">
-        <div className="p-3 bg-alert-100 text-alert-700 rounded-2xl"><AlertTriangle className="w-6 h-6" /></div>
+        <div className="p-3 bg-copper-900/30 text-copper-300 rounded-2xl"><AlertTriangle className="w-6 h-6" /></div>
         <div>
           <CardTitle className="text-lg">{t.safety.title}</CardTitle>
-          <p className="text-xs text-earth-500 font-medium">{t.safety.subheading}</p>
+          <p className="text-xs text-cream-500 font-medium">{t.safety.subheading}</p>
         </div>
       </div>
 
-      <div className="p-3.5 bg-alert-50 border border-alert-200 rounded-2xl text-xs text-alert-900 space-y-1">
+      <div className="p-3.5 bg-copper-900/30 border border-copper-700 rounded-2xl text-xs text-copper-100 space-y-1">
         <p className="font-bold flex items-center gap-1.5">
-          <ShieldCheck className="w-4 h-4 text-alert-600" />
+          <ShieldCheck className="w-4 h-4 text-copper-400" />
           100% Guaranteed Confidentiality
         </p>
-        <p className="text-alert-800 leading-relaxed font-medium">{t.safety.guarantee}</p>
+        <p className="text-cream-300 leading-relaxed font-medium">{t.safety.guarantee}</p>
       </div>
 
       {safetyError && (
-        <div className="p-3 bg-alert-50 border border-alert-200 rounded-xl text-xs text-alert-800 flex items-center gap-2 font-semibold">
-          <AlertCircle className="w-4 h-4 text-alert-600 shrink-0" />
+        <div className="p-3 bg-copper-900/30 border border-copper-700 rounded-xl text-xs text-copper-100 flex items-center gap-2 font-semibold">
+          <AlertCircle className="w-4 h-4 text-copper-400 shrink-0" />
           <span>{safetyError}</span>
         </div>
       )}
 
       {safetySubmitted ? (
-        <div className="p-6 bg-agri-50 border border-agri-200 rounded-2xl text-center space-y-2">
-          <CheckCircle2 className="w-10 h-10 text-agri-600 mx-auto" />
-          <h4 className="font-bold text-sm text-agri-900">Report Submitted to Admin Moderation Queue</h4>
-          <p className="text-xs text-earth-500">Your report has been logged without storing any identifying data.</p>
+        <div className="p-6 bg-forest-900/30 border border-forest-700 rounded-2xl text-center space-y-2">
+          <CheckCircle2 className="w-10 h-10 text-forest-400 mx-auto" />
+          <h4 className="font-bold text-sm text-forest-100">Report Submitted to Admin Moderation Queue</h4>
+          <p className="text-xs text-cream-500">Your report has been logged without storing any identifying data.</p>
         </div>
       ) : (
         <form onSubmit={handleSafetySubmit} className="space-y-4 text-xs sm:text-sm">
           <div>
-            <label className="block text-xs font-semibold text-earth-800 mb-1">Issue Category</label>
+            <label className="block text-xs font-semibold text-cream-300 mb-1">Issue Category</label>
             <Select
               options={SAFETY_CATEGORIES.map(c => ({ value: c.value, label: c.label }))}
               value={safetyCategory}
@@ -1007,7 +1557,7 @@ function SafetyTab({
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-earth-800 mb-1">Name / Description of Entity Involved</label>
+            <label className="block text-xs font-semibold text-cream-300 mb-1">Name / Description of Entity Involved</label>
             <Input
               placeholder="e.g. Sub-agent at Pimpalgaon gate, Trader X"
               value={safetyEntity}
@@ -1016,7 +1566,7 @@ function SafetyTab({
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-earth-800 mb-1">Describe what happened</label>
+            <label className="block text-xs font-semibold text-cream-300 mb-1">Describe what happened</label>
             <Textarea
               rows={4}
               required
@@ -1032,9 +1582,9 @@ function SafetyTab({
               id="anonCheck"
               checked={safetyAnonymous}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSafetyAnonymous(e.target.checked)}
-              className="w-4 h-4 text-alert-600 rounded-sm focus:ring-alert-500 cursor-pointer"
+              className="w-4 h-4 text-copper-500 rounded-sm focus:ring-copper-500 cursor-pointer bg-bg-800 border-bg-700"
             />
-            <label htmlFor="anonCheck" className="text-xs font-semibold text-earth-800 cursor-pointer">
+            <label htmlFor="anonCheck" className="text-xs font-semibold text-cream-300 cursor-pointer">
               Submit 100% Anonymously (Do not associate my farmer ID)
             </label>
           </div>
@@ -1119,20 +1669,20 @@ function CreateListingModal({
     >
       <div className="space-y-5 text-xs sm:text-sm">
         {publishError && (
-          <div className="p-3 bg-alert-50 border border-alert-200 rounded-xl text-xs text-alert-800 flex items-center gap-2 font-semibold">
-            <AlertCircle className="w-4 h-4 text-alert-600 shrink-0" />
+          <div className="p-3 bg-copper-900/30 border border-copper-700 rounded-xl text-xs text-copper-100 flex items-center gap-2 font-semibold">
+            <AlertCircle className="w-4 h-4 text-copper-400 shrink-0" />
             <span>{publishError}</span>
           </div>
         )}
         {/* Mic Record Banner */}
-        <div className="p-4 bg-agri-50 rounded-2xl border border-agri-200 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+        <div className="p-4 bg-forest-900/30 rounded-2xl border border-forest-700 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
           <div className="space-y-1">
-            <p className="text-xs font-bold text-agri-950">
+            <p className="text-xs font-bold text-forest-100">
               {isRecording ? t.farmer.listening : t.farmer.tapToSpeak}
             </p>
-            <p className="text-[11px] text-agri-800 font-semibold">{t.farmer.speakPrompt}</p>
+            <p className="text-[11px] text-forest-300 font-semibold">{t.farmer.speakPrompt}</p>
             {speechTranscript && (
-              <p className="text-xs font-mono font-bold text-earth-900 bg-white px-2.5 py-1 rounded-lg border border-agri-300 inline-block mt-1">
+              <p className="text-xs font-mono font-bold text-cream-100 bg-bg-800 px-2.5 py-1 rounded-lg border border-forest-700 inline-block mt-1">
                 "{speechTranscript}"
               </p>
             )}
@@ -1141,19 +1691,19 @@ function CreateListingModal({
           <button
             type="button"
             onClick={handleToggleRecording}
-            className={`relative w-14 h-14 rounded-full flex items-center justify-center text-white shadow-lg transition-all cursor-pointer shrink-0 ${
-              isRecording ? 'bg-alert-600 animate-pulse scale-105' : 'bg-agri-600 hover:bg-agri-700'
+            className={`relative w-14 h-14 rounded-full flex items-center justify-center text-bg-950 shadow-lg transition-all cursor-pointer shrink-0 ${
+              isRecording ? 'bg-copper-500 animate-pulse scale-105' : 'bg-forest-500 hover:bg-forest-400'
             }`}
           >
             {isRecording ? <MicOff className="w-6 h-6" /> : <Mic className="w-6 h-6" />}
-            {isRecording && <span className="absolute inset-0 rounded-full border-4 border-alert-400 animate-ping" />}
+            {isRecording && <span className="absolute inset-0 rounded-full border-4 border-copper-400 animate-ping" />}
           </button>
         </div>
 
         {/* Form Input Slots */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
           <div>
-            <label className="block font-semibold text-earth-800 mb-1">Crop</label>
+            <label className="block font-semibold text-cream-300 mb-1">Crop</label>
             <Select
               options={[
                 { value: 'Tomato', label: 'Tomato (टमाटर)' },
@@ -1170,7 +1720,7 @@ function CreateListingModal({
           </div>
 
           <div>
-            <label className="block font-semibold text-earth-800 mb-1">Variety</label>
+            <label className="block font-semibold text-cream-300 mb-1">Variety</label>
             <Input
               value={varietyInput}
               onChange={(e) => setVarietyInput(e.target.value)}
@@ -1179,7 +1729,7 @@ function CreateListingModal({
           </div>
 
           <div>
-            <label className="block font-semibold text-earth-800 mb-1">Quantity (kg)</label>
+            <label className="block font-semibold text-cream-300 mb-1">Quantity (kg)</label>
             <Input
               type="number"
               value={quantityInput}
@@ -1188,27 +1738,27 @@ function CreateListingModal({
               min={50}
               className="w-full"
             />
-            <span className="text-[10px] text-earth-500 font-semibold mt-0.5 block">= {(quantityInput / 100).toFixed(1)} Quintal</span>
+            <span className="text-[10px] text-cream-500 font-semibold mt-0.5 block">= {(quantityInput / 100).toFixed(1)} Quintal</span>
           </div>
 
           <div>
-            <label className="block font-semibold text-earth-800 mb-1">Expected Price (₹/kg)</label>
+            <label className="block font-semibold text-cream-300 mb-1">Expected Price (₹/kg)</label>
             <Input
               type="number"
               value={priceInput}
               onChange={(e) => setPriceInput(Number(e.target.value))}
               step={0.5}
               min={5}
-              className="w-full text-agri-800 font-bold"
+              className="w-full text-harvest-300 font-bold"
             />
           </div>
         </div>
 
         {/* Photo Upload & CNN Quality Assessment */}
         <div className="space-y-2">
-          <label className="block text-xs font-semibold text-earth-800">Produce Photo (for CNN Quality Assessment)</label>
+          <label className="block text-xs font-semibold text-cream-300">Produce Photo (for CNN Quality Assessment)</label>
 
-          <div className="relative w-full h-36 rounded-xl overflow-hidden border border-earth-200 bg-earth-50">
+          <div className="relative w-full h-36 rounded-xl overflow-hidden border border-bg-700 bg-bg-750">
             {selectedPhotoUrl && (
               <ImageWithFallback src={selectedPhotoUrl} alt="Produce photo" fallbackTitle={cropInput} className="w-full h-full object-cover" />
             )}
@@ -1224,11 +1774,11 @@ function CreateListingModal({
           </div>
 
           <div className="flex items-center gap-2">
-            <label htmlFor="photo-upload" className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-agri-800 bg-agri-50 hover:bg-agri-100 border border-agri-300 rounded-xl cursor-pointer transition-colors">
+            <label htmlFor="photo-upload" className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-forest-300 bg-forest-900/30 hover:bg-forest-900/50 border border-forest-700 rounded-xl cursor-pointer transition-colors">
               <Camera className="w-3.5 h-3.5" /> Upload Photo
             </label>
             <input id="photo-upload" type="file" accept="image/*" capture="environment" className="hidden" onChange={handlePhotoFileChange} />
-            <span className="text-[11px] text-earth-500 font-medium">or choose demo photo:</span>
+            <span className="text-[11px] text-cream-500 font-medium">or choose demo photo:</span>
           </div>
 
           {DEMO_PHOTOS[cropInput] && (
@@ -1240,12 +1790,12 @@ function CreateListingModal({
                   onClick={() => { setSelectedPhotoUrl(demo.url); setPhotoBase64(''); }}
                   className={`shrink-0 flex flex-col items-center gap-1 p-1 rounded-xl border-2 transition-all cursor-pointer ${
                     selectedPhotoUrl === demo.url
-                      ? 'border-agri-500 shadow-sm bg-agri-50/50'
-                      : 'border-earth-200 hover:border-earth-300'
+                      ? 'bg-forest-900/30 border-forest-500 shadow-sm'
+                      : 'bg-bg-800 border-bg-700 hover:border-bg-600'
                   }`}
                 >
                   <ImageWithFallback src={demo.url} alt={demo.label} fallbackTitle={demo.label} className="w-16 h-12 object-cover rounded-lg" loading="lazy" />
-                  <span className="text-[10px] text-earth-700 font-bold">{demo.label}</span>
+                  <span className="text-[10px] text-cream-300 font-bold">{demo.label}</span>
                 </button>
               ))}
             </div>
@@ -1254,47 +1804,47 @@ function CreateListingModal({
 
         {/* AI Price Recommendation Band */}
         {aiPriceBand && (
-          <div className="p-3.5 bg-harvest-50 border border-harvest-200 rounded-2xl space-y-2">
+          <div className="p-3.5 bg-harvest-900/30 border border-harvest-700 rounded-2xl space-y-2">
             <div className="flex items-center justify-between text-xs">
-              <span className="font-bold text-harvest-950 flex items-center gap-1.5">
-                <Sparkles className="w-4 h-4 text-harvest-600" />
+              <span className="font-bold text-harvest-100 flex items-center gap-1.5">
+                <Sparkles className="w-4 h-4 text-harvest-400" />
                 AI Price Band (Agmarknet Mandi Model)
               </span>
-              <span className="font-bold text-harvest-900">{aiPriceBand.confidence}% Confidence</span>
+              <span className="font-bold text-harvest-300">{aiPriceBand.confidence}% Confidence</span>
             </div>
 
-            <div className="flex items-center justify-between text-xs font-mono font-bold bg-white p-2 rounded-xl border border-harvest-200">
-              <span className="text-earth-600">Min: ₹{aiPriceBand.min}/kg</span>
-              <span className="text-agri-800 text-sm">Fair: ₹{aiPriceBand.fair}/kg</span>
-              <span className="text-earth-600">Max: ₹{aiPriceBand.max}/kg</span>
+            <div className="flex items-center justify-between text-xs font-mono font-bold bg-bg-800 p-2 rounded-xl border border-harvest-700">
+              <span className="text-cream-500">Min: ₹{aiPriceBand.min}/kg</span>
+              <span className="text-harvest-300 text-sm">Fair: ₹{aiPriceBand.fair}/kg</span>
+              <span className="text-cream-500">Max: ₹{aiPriceBand.max}/kg</span>
             </div>
 
-            <p className="text-[11px] text-harvest-950 font-medium">Benchmark: {aiPriceBand.benchmarkMandi}. Wholesale prices are currently trending {aiPriceBand.trend}.</p>
+            <p className="text-[11px] text-harvest-100 font-medium">Benchmark: {aiPriceBand.benchmarkMandi}. Wholesale prices are currently trending {aiPriceBand.trend}.</p>
           </div>
         )}
 
         {/* Quality Assessment */}
         {isAssessingQuality && (
-          <div className="p-3.5 bg-earth-50 border border-earth-200 rounded-2xl space-y-2 animate-pulse">
-            <div className="flex items-center gap-2 text-xs text-earth-600 font-bold">
-              <Camera className="w-4 h-4 text-agri-600" />
+          <div className="p-3.5 bg-bg-750 border border-bg-700 rounded-2xl space-y-2 animate-pulse">
+            <div className="flex items-center gap-2 text-xs text-cream-500 font-bold">
+              <Camera className="w-4 h-4 text-forest-400" />
               <span>MobileNet CNN analysing produce quality...</span>
             </div>
             <div className="grid grid-cols-3 gap-2">
               {['Color', 'Firmness', 'Defects'].map(label => (
-                <div key={label} className="bg-earth-200 h-8 rounded-lg" />
+                <div key={label} className="bg-bg-700 h-8 rounded-lg" />
               ))}
             </div>
           </div>
         )}
         {!isAssessingQuality && qualityGrade && (
           <div className={`p-3.5 border rounded-2xl space-y-2 ${
-            qualityGrade.grade === 'A' ? 'bg-agri-50 border-agri-200' :
-            qualityGrade.grade === 'B' ? 'bg-harvest-50 border-harvest-200' :
-            'bg-alert-50 border-alert-200'
+            qualityGrade.grade === 'A' ? 'bg-forest-900/30 border-forest-700' :
+            qualityGrade.grade === 'B' ? 'bg-harvest-900/30 border-harvest-700' :
+            'bg-copper-900/30 border-copper-700'
           }`}>
             <div className="flex items-center justify-between text-xs">
-              <span className={`font-bold flex items-center gap-1.5 ${qualityGrade.grade === 'A' ? 'text-agri-950' : qualityGrade.grade === 'B' ? 'text-harvest-950' : 'text-alert-950'}`}>
+              <span className={`font-bold flex items-center gap-1.5 ${qualityGrade.grade === 'A' ? 'text-forest-100' : qualityGrade.grade === 'B' ? 'text-harvest-100' : 'text-copper-100'}`}>
                 <Camera className="w-4 h-4" />
                 CNN Grade {qualityGrade.grade} — {qualityGrade.freshnessLabel}
               </span>
@@ -1304,35 +1854,35 @@ function CreateListingModal({
             </div>
 
             <div className="grid grid-cols-3 gap-2 text-center text-xs">
-              <div className="bg-white p-1.5 rounded-lg border border-earth-200">
-                <p className="text-[10px] text-earth-500 font-semibold">Color Uniformity</p>
-                <p className="font-bold text-earth-900">{qualityGrade.colorUniformity}%</p>
+              <div className="bg-bg-800 p-1.5 rounded-lg border border-bg-700">
+                <p className="text-[10px] text-cream-500 font-semibold">Color Uniformity</p>
+                <p className="font-bold text-cream-100">{qualityGrade.colorUniformity}%</p>
               </div>
-              <div className="bg-white p-1.5 rounded-lg border border-earth-200">
-                <p className="text-[10px] text-earth-500 font-semibold">Firmness</p>
-                <p className="font-bold text-earth-900">{qualityGrade.firmnessScore}%</p>
+              <div className="bg-bg-800 p-1.5 rounded-lg border border-bg-700">
+                <p className="text-[10px] text-cream-500 font-semibold">Firmness</p>
+                <p className="font-bold text-cream-100">{qualityGrade.firmnessScore}%</p>
               </div>
-              <div className="bg-white p-1.5 rounded-lg border border-earth-200">
-                <p className="text-[10px] text-earth-500 font-semibold">Defect %</p>
-                <p className={`font-bold ${qualityGrade.surfaceDefects <= 8 ? 'text-agri-800' : qualityGrade.surfaceDefects <= 18 ? 'text-harvest-700' : 'text-alert-700'}`}>{qualityGrade.surfaceDefects}%</p>
+              <div className="bg-bg-800 p-1.5 rounded-lg border border-bg-700">
+                <p className="text-[10px] text-cream-500 font-semibold">Defect %</p>
+                <p className={`font-bold ${qualityGrade.surfaceDefects <= 8 ? 'text-forest-300' : qualityGrade.surfaceDefects <= 18 ? 'text-harvest-300' : 'text-copper-300'}`}>{qualityGrade.surfaceDefects}%</p>
               </div>
             </div>
 
-            <p className="text-[11px] text-earth-700 leading-relaxed font-medium">{qualityGrade.notes}</p>
+            <p className="text-[11px] text-cream-400 leading-relaxed font-medium">{qualityGrade.notes}</p>
           </div>
         )}
 
         {/* Anonymous Shield Notice */}
-        <div className="p-3 bg-earth-50 border border-earth-200 rounded-xl text-[11px] text-earth-700 flex items-start gap-2">
-          <ShieldCheck className="w-4 h-4 text-agri-600 mt-0.5 shrink-0" />
+        <div className="p-3 bg-bg-750 border border-bg-700 rounded-xl text-[11px] text-cream-400 flex items-start gap-2">
+          <ShieldCheck className="w-4 h-4 text-forest-400 mt-0.5 shrink-0" />
           <p>
-            {t.farmer.anonShieldNotice} Your listing will be published under Anonymous ID <span className="font-mono font-bold text-earth-900">{farmer.anonSellerId}</span>.
+            {t.farmer.anonShieldNotice} Your listing will be published under Anonymous ID <span className="font-mono font-bold text-cream-100">{farmer.anonSellerId}</span>.
           </p>
         </div>
 
-        <div className="flex items-center justify-end gap-2 pt-4 border-t border-earth-200">
+        <div className="flex items-center justify-end gap-2 pt-4 border-t border-bg-700">
           <Button variant="secondary" onClick={onClose} disabled={isPublishing}>Cancel</Button>
-          <Button variant="agri" onClick={onPublish} disabled={isPublishing} loading={isPublishing}>
+          <Button variant="forest" onClick={onPublish} disabled={isPublishing} loading={isPublishing}>
             Publish Anonymously
           </Button>
         </div>

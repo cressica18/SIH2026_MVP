@@ -104,27 +104,27 @@ export const AepsModal: React.FC<AepsModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-stone-950/70 backdrop-blur-sm animate-fade-in">
-      <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl border border-stone-200 overflow-hidden flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-bg-950/70 backdrop-blur-sm animate-fade-in">
+      <div className="relative w-full max-w-md bg-bg-850 rounded-3xl shadow-2xl border border-bg-700 overflow-hidden flex flex-col">
         
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 bg-gradient-to-r from-teal-800 to-emerald-900 text-white">
+        <div className="flex items-center justify-between px-6 py-4 bg-harvest-900/50 border-b border-harvest-700 text-cream-50">
           <div className="flex items-center gap-2">
-            <div className="p-1.5 bg-white/10 rounded-lg border border-white/15">
-              <Fingerprint className="w-5 h-5 text-teal-200" />
+            <div className="p-1.5 bg-bg-800 rounded-lg border border-bg-700">
+              <Fingerprint className="w-5 h-5 text-harvest-400" />
             </div>
             <div>
-              <h3 className="text-base font-black text-white">
+              <h3 className="text-base font-black text-cream-50">
                 AEPS Biometric Cash-Out Counter
               </h3>
-              <p className="text-xs text-teal-100 font-semibold">
+              <p className="text-xs text-harvest-300 font-semibold">
                 Aadhaar Enabled Payment System (Simulated BC Agent)
               </p>
             </div>
           </div>
           <button
             onClick={resetModal}
-            className="p-1 text-teal-100 hover:text-white rounded-full transition-colors cursor-pointer"
+            className="p-1 text-cream-400 hover:text-cream-50 rounded-full transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -135,31 +135,31 @@ export const AepsModal: React.FC<AepsModalProps> = ({
           
           {authStep === 'input' && (
             <div className="space-y-4">
-              <div className="p-3 bg-teal-50 border border-teal-200 rounded-xl text-xs text-teal-950 flex items-start gap-2 font-medium">
-                <ShieldCheck className="w-4 h-4 text-teal-700 mt-0.5 shrink-0" />
+              <div className="p-3 bg-teal-900/30 border border-teal-700 rounded-xl text-xs text-teal-100 flex items-start gap-2 font-medium">
+                <ShieldCheck className="w-4 h-4 text-teal-400 mt-0.5 shrink-0" />
                 <p>
                   No smartphone or bank branch visit required. Farmers withdraw liquidity directly via village Banking Correspondent (Bank Mitra) using Aadhaar fingerprint.
                 </p>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-stone-800 mb-1">
+                <label className="block text-xs font-bold text-cream-300 mb-1">
                   Beneficiary Account Holder
                 </label>
                 <input
                   type="text"
                   disabled
                   value={farmerName}
-                  className="w-full px-3 py-2 text-sm bg-stone-100 border border-stone-300 rounded-xl text-stone-900 font-bold"
+                  className="w-full px-3 py-2 text-sm bg-bg-750 border border-bg-700 rounded-xl text-cream-50 font-bold"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-stone-800 mb-1">
+                <label className="block text-xs font-bold text-cream-300 mb-1">
                   Aadhaar Number (Last 4 Digits)
                 </label>
                 <div className="flex items-center gap-2">
-                  <span className="px-3 py-2 bg-stone-100 border border-stone-300 rounded-xl text-stone-600 text-sm tracking-widest font-mono font-bold">
+                  <span className="px-3 py-2 bg-bg-750 border border-bg-700 rounded-xl text-cream-500 text-sm tracking-widest font-mono font-bold">
                     •••• ••••
                   </span>
                   <input
@@ -167,17 +167,17 @@ export const AepsModal: React.FC<AepsModalProps> = ({
                     maxLength={4}
                     value={aadhaarLast4}
                     onChange={(e) => setAadhaarLast4(e.target.value.replace(/\D/g, ''))}
-                    className="w-24 px-3 py-2 text-sm font-mono text-center tracking-widest border border-teal-400 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 font-black text-stone-900 bg-white"
+                    className="w-24 px-3 py-2 text-sm font-mono text-center tracking-widest border border-harvest-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-harvest-500 font-black text-cream-50 bg-bg-800"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-stone-800 mb-1">
+                <label className="block text-xs font-bold text-cream-300 mb-1">
                   Withdrawal Amount (₹)
                 </label>
                 <div className="relative">
-                  <span className="absolute left-3 top-2.5 text-stone-600 font-bold">
+                  <span className="absolute left-3 top-2.5 text-cream-500 font-bold">
                     ₹
                   </span>
                   <input
@@ -187,7 +187,7 @@ export const AepsModal: React.FC<AepsModalProps> = ({
                     step={1000}
                     min={1000}
                     max={50000}
-                    className="w-full pl-8 pr-3 py-2 text-sm font-black text-stone-900 border border-stone-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 bg-white"
+                    className="w-full pl-8 pr-3 py-2 text-sm font-black text-cream-50 border border-bg-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-harvest-500 bg-bg-800"
                   />
                 </div>
               </div>
@@ -196,7 +196,7 @@ export const AepsModal: React.FC<AepsModalProps> = ({
                 <button
                   onClick={handleStartBiometric}
                   disabled={isSimulating}
-                  className="w-full py-3 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white font-bold text-sm rounded-xl shadow-lg shadow-teal-700/20 flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-98 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full py-3 bg-gradient-to-r from-harvest-600 to-copper-600 hover:from-harvest-500 hover:to-copper-500 text-bg-950 font-bold text-sm rounded-xl shadow-lg shadow-harvest-600/30 flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-98 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isSimulating ? (
                     <>
@@ -216,56 +216,56 @@ export const AepsModal: React.FC<AepsModalProps> = ({
 
           {authStep === 'scanning' && (
             <div className="py-8 flex flex-col items-center justify-center text-center space-y-4">
-              <div className="relative w-24 h-24 rounded-full bg-teal-50 border-4 border-teal-500/40 flex items-center justify-center animate-pulse">
-                <Fingerprint className="w-14 h-14 text-teal-600" />
-                <div className="absolute inset-x-2 h-1 bg-teal-400/80 rounded-full animate-bounce shadow-xs" />
+              <div className="relative w-24 h-24 rounded-full bg-harvest-900/30 border-4 border-harvest-500/40 flex items-center justify-center animate-pulse">
+                <Fingerprint className="w-14 h-14 text-harvest-400" />
+                <div className="absolute inset-x-2 h-1 bg-harvest-400/80 rounded-full animate-bounce shadow-xs" />
               </div>
               <div>
-                <h4 className="font-bold text-sm text-stone-900">
+                <h4 className="font-bold text-sm text-cream-50">
                   Simulating AEPS Cash-Out...
                 </h4>
-                <p className="text-xs text-stone-600 font-medium mt-1">
+                <p className="text-xs text-cream-400 font-medium mt-1">
                   Transmitting to NPCI gateway (SIMULATED — no real banking)
                 </p>
               </div>
               {isSimulating && (
-                <Loader2 className="w-6 h-6 text-teal-600 animate-spin" />
+                <Loader2 className="w-6 h-6 text-harvest-400 animate-spin" />
               )}
             </div>
           )}
 
           {authStep === 'error' && (
             <div className="space-y-4 text-center">
-              <div className="w-14 h-14 mx-auto rounded-full bg-rose-100 flex items-center justify-center text-rose-600">
+              <div className="w-14 h-14 mx-auto rounded-full bg-copper-900/30 flex items-center justify-center text-copper-400">
                 <AlertCircle className="w-8 h-8" />
               </div>
               <div>
-                <h4 className="font-bold text-base text-rose-900">
+                <h4 className="font-bold text-base text-copper-300">
                   AEPS Simulation Failed
                 </h4>
-                <p className="text-xs text-stone-700 font-medium mt-0.5">
+                <p className="text-xs text-cream-400 font-medium mt-0.5">
                   {simError || 'An error occurred during AEPS simulation'}
                 </p>
               </div>
-              <div className="p-3.5 bg-stone-50 border border-stone-200 rounded-xl text-left font-mono text-xs space-y-1.5 text-stone-800">
+              <div className="p-3.5 bg-bg-750 border border-bg-700 rounded-xl text-left font-mono text-xs space-y-1.5 text-cream-300">
                 <div className="flex justify-between">
-                  <span className="text-stone-500 font-bold">Advance ID:</span>
-                  <span className="font-bold text-stone-900">{advanceId || 'N/A'}</span>
+                  <span className="text-cream-500 font-bold">Advance ID:</span>
+                  <span className="font-bold text-cream-50">{advanceId || 'N/A'}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-stone-500 font-bold">Aadhaar Auth:</span>
+                  <span className="text-cream-500 font-bold">Aadhaar Auth:</span>
                   <span className="font-bold">•••• •••• {aadhaarLast4} (Simulated)</span>
                 </div>
               </div>
               <button
                 onClick={handleRetry}
-                className="w-full py-2.5 bg-stone-900 hover:bg-stone-800 text-white font-bold text-xs rounded-xl cursor-pointer transition-colors"
+                className="w-full py-2.5 bg-bg-800 hover:bg-bg-750 text-cream-50 font-bold text-xs rounded-xl cursor-pointer transition-colors border border-bg-700"
               >
                 Retry Simulation
               </button>
               <button
                 onClick={resetModal}
-                className="w-full py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-800 font-bold text-xs rounded-xl cursor-pointer transition-colors"
+                className="w-full py-2.5 bg-bg-750 hover:bg-bg-700 text-cream-50 font-bold text-xs rounded-xl cursor-pointer transition-colors border border-bg-700"
               >
                 Cancel
               </button>
@@ -274,48 +274,48 @@ export const AepsModal: React.FC<AepsModalProps> = ({
 
           {authStep === 'success' && (
             <div className="space-y-4 text-center">
-              <div className="w-14 h-14 mx-auto rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600">
+              <div className="w-14 h-14 mx-auto rounded-full bg-forest-900/30 flex items-center justify-center text-forest-400">
                 <CheckCircle2 className="w-8 h-8" />
               </div>
               <div>
-                <h4 className="font-bold text-base text-emerald-900">
+                <h4 className="font-bold text-base text-forest-300">
                   AEPS Cash-Out Authenticated!
                 </h4>
-                <p className="text-xs text-stone-700 font-semibold mt-0.5">
+                <p className="text-xs text-cream-400 font-semibold mt-0.5">
                   ₹{amount.toLocaleString('en-IN')} disbursed in cash by Bank Mitra
                 </p>
               </div>
 
-              <div className="p-3.5 bg-stone-50 border border-stone-200 rounded-xl text-left font-mono text-xs space-y-1.5 text-stone-800">
+              <div className="p-3.5 bg-bg-750 border border-bg-700 rounded-xl text-left font-mono text-xs space-y-1.5 text-cream-300">
                 <div className="flex justify-between">
-                  <span className="text-stone-500 font-bold">Txn Ref:</span>
-                  <span className="font-black text-stone-900">{txnRef}</span>
+                  <span className="text-cream-500 font-bold">Txn Ref:</span>
+                  <span className="font-black text-cream-50">{txnRef}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-stone-500 font-bold">Aadhaar Auth:</span>
+                  <span className="text-cream-500 font-bold">Aadhaar Auth:</span>
                   <span className="font-bold">•••• •••• {aadhaarLast4} (UIDAI Success)</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-stone-500 font-bold">BC Agent:</span>
-                  <span className="font-bold text-stone-900">BC-PIMPALGAON-04 (MahaGramin Bank)</span>
+                  <span className="text-cream-500 font-bold">BC Agent:</span>
+                  <span className="font-bold text-cream-50">BC-PIMPALGAON-04 (MahaGramin Bank)</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-stone-500 font-bold">Timestamp:</span>
+                  <span className="text-cream-500 font-bold">Timestamp:</span>
                   <span className="font-bold">{new Date().toLocaleTimeString()}</span>
                 </div>
               </div>
 
               <button
                 onClick={resetModal}
-                className="w-full py-2.5 bg-stone-900 hover:bg-stone-800 text-white font-bold text-xs rounded-xl cursor-pointer transition-colors"
+                className="w-full py-2.5 bg-bg-800 hover:bg-bg-750 text-cream-50 font-bold text-xs rounded-xl cursor-pointer transition-colors border border-bg-700"
               >
                 Close Receipt
               </button>
             </div>
           )}
 
-          <div className="pt-2 border-t border-stone-200 text-[11px] text-stone-600 font-medium flex items-center gap-1.5 justify-center">
-            <AlertCircle className="w-3.5 h-3.5 text-teal-600 shrink-0" />
+          <div className="pt-2 border-t border-bg-700 text-[11px] text-cream-500 font-medium flex items-center gap-1.5 justify-center">
+            <AlertCircle className="w-3.5 h-3.5 text-teal-400 shrink-0" />
             <span>Simulated AEPS interface with mock NPCI settlement. No real banking integration.</span>
           </div>
 

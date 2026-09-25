@@ -15,6 +15,8 @@ import {
   X,
   ChevronDown,
   Menu,
+  Leaf,
+  Building2,
 } from 'lucide-react';
 import { Button } from './ui/Button';
 import { Modal } from './ui/Modal';
@@ -38,12 +40,26 @@ const LANGUAGES: { code: Language; label: string; nativeLabel: string }[] = [
   { code: 'pa', label: 'Punjabi', nativeLabel: 'ਪੰਜਾਬੀ' },
 ];
 
-const ROLES: { value: Role; label: string; icon: React.ReactNode }[] = [
-  { value: 'farmer', label: 'Farmer', icon: <Sprout className="w-4 h-4" /> },
-  { value: 'buyer', label: 'Buyer', icon: <UserCheck className="w-4 h-4" /> },
-  { value: 'logistics', label: 'Logistics', icon: <Truck className="w-4 h-4" /> },
-  { value: 'admin', label: 'Admin', icon: <ShieldCheck className="w-4 h-4" /> },
-];
+const ROLE_CONFIG: Record<Role, { label: string; icon: React.ReactNode; accent: string }> = {
+  farmer: { label: 'Farmer', icon: <Sprout className="w-4 h-4" />, accent: 'forest' },
+  buyer: { label: 'Buyer', icon: <UserCheck className="w-4 h-4" />, accent: 'teal' },
+  logistics: { label: 'Logistics', icon: <Truck className="w-4 h-4" />, accent: 'harvest' },
+  admin: { label: 'Admin', icon: <ShieldCheck className="w-4 h-4" />, accent: 'sage' },
+};
+
+const ROLE_ACCENT_CLASSES: Record<Role, string> = {
+  farmer: 'border-forest-600 bg-forest-900/30 text-forest-300 hover:bg-forest-900/50',
+  buyer: 'border-teal-600 bg-teal-900/30 text-teal-300 hover:bg-teal-900/50',
+  logistics: 'border-harvest-600 bg-harvest-900/30 text-harvest-300 hover:bg-harvest-900/50',
+  admin: 'border-sage-600 bg-sage-900/30 text-sage-300 hover:bg-sage-900/50',
+};
+
+const ROLE_ACCENT_ACTIVE: Record<Role, string> = {
+  farmer: 'bg-forest-600 text-bg-950 border-forest-600 shadow-sm shadow-forest-600/30',
+  buyer: 'bg-teal-600 text-bg-950 border-teal-600 shadow-sm shadow-teal-600/30',
+  logistics: 'bg-harvest-600 text-bg-950 border-harvest-600 shadow-sm shadow-harvest-600/30',
+  admin: 'bg-sage-600 text-bg-950 border-sage-600 shadow-sm shadow-sage-600/30',
+};
 
 export const Navbar: React.FC<NavbarProps> = ({
   currentRole,
@@ -67,6 +83,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   const t = I18N_STRINGS[currentLanguage];
   const unreadCount = notifications.filter((n) => !n.read).length;
   const currentLang = LANGUAGES.find((l) => l.code === currentLanguage);
+  const currentRoleConfig = ROLE_CONFIG[currentRole];
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -104,55 +121,57 @@ export const Navbar: React.FC<NavbarProps> = ({
     setShowMobileMenu(false);
   };
 
-  const currentRoleData = ROLES.find((r) => r.value === currentRole);
-
   return (
     <header className="page-header">
-      <div className="section-container">
+      <div className="container-page">
         <div className="flex items-center justify-between h-16 sm:h-20 gap-4">
           {/* Brand */}
           <div className="flex items-center gap-3 min-w-0 flex-shrink-0">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-agri-600 flex items-center justify-center text-white shadow-sm shrink-0">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-gradient-to-br from-forest-600 to-teal-600 flex items-center justify-center text-bg-950 shadow-sm shrink-0">
               <Sprout className="w-6 h-6 sm:w-7 sm:h-7" />
             </div>
             <div className="min-w-0 hidden sm:block">
               <div className="flex items-center gap-2">
-                <span className="font-extrabold text-lg sm:text-xl text-earth-900 tracking-tight truncate">
+                <span className="font-display font-semibold text-lg sm:text-xl text-cream-50 tracking-tight truncate">
                   {t.appName}
                 </span>
-                <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-agri-50 text-agri-700 border border-agri-200 whitespace-nowrap">
+                <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-bg-800 text-cream-300 border border-bg-700 whitespace-nowrap">
                   SIH 2026 MVP
                 </span>
               </div>
-              <p className="text-xs text-earth-500 truncate">
+              <p className="text-xs text-cream-400 truncate">
                 {t.tagline}
               </p>
             </div>
           </div>
 
           {/* Desktop Role Switcher */}
-          <div className="hidden lg:flex items-center gap-1 p-1 bg-earth-50 rounded-xl border border-earth-200">
-            {ROLES.map((role) => (
-              <button
-                key={role.value}
-                onClick={() => handleRoleChange(role.value)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                  currentRole === role.value
-                    ? 'bg-agri-600 text-white shadow-sm'
-                    : 'text-earth-700 hover:text-agri-700 hover:bg-earth-100'
-                }`}
-              >
-                {role.icon}
-                <span>{t.roles[role.value]}</span>
-              </button>
-            ))}
+          <div className="hidden lg:flex items-center gap-1 p-1 bg-bg-800 rounded-lg border border-bg-700">
+            {(Object.keys(ROLE_CONFIG) as Role[]).map((role) => {
+              const config = ROLE_CONFIG[role];
+              const isActive = currentRole === role;
+              return (
+                <button
+                  key={role}
+                  onClick={() => handleRoleChange(role)}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+                    isActive
+                      ? ROLE_ACCENT_ACTIVE[role]
+                      : `${ROLE_ACCENT_CLASSES[role]} hover:border-${config.accent}-500`
+                  }`}
+                >
+                  {config.icon}
+                  <span>{t.roles[role]}</span>
+                </button>
+              );
+            })}
           </div>
 
           {/* Right Actions */}
           <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
             {/* Demo Guide */}
             <Button
-              variant="secondary"
+              variant="outline"
               size="sm"
               onClick={onOpenDemoGuide}
               className="hidden sm:flex gap-1.5"
@@ -163,7 +182,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             {/* Insights */}
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={onOpenInsights}
               className="hidden md:flex gap-1.5"
@@ -183,27 +202,27 @@ export const Navbar: React.FC<NavbarProps> = ({
                 aria-expanded={showLanguageMenu}
               >
                 <Globe className="w-4 h-4" />
-                <span className="hidden sm:inline font-medium text-earth-700">
+                <span className="hidden sm:inline font-medium text-cream-300">
                   {currentLang?.nativeLabel || currentLang?.label}
                 </span>
                 <ChevronDown className="w-3.5 h-3.5" />
               </Button>
 
               {showLanguageMenu && (
-                <div className="absolute right-0 mt-2 w-40 bg-white rounded-xl shadow-xl border border-earth-200 py-1 z-50 animate-fade-in">
+                <div className="absolute right-0 mt-2 w-40 bg-bg-850 rounded-lg shadow-xl border border-bg-700 py-1 z-50 animate-fade-in">
                   {LANGUAGES.map((lang) => (
                     <button
                       key={lang.code}
                       onClick={() => handleLanguageChange(lang.code)}
                       className={`w-full px-3 py-2 text-left text-sm font-medium transition-colors ${
                         currentLanguage === lang.code
-                          ? 'bg-agri-50 text-agri-700'
-                          : 'text-earth-700 hover:bg-earth-50'
+                          ? 'bg-bg-700 text-teal-300'
+                          : 'text-cream-300 hover:bg-bg-800'
                       }`}
                     >
                       <span className="flex items-center gap-2">
                         <span>{lang.nativeLabel}</span>
-                        <span className="text-xs text-earth-400">({lang.label})</span>
+                        <span className="text-xs text-cream-500">({lang.label})</span>
                       </span>
                     </button>
                   ))}
@@ -222,26 +241,26 @@ export const Navbar: React.FC<NavbarProps> = ({
                 aria-haspopup="true"
                 aria-expanded={showNotifications}
               >
-                <Bell className="w-5 h-5 text-earth-600" />
+                <Bell className="w-5 h-5 text-cream-400" />
                 {unreadCount > 0 && (
-                  <span className="absolute top-1 right-1 w-5 h-5 bg-alert-500 text-white rounded-full text-[10px] font-bold flex items-center justify-center">
+                  <span className="absolute top-1 right-1 w-5 h-5 bg-copper-500 text-bg-950 rounded-full text-[10px] font-bold flex items-center justify-center">
                     {unreadCount > 9 ? '9+' : unreadCount}
                   </span>
                 )}
               </Button>
 
               {showNotifications && (
-                <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-xl shadow-xl border border-earth-200 z-50 animate-fade-in">
-                  <div className="flex items-center justify-between px-4 py-3 border-b border-earth-100">
-                    <h4 className="font-semibold text-sm text-earth-900 flex items-center gap-2">
-                      <Bell className="w-4 h-4 text-agri-600" />
+                <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-bg-850 rounded-lg shadow-xl border border-bg-700 z-50 animate-fade-in">
+                  <div className="flex items-center justify-between px-4 py-3 border-b border-bg-700">
+                    <h4 className="font-semibold text-sm text-cream-50 flex items-center gap-2">
+                      <Bell className="w-4 h-4 text-teal-400" />
                       Notifications
                     </h4>
-                    <span className="text-xs text-earth-400">
+                    <span className="text-xs text-cream-500">
                       {unreadCount} unread
                     </span>
                   </div>
-                  <div className="divide-y divide-earth-100 max-h-72 overflow-y-auto">
+                  <div className="divide-y divide-bg-700 max-h-72 overflow-y-auto">
                     {notifications.length === 0 ? (
                       <EmptyState variant="notifications" className="py-8" />
                     ) : (
@@ -250,18 +269,18 @@ export const Navbar: React.FC<NavbarProps> = ({
                           key={notif.id}
                           onClick={() => handleNotificationClick(notif)}
                           className={`w-full px-4 py-3 text-left transition-colors ${
-                            notif.read ? 'bg-white' : 'bg-agri-50/50'
+                            notif.read ? 'bg-bg-850' : 'bg-bg-700/50'
                           }`}
                         >
                           <div className="flex items-start justify-between gap-2">
-                            <p className={`text-xs font-semibold ${notif.read ? 'text-earth-700' : 'text-earth-900'}`}>
+                            <p className={`text-xs font-semibold ${notif.read ? 'text-cream-300' : 'text-cream-50'}`}>
                               {notif.title}
                             </p>
-                            <span className="text-[10px] text-earth-400 whitespace-nowrap flex-shrink-0">
+                            <span className="text-[10px] text-cream-500 whitespace-nowrap flex-shrink-0">
                               {notif.timestamp}
                             </span>
                           </div>
-                          <p className="text-xs text-earth-500 mt-1 line-clamp-2">
+                          <p className="text-xs text-cream-400 mt-1 line-clamp-2">
                             {notif.message}
                           </p>
                         </button>
@@ -271,7 +290,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="w-full px-4 py-2 border-t border-earth-100"
+                    className="w-full px-4 py-2 border-t border-bg-700"
                     onClick={() => setShowNotifications(false)}
                   >
                     Close
@@ -290,48 +309,51 @@ export const Navbar: React.FC<NavbarProps> = ({
                 aria-label="Open menu"
                 aria-expanded={showMobileMenu}
               >
-                <Menu className="w-5 h-5 text-earth-600" />
+                <Menu className="w-5 h-5 text-cream-400" />
               </Button>
 
               {showMobileMenu && (
-                <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-xl shadow-xl border border-earth-200 py-2 z-50 animate-fade-in">
+                <div className="absolute right-0 top-full mt-2 w-56 bg-bg-850 rounded-lg shadow-xl border border-bg-700 py-2 z-50 animate-fade-in">
                   {/* Role Switcher in Mobile Menu */}
-                  <div className="px-4 py-2 border-b border-earth-100">
-                    <p className="text-xs font-semibold text-earth-500 uppercase tracking-wider mb-2">Switch Role</p>
+                  <div className="px-4 py-2 border-b border-bg-700">
+                    <p className="text-xs font-semibold text-cream-500 uppercase tracking-wider mb-2">Switch Role</p>
                     <div className="space-y-1">
-                      {ROLES.map((role) => (
-                        <button
-                          key={role.value}
-                          onClick={() => handleRoleChange(role.value)}
-                          className={`w-full px-3 py-2 rounded-lg text-left text-sm font-medium transition-colors flex items-center gap-2 ${
-                            currentRole === role.value
-                              ? 'bg-agri-50 text-agri-700'
-                              : 'text-earth-700 hover:bg-earth-50'
-                          }`}
-                        >
-                          {role.icon}
-                          <span>{t.roles[role.value]}</span>
-                        </button>
-                      ))}
+                      {(Object.keys(ROLE_CONFIG) as Role[]).map((role) => {
+                        const config = ROLE_CONFIG[role];
+                        return (
+                          <button
+                            key={role}
+                            onClick={() => handleRoleChange(role)}
+                            className={`w-full px-3 py-2 rounded-md text-left text-sm font-medium transition-colors flex items-center gap-2 ${
+                              currentRole === role
+                                ? `${ROLE_ACCENT_ACTIVE[role]}`
+                                : `${ROLE_ACCENT_CLASSES[role]} hover:border-${config.accent}-500`
+                            }`}
+                          >
+                            {config.icon}
+                            <span>{t.roles[role]}</span>
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
 
                   {/* Language Switcher in Mobile Menu */}
-                  <div className="px-4 py-2 border-b border-earth-100">
-                    <p className="text-xs font-semibold text-earth-500 uppercase tracking-wider mb-2">Language</p>
+                  <div className="px-4 py-2 border-b border-bg-700">
+                    <p className="text-xs font-semibold text-cream-500 uppercase tracking-wider mb-2">Language</p>
                     <div className="space-y-1">
                       {LANGUAGES.map((lang) => (
                         <button
                           key={lang.code}
                           onClick={() => handleLanguageChange(lang.code)}
-                          className={`w-full px-3 py-2 rounded-lg text-left text-sm font-medium transition-colors flex items-center gap-2 ${
+                          className={`w-full px-3 py-2 rounded-md text-left text-sm font-medium transition-colors flex items-center gap-2 ${
                             currentLanguage === lang.code
-                              ? 'bg-agri-50 text-agri-700'
-                              : 'text-earth-700 hover:bg-earth-50'
+                              ? 'bg-bg-700 text-teal-300'
+                              : 'text-cream-300 hover:bg-bg-800'
                           }`}
                         >
                           <span>{lang.nativeLabel}</span>
-                          <span className="text-xs text-earth-400 ml-auto">({lang.label})</span>
+                          <span className="text-xs text-cream-500 ml-auto">({lang.label})</span>
                         </button>
                       ))}
                     </div>
@@ -339,7 +361,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
                   {/* Demo Guide in Mobile Menu */}
                   <Button
-                    variant="secondary"
+                    variant="outline"
                     size="sm"
                     onClick={onOpenDemoGuide}
                     className="w-full mx-4 justify-start"
@@ -360,30 +382,33 @@ export const Navbar: React.FC<NavbarProps> = ({
                 className="w-full justify-between"
               >
                 <span className="flex items-center gap-2">
-                  {currentRoleData?.icon}
-                  <span className="font-medium text-earth-700">{t.roles[currentRole]}</span>
+                  {currentRoleConfig.icon}
+                  <span className="font-medium text-cream-300">{t.roles[currentRole]}</span>
                 </span>
-                <ChevronDown className="w-4 h-4 text-earth-400" />
+                <ChevronDown className="w-4 h-4 text-cream-500" />
               </Button>
 
               {showRoleMenu && (
-                <div className="absolute bottom-full left-0 right-0 mb-2 bg-white rounded-xl shadow-xl border border-earth-200 py-1 z-50 animate-fade-in">
-                  {ROLES.map((role) => (
-                    <button
-                      key={role.value}
-                      onClick={() => handleRoleChange(role.value)}
-                      className={`w-full px-4 py-3 text-left font-semibold transition-colors ${
-                        currentRole === role.value
-                          ? 'bg-agri-50 text-agri-700'
-                          : 'text-earth-700 hover:bg-earth-50'
-                      }`}
-                    >
-                      <span className="flex items-center gap-2">
-                        {role.icon}
-                        <span>{t.roles[role.value]}</span>
-                      </span>
-                    </button>
-                  ))}
+                <div className="absolute bottom-full left-0 right-0 mb-2 bg-bg-850 rounded-lg shadow-xl border border-bg-700 py-1 z-50 animate-fade-in">
+                  {(Object.keys(ROLE_CONFIG) as Role[]).map((role) => {
+                    const config = ROLE_CONFIG[role];
+                    return (
+                      <button
+                        key={role}
+                        onClick={() => handleRoleChange(role)}
+                        className={`w-full px-4 py-3 text-left font-semibold transition-colors ${
+                          currentRole === role
+                            ? ROLE_ACCENT_ACTIVE[role]
+                            : `${ROLE_ACCENT_CLASSES[role]} hover:border-${config.accent}-500`
+                        }`}
+                      >
+                        <span className="flex items-center gap-2">
+                          {config.icon}
+                          <span>{t.roles[role]}</span>
+                        </span>
+                      </button>
+                    );
+                  })}
                 </div>
               )}
             </div>
@@ -391,21 +416,25 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
 
         {/* Mobile Role Strip - Only show on mobile, with proper overflow handling */}
-        <div className="lg:hidden flex overflow-x-auto py-2 border-t border-earth-100 gap-2 no-scrollbar pb-2 -mx-4 px-4">
-          {ROLES.map((role) => (
-            <button
-              key={role.value}
-              onClick={() => handleRoleChange(role.value)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap flex items-center gap-1.5 shrink-0 ${
-                currentRole === role.value
-                  ? 'bg-agri-600 text-white'
-                  : 'bg-earth-100 text-earth-700'
-              }`}
-            >
-              {role.icon}
-              <span>{t.roles[role.value]}</span>
-            </button>
-          ))}
+        <div className="lg:hidden flex overflow-x-auto py-2 border-t border-bg-700 gap-2 scrollbar-hidden pb-2 -mx-4 px-4">
+          {(Object.keys(ROLE_CONFIG) as Role[]).map((role) => {
+            const config = ROLE_CONFIG[role];
+            const isActive = currentRole === role;
+            return (
+              <button
+                key={role}
+                onClick={() => handleRoleChange(role)}
+                className={`px-3 py-1.5 rounded-md text-xs font-bold whitespace-nowrap flex items-center gap-1.5 shrink-0 ${
+                  isActive
+                    ? ROLE_ACCENT_ACTIVE[role]
+                    : ROLE_ACCENT_CLASSES[role]
+                }`}
+              >
+                {config.icon}
+                <span>{t.roles[role]}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
     </header>

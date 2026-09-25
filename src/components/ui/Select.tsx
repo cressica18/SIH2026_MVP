@@ -37,9 +37,9 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
     return (
       <div className={fullWidth ? 'w-full' : ''}>
         {label && (
-          <label htmlFor={selectId} className="block text-xs sm:text-sm font-semibold text-earth-800 mb-1.5">
+          <label htmlFor={selectId} className="block text-sm font-medium text-cream-300 mb-1.5">
             {label}
-            {required && <span className="text-alert-500 ml-1" aria-hidden="true">*</span>}
+            {required && <span className="text-copper-400 ml-1" aria-hidden="true">*</span>}
           </label>
         )}
         <div className="relative">
@@ -51,12 +51,12 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
             aria-invalid={error ? 'true' : 'false'}
             aria-describedby={error ? `${selectId}-error` : hint ? `${selectId}-hint` : undefined}
             className={`
-              w-full rounded-xl border appearance-none transition-colors duration-150 cursor-pointer
-              pl-4 pr-10 py-2.5 text-sm font-medium
+              w-full rounded-lg appearance-none transition-colors duration-100 cursor-pointer
+              pl-3 pr-10 py-2.5 text-sm
               ${error
-                ? 'border-alert-400 text-earth-900 focus:border-alert-500 focus:ring-2 focus:ring-alert-500/20'
-                : 'border-earth-300 text-earth-900 focus:border-agri-500 focus:ring-2 focus:ring-agri-500/20'}
-              ${disabled ? 'bg-earth-100 cursor-not-allowed text-earth-500' : 'bg-white hover:border-earth-400'}
+                ? 'border-copper-500 text-cream-100 focus:border-copper-500 focus:ring-2 focus:ring-copper-500/30'
+                : 'border-bg-600 text-cream-100 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/30'}
+              ${disabled ? 'bg-bg-700 cursor-not-allowed text-cream-500' : 'bg-bg-800 hover:border-bg-500'}
               ${className}
             `}
             {...props}
@@ -72,19 +72,19 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
               </option>
             ))}
           </select>
-          <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-earth-500">
+          <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-cream-500">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>
           </div>
         </div>
         {error && (
-          <p id={`${selectId}-error`} className="mt-1.5 text-xs sm:text-sm font-semibold text-alert-600" role="alert">
+          <p id={`${selectId}-error`} className="mt-1.5 text-sm font-medium text-copper-400" role="alert">
             {error}
           </p>
         )}
         {hint && !error && (
-          <p id={`${selectId}-hint`} className="mt-1.5 text-xs text-earth-500 font-medium">
+          <p id={`${selectId}-hint`} className="mt-1.5 text-xs text-cream-500">
             {hint}
           </p>
         )}

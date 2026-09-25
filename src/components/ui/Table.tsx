@@ -16,7 +16,7 @@ export interface TableProps<T> {
   data: T[];
   keyExtractor: (item: T) => string;
   emptyMessage?: string;
-  emptyVariant?: 'default' | 'listings' | 'orders' | 'schemes' | 'reports' | 'matches' | 'notifications' | 'pools';
+  emptyVariant?: 'default' | 'listings' | 'orders' | 'schemes' | 'reports' | 'matches' | 'notifications' | 'pools' | 'finance';
   onRowClick?: (item: T) => void;
   striped?: boolean;
   hoverable?: boolean;
@@ -43,36 +43,36 @@ export function Table<T>({
   }
 
   return (
-    <div className={`overflow-x-auto rounded-2xl border border-stone-200 bg-white ${className}`}>
+    <div className={`overflow-x-auto rounded-xl border border-bg-700 bg-bg-850 ${className}`}>
       <table className="w-full" role="grid">
-        <thead className="bg-stone-50 border-b border-stone-100">
+        <thead className="bg-bg-800 border-b border-bg-700">
           <tr>
             {columns.map((column) => (
               <th
                 key={column.key}
                 scope="col"
-                className={`px-4 py-3 text-left text-xs font-semibold text-stone-600 uppercase tracking-wider ${column.headerClassName || ''}`}
+                className={`px-4 py-3 text-left text-xs font-semibold text-cream-500 uppercase tracking-wider ${column.headerClassName || ''}`}
               >
                 {column.header}
               </th>
             ))}
           </tr>
         </thead>
-        <tbody className="divide-y divide-stone-100">
+        <tbody className="divide-y divide-bg-700">
           {data.map((item, index) => (
             <tr
               key={keyExtractor(item)}
               className={`
                 transition-colors duration-100
-                ${striped && index % 2 === 1 ? 'bg-stone-50/50' : ''}
-                ${hoverable && onRowClick ? 'hover:bg-stone-50 cursor-pointer' : ''}
+                ${striped && index % 2 === 1 ? 'bg-bg-800/50' : ''}
+                ${hoverable && onRowClick ? 'hover:bg-bg-750 cursor-pointer' : ''}
               `}
               onClick={() => onRowClick?.(item)}
             >
               {columns.map((column) => (
                 <td
                   key={column.key}
-                  className={`px-4 py-3 text-sm text-stone-900 ${column.className || ''}`}
+                  className={`px-4 py-3 text-sm text-cream-100 ${column.className || ''}`}
                 >
                   {column.render ? column.render(item, index) : (item as any)[column.key]}
                 </td>
@@ -90,7 +90,7 @@ export interface TableActionColumnProps<T> {
   actions: Array<{
     label: string;
     onClick: (item: T, e: React.MouseEvent) => void;
-    variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
+    variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'harvest' | 'forest' | 'teal' | 'copper';
     icon?: React.ReactNode;
     disabled?: boolean;
   }>;

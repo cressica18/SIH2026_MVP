@@ -733,8 +733,8 @@ export default function App() {
 
   if (isAuthLoading || isProfileLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-stone-100">
-        <div className="text-stone-600 text-sm">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center bg-bg-900">
+        <div className="text-cream-400 text-sm">Loading...</div>
       </div>
     );
   }
@@ -761,21 +761,21 @@ export default function App() {
     }
 
 return (
-      <div className="min-h-screen bg-stone-100/70 text-stone-900 font-sans flex flex-col selection:bg-emerald-500 selection:text-white">
+      <div className="min-h-screen bg-bg-900 text-cream-100 font-sans flex flex-col selection:bg-harvest-500 selection:text-bg-950">
        
-       {/* Top Navigation Bar */}
-       <Navbar
-         currentRole={currentRole}
-         currentLanguage={currentLanguage}
-         onLanguageChange={setCurrentLanguage}
-         onOpenDemoGuide={() => setIsDemoModalOpen(true)}
-         onOpenInsights={() => setIsMarketInsightsOpen(true)}
-         notifications={notifications}
-         onMarkNotificationRead={handleMarkNotificationAsRead}
-       />
+        {/* Top Navigation Bar */}
+        <Navbar
+          currentRole={currentRole}
+          currentLanguage={currentLanguage}
+          onLanguageChange={setCurrentLanguage}
+          onOpenDemoGuide={() => setIsDemoModalOpen(true)}
+          onOpenInsights={() => setIsMarketInsightsOpen(true)}
+          notifications={notifications}
+          onMarkNotificationRead={handleMarkNotificationAsRead}
+        />
 
-      {/* Main Viewport */}
-      <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+       {/* Main Viewport */}
+       <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
         {currentRole === 'farmer' && farmer && (
           <FarmerView
             farmer={farmer}
@@ -831,21 +831,21 @@ return (
         )}
       </main>
 
-      {/* Footer */}
-      <footer className="bg-white border-t border-stone-200 py-6 px-4 text-center text-xs text-stone-500">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="font-semibold text-stone-700">
-            Vasundhara (वसुंधरा) • Direct Farmgate Digital Commerce & Trust Platform
-          </p>
-          <div className="flex items-center gap-4 text-[11px] text-stone-500">
-            <span>Agmarknet Mandi Integration</span>
-            <span>•</span>
-            <span>MobileNet CNN Quality Grading</span>
-            <span>•</span>
-            <span>AEPS Cash-Out</span>
-          </div>
-        </div>
-      </footer>
+{/* Footer */}
+       <footer className="bg-bg-850 border-t border-bg-700 py-6 px-4 text-center text-xs text-cream-400">
+         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+           <p className="font-semibold text-cream-100">
+             Vasundhara (वसुंधरा) • Direct Farmgate Digital Commerce & Trust Platform
+           </p>
+           <div className="flex items-center gap-4 text-[11px] text-cream-500">
+             <span>Agmarknet Mandi Integration</span>
+             <span className="text-cream-600">•</span>
+             <span>MobileNet CNN Quality Grading</span>
+             <span className="text-cream-600">•</span>
+             <span>AEPS Cash-Out</span>
+           </div>
+         </div>
+       </footer>
 
       {/* 7-Step Evaluation Demo Walkthrough Modal */}
       <DemoWalkthroughModal

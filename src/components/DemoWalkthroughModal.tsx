@@ -13,6 +13,11 @@ import {
   X,
   ExternalLink,
   CheckCircle2,
+  Zap,
+  Target,
+  Gauge,
+  BarChart3,
+  Building2,
 } from 'lucide-react';
 
 interface DemoWalkthroughModalProps {
@@ -47,7 +52,7 @@ export const DemoWalkthroughModal: React.FC<DemoWalkthroughModalProps> = ({
       title: 'Farmer Voice-First Listing & AI Quality/Price Bands',
       role: 'farmer',
       tabName: 'listings',
-      icon: <Mic className="w-6 h-6 text-emerald-600" />,
+      icon: <Mic className="w-6 h-6 text-forest-400" />,
       narrative:
         'Farmer taps the microphone and speaks naturally in their regional language (e.g., "do quintal tamatar, atharah rupaye kilo"). The platform transcribes speech, extracts structured harvest entities, computes an AI Price Band grounded in Agmarknet Mandi data, and runs a MobileNet CNN quality classifier on produce photos.',
       keyInnovations: [
@@ -63,7 +68,7 @@ export const DemoWalkthroughModal: React.FC<DemoWalkthroughModalProps> = ({
       title: 'Buyer Discovery & Anonymized Seller Protection',
       role: 'buyer',
       tabName: 'marketplace',
-      icon: <ShieldCheck className="w-6 h-6 text-blue-600" />,
+      icon: <ShieldCheck className="w-6 h-6 text-teal-400" />,
       narrative:
         'A food processor or retail buyer explores active harvest lots. The seller is masked with an anonymous ID (e.g. FARM-88214) to prevent cartel intimidation and local price collusion. An explainable multi-factor AI matching engine highlights "Recommended for You" listings.',
       keyInnovations: [
@@ -78,7 +83,7 @@ export const DemoWalkthroughModal: React.FC<DemoWalkthroughModalProps> = ({
       title: 'Order Placement & Identity Reveal on Commit',
       role: 'buyer',
       tabName: 'orders',
-      icon: <FileCheck className="w-6 h-6 text-indigo-600" />,
+      icon: <FileCheck className="w-6 h-6 text-indigo-400" />,
       narrative:
         'Buyer commits to procurement by placing an order. The transaction enters a strict state machine (pending → matched → confirmed). The Identity Reveal mechanism unlocks exactly when both parties confirm, releasing contact and location details for seamless delivery logistics.',
       keyInnovations: [
@@ -93,7 +98,7 @@ export const DemoWalkthroughModal: React.FC<DemoWalkthroughModalProps> = ({
       title: 'Logistics Pooling & Route Optimization',
       role: 'logistics',
       tabName: 'pools',
-      icon: <Truck className="w-6 h-6 text-amber-600" />,
+      icon: <Truck className="w-6 h-6 text-harvest-400" />,
       narrative:
         'Confirmed orders within the same geographic district (e.g. Nashik-Pimpalgaon to Pune corridor) automatically cluster into a shared vehicle pool. Capacitated VRP sequencing schedules multi-stop pickups, saving 34% in freight fuel and reducing transit spoilage.',
       keyInnovations: [
@@ -108,7 +113,7 @@ export const DemoWalkthroughModal: React.FC<DemoWalkthroughModalProps> = ({
       title: 'Settlement & AEPS Biometric Cash-Out Counter',
       role: 'farmer',
       tabName: 'finance',
-      icon: <IndianRupee className="w-6 h-6 text-teal-600" />,
+      icon: <IndianRupee className="w-6 h-6 text-teal-400" />,
       narrative:
         'Upon delivery completion, the transaction settles and seller reputation updates. The farmer accesses the Finance tab to view their AI Harvest Risk Score and instant working-capital advance eligibility, then simulates cash-out at a local Bank Correspondent (BC) counter via Aadhaar biometric authentication.',
       keyInnovations: [
@@ -123,7 +128,7 @@ export const DemoWalkthroughModal: React.FC<DemoWalkthroughModalProps> = ({
       title: 'Government Scheme Matching & Mandi Market Insights',
       role: 'farmer',
       tabName: 'schemes',
-      icon: <BookOpen className="w-6 h-6 text-purple-600" />,
+      icon: <BookOpen className="w-6 h-6 text-sage-400" />,
       narrative:
         'Farmers receive rule-matched Central and State government schemes (PM-KISAN, PMFBY insurance, Agri Infrastructure Fund) filtered by their acreage and crop. Both farmers and buyers also access an interactive Mandi Insights dashboard with 7-week price trends and an AI natural-language forecast.',
       keyInnovations: [
@@ -138,7 +143,7 @@ export const DemoWalkthroughModal: React.FC<DemoWalkthroughModalProps> = ({
       title: 'Women-Centric Privacy & Anonymous Whistleblowing',
       role: 'admin',
       tabName: 'reports',
-      icon: <ShieldCheck className="w-6 h-6 text-rose-600" />,
+      icon: <ShieldCheck className="w-6 h-6 text-copper-400" />,
       narrative:
         'A dedicated safe-space whistleblower portal allows vulnerable, smallholder, and women farmers to report mandi cartel price collusion, harassment, or transporter extortion with zero personally identifying data stored. The Admin Moderation queue triages and resolves issues.',
       keyInnovations: [
@@ -158,47 +163,47 @@ export const DemoWalkthroughModal: React.FC<DemoWalkthroughModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-stone-950/70 backdrop-blur-sm animate-fade-in">
-      <div className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl border border-stone-200 overflow-hidden flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-bg-950/70 backdrop-blur-sm animate-fade-in">
+      <div className="relative w-full max-w-2xl bg-bg-850 rounded-3xl shadow-2xl border border-bg-700 overflow-hidden flex flex-col max-h-[90vh]">
         
         {/* Modal Header */}
-        <div className="flex items-center justify-between px-6 py-4 bg-gradient-to-r from-emerald-800 to-teal-900 text-white">
+        <div className="flex items-center justify-between px-6 py-4 bg-forest-900/50 border-b border-forest-700 text-cream-50">
           <div className="flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-amber-300 animate-pulse" />
+            <Sparkles className="w-5 h-5 text-harvest-400 animate-pulse" />
             <div>
-              <h3 className="text-base sm:text-lg font-black text-white">
+              <h3 className="text-base sm:text-lg font-black text-cream-50">
                 SIH 2026 Judge Demonstration Guide
               </h3>
-              <p className="text-xs text-emerald-100 font-semibold">
+              <p className="text-xs text-forest-300 font-semibold">
                 End-to-End Story: 7 Phases of Vasundhara
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-emerald-100 hover:text-white hover:bg-white/10 rounded-full transition-colors cursor-pointer"
+            className="p-1.5 text-cream-400 hover:text-cream-50 hover:bg-bg-800 rounded-full transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Step Progress Indicators */}
-        <div className="px-6 py-3 bg-stone-50 border-b border-stone-200 flex items-center justify-between gap-1 overflow-x-auto">
+        <div className="px-6 py-3 bg-bg-750 border-b border-bg-700 flex items-center justify-between gap-1 overflow-x-auto">
           {steps.map((s, idx) => (
             <button
               key={s.stepNumber}
               onClick={() => setCurrentStepIndex(idx)}
               className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
                 idx === currentStepIndex
-                  ? 'bg-emerald-600 text-white shadow-xs'
+                  ? 'bg-forest-600 text-bg-950 shadow-xs'
                   : idx < currentStepIndex
-                  ? 'bg-emerald-100 text-emerald-900 border border-emerald-300'
-                  : 'bg-stone-200 text-stone-700 hover:bg-stone-300'
+                  ? 'bg-forest-900/30 text-forest-100 border border-forest-700'
+                  : 'bg-bg-800 text-cream-400 hover:bg-bg-750 hover:text-cream-50 border border-bg-700'
               }`}
             >
               <span>{s.stepNumber}</span>
               <span className="hidden sm:inline">
-                {idx < currentStepIndex && <CheckCircle2 className="w-3 h-3 inline ml-0.5 text-emerald-700" />}
+                {idx < currentStepIndex && <CheckCircle2 className="w-3 h-3 inline ml-0.5 text-forest-400" />}
               </span>
             </button>
           ))}
@@ -208,31 +213,31 @@ export const DemoWalkthroughModal: React.FC<DemoWalkthroughModalProps> = ({
         <div className="p-6 overflow-y-auto space-y-4">
           
           <div className="flex items-start gap-3">
-            <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-2xl shrink-0">
+            <div className="p-3 bg-forest-900/30 border border-forest-700 rounded-2xl shrink-0">
               {currentStep.icon}
             </div>
             <div>
-              <span className="inline-block text-[11px] font-bold uppercase tracking-wider text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md mb-1 border border-emerald-200">
+              <span className="inline-block text-[11px] font-bold uppercase tracking-wider text-forest-300 bg-forest-900/30 px-2 py-0.5 rounded-md mb-1 border border-forest-700">
                 Step {currentStep.stepNumber} of 7 • Role: {currentStep.role.toUpperCase()}
               </span>
-              <h4 className="text-lg font-bold text-stone-900 leading-snug">
+              <h4 className="text-lg font-bold text-cream-50 leading-snug">
                 {currentStep.title}
               </h4>
             </div>
           </div>
 
-          <p className="text-xs sm:text-sm text-stone-800 leading-relaxed bg-stone-50 p-3.5 rounded-xl border border-stone-200 font-medium">
+          <p className="text-xs sm:text-sm text-cream-300 leading-relaxed bg-bg-750 p-3.5 rounded-xl border border-bg-700 font-medium">
             {currentStep.narrative}
           </p>
 
           <div className="space-y-2">
-            <h5 className="text-xs font-bold text-stone-900 uppercase tracking-wider">
+            <h5 className="text-xs font-bold text-cream-50 uppercase tracking-wider">
               Technical & Architectural Highlights:
             </h5>
-            <ul className="space-y-1.5 text-xs text-stone-800 font-medium">
+            <ul className="space-y-1.5 text-xs text-cream-300 font-medium">
               {currentStep.keyInnovations.map((item, i) => (
                 <li key={i} className="flex items-start gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 mt-1.5 shrink-0" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-forest-400 mt-1.5 shrink-0" />
                   <span>{item}</span>
                 </li>
               ))}
@@ -242,12 +247,12 @@ export const DemoWalkthroughModal: React.FC<DemoWalkthroughModalProps> = ({
         </div>
 
         {/* Modal Footer Controls */}
-        <div className="px-6 py-4 bg-stone-50 border-t border-stone-200 flex items-center justify-between gap-3">
+        <div className="px-6 py-4 bg-bg-750 border-t border-bg-700 flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <button
               disabled={currentStepIndex === 0}
               onClick={() => setCurrentStepIndex((prev) => Math.max(0, prev - 1))}
-              className="flex items-center gap-1 px-3 py-2 text-xs font-bold text-stone-800 bg-white border border-stone-300 rounded-xl hover:bg-stone-100 disabled:opacity-40 disabled:pointer-events-none transition-colors cursor-pointer"
+              className="flex items-center gap-1 px-3 py-2 text-xs font-bold text-cream-300 bg-bg-800 border border-bg-700 rounded-xl hover:bg-bg-750 disabled:opacity-40 disabled:pointer-events-none transition-colors cursor-pointer"
             >
               <ChevronLeft className="w-4 h-4" />
               Previous
@@ -255,7 +260,7 @@ export const DemoWalkthroughModal: React.FC<DemoWalkthroughModalProps> = ({
             <button
               disabled={currentStepIndex === steps.length - 1}
               onClick={() => setCurrentStepIndex((prev) => Math.min(steps.length - 1, prev + 1))}
-              className="flex items-center gap-1 px-3 py-2 text-xs font-bold text-stone-800 bg-white border border-stone-300 rounded-xl hover:bg-stone-100 disabled:opacity-40 disabled:pointer-events-none transition-colors cursor-pointer"
+              className="flex items-center gap-1 px-3 py-2 text-xs font-bold text-cream-300 bg-bg-800 border border-bg-700 rounded-xl hover:bg-bg-750 disabled:opacity-40 disabled:pointer-events-none transition-colors cursor-pointer"
             >
               Next
               <ChevronRight className="w-4 h-4" />
@@ -264,7 +269,7 @@ export const DemoWalkthroughModal: React.FC<DemoWalkthroughModalProps> = ({
 
           <button
             onClick={handleAction}
-            className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-black rounded-xl shadow-md shadow-emerald-700/20 transition-all cursor-pointer active:scale-95"
+            className="flex items-center gap-2 px-4 py-2 bg-forest-600 hover:bg-forest-500 text-bg-950 text-xs sm:text-sm font-black rounded-xl shadow-md shadow-forest-700/30 transition-all cursor-pointer active:scale-95"
           >
             <span>{currentStep.actionLabel}</span>
             <ExternalLink className="w-4 h-4" />

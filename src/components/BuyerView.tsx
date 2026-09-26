@@ -216,30 +216,24 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
             </CardDescription>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="tab-strip shrink-0 bg-bg-900/50 backdrop-blur-md">
             <button
               onClick={() => setActiveTab('marketplace')}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
-                activeTab === 'marketplace'
-                  ? 'bg-gradient-to-br from-deepteal-700 to-deepteal-500 text-cream-50 shadow-[0_2px_8px_-2px_rgb(18_137_117_/_0.5)] border-transparent'
-                  : 'bg-bg-800/50 text-deepteal-200 hover:bg-deepteal-900/30 hover:text-deepteal-100 border border-deepteal-700/50'
-              }`}
+              className={`tab-item tab-item-buyer ${activeTab === 'marketplace' ? 'tab-active' : ''}`}
             >
               <ShoppingCart className="w-4 h-4" />
-              <span>Direct Marketplace</span>
+              <span className="hidden sm:inline">Direct Marketplace</span>
+              <span className="sm:hidden">Market</span>
             </button>
             <button
               onClick={() => setActiveTab('orders')}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
-                activeTab === 'orders'
-                  ? 'bg-gradient-to-br from-deepteal-700 to-deepteal-500 text-cream-50 shadow-[0_2px_8px_-2px_rgb(18_137_117_/_0.5)] border-transparent'
-                  : 'bg-bg-800/50 text-deepteal-200 hover:bg-deepteal-900/30 hover:text-deepteal-100 border border-deepteal-700/50'
-              }`}
+              className={`tab-item tab-item-buyer ${activeTab === 'orders' ? 'tab-active' : ''}`}
             >
               <Package className="w-4 h-4" />
-              <span>My Orders</span>
+              <span className="hidden sm:inline">My Orders</span>
+              <span className="sm:hidden">Orders</span>
               {orders.length > 0 && (
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-olive-500 text-bg-950">
+                <span className="px-1.5 py-px rounded bg-bg-950/30 text-cream-100 text-[10px]">
                   {orders.length}
                 </span>
               )}
@@ -322,24 +316,24 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
           )}
 
           {/* Search & Filter Bar */}
-          <Card variant="outlined" padding="sm" className="border-bg-700">
+          <div className="p-3 bg-bg-800/50 border border-bg-700 rounded-xl">
             <div className="flex flex-col sm:flex-row items-center gap-3">
               <div className="relative flex-1 w-full">
-                <Search className="w-4 h-4 text-cream-500 absolute left-3 top-3" />
+                <Search className="w-4 h-4 text-cream-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                 <input
                   type="text"
                   placeholder="Search by crop, variety, or district..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2 text-xs font-semibold bg-bg-800 border border-bg-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-deepteal-500 text-cream-100 placeholder:text-cream-500"
+                  className="w-full pl-9 pr-3 py-2 text-sm font-medium bg-bg-850 border border-bg-700 rounded-lg focus:outline-none focus:border-deepteal-500 focus:ring-1 focus:ring-deepteal-500/30 text-cream-100 placeholder:text-cream-600 transition-colors"
                 />
               </div>
 
-              <div className="flex items-center gap-2 w-full sm:w-auto overflow-x-auto no-scrollbar">
+              <div className="flex items-center gap-2 w-full sm:w-auto overflow-x-auto scrollbar-hidden">
                 <select
                   value={selectedCrop}
                   onChange={(e) => setSelectedCrop(e.target.value)}
-                  className="px-3 py-2 text-xs font-bold bg-bg-800 border border-bg-700 rounded-xl focus:outline-none cursor-pointer text-cream-100"
+                  className="px-3 py-2 text-sm font-medium bg-bg-850 border border-bg-700 rounded-lg focus:outline-none focus:border-deepteal-500 cursor-pointer text-cream-100 transition-colors shrink-0 appearance-none pr-8 bg-no-repeat bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%24%2024%22%20fill%3D%22none%22%20stroke%3D%22%23bfaa92%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E')] bg-[position:right_8px_center] bg-[length:16px_16px]"
                 >
                   <option value="All">All Crops</option>
                   <option value="Tomato">Tomato</option>
@@ -352,15 +346,15 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                 <select
                   value={selectedGrade}
                   onChange={(e) => setSelectedGrade(e.target.value)}
-                  className="px-3 py-2 text-xs font-bold bg-bg-800 border border-bg-700 rounded-xl focus:outline-none cursor-pointer text-cream-100"
+                  className="px-3 py-2 text-sm font-medium bg-bg-850 border border-bg-700 rounded-lg focus:outline-none focus:border-deepteal-500 cursor-pointer text-cream-100 transition-colors shrink-0 appearance-none pr-8 bg-no-repeat bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%24%2024%22%20fill%3D%22none%22%20stroke%3D%22%23bfaa92%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E')] bg-[position:right_8px_center] bg-[length:16px_16px]"
                 >
-                  <option value="All">All Quality Grades</option>
+                  <option value="All">All Grades</option>
                   <option value="A">Grade A Only</option>
                   <option value="B">Grade B & Above</option>
                 </select>
 
-                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-bg-750 border border-bg-700 rounded-xl text-xs font-bold text-cream-300 whitespace-nowrap">
-                  <span>Max: ₹{maxPrice}/kg</span>
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-bg-850 border border-bg-700 rounded-lg text-sm font-medium text-cream-300 shrink-0">
+                  <span className="w-16">₹{maxPrice}/kg</span>
                   <input
                     type="range"
                     min={10}
@@ -368,12 +362,12 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                     step={2}
                     value={maxPrice}
                     onChange={(e) => setMaxPrice(Number(e.target.value))}
-                    className="w-16 accent-deepteal-500 cursor-pointer"
+                    className="w-20 accent-deepteal-500 cursor-pointer h-1 bg-bg-700 rounded-lg appearance-none"
                   />
                 </div>
               </div>
             </div>
-          </Card>
+          </div>
 
           {/* Listings Grid */}
           {filteredListings.length === 0 ? (
@@ -643,32 +637,24 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
             </div>
 
             <div>
-              <label className="block font-bold text-cream-300 mb-1 text-xs">
-                Procurement Quantity (kg)
-              </label>
-              <input
+              <Input
+                label="Procurement Quantity (kg)"
                 type="number"
                 max={selectedListing.quantityKg}
                 min={100}
                 step={50}
                 value={orderQuantity}
                 onChange={(e) => setOrderQuantity(Number(e.target.value))}
-                className="w-full px-3 py-2 text-sm font-bold border border-bg-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-deepteal-500 text-cream-100 bg-bg-800"
+                hint={`Max Available in Lot: ${selectedListing.quantityKg} kg`}
               />
-              <span className="text-[10px] text-cream-500 mt-0.5 block font-semibold">
-                Max Available in Lot: {selectedListing.quantityKg} kg
-              </span>
             </div>
 
             <div>
-              <label className="block font-bold text-cream-300 mb-1 text-xs">
-                Delivery Destination Address
-              </label>
-              <input
+              <Input
+                label="Delivery Destination Address"
                 type="text"
                 value={deliveryAddress}
                 onChange={(e) => setDeliveryAddress(e.target.value)}
-                className="w-full px-3 py-2 text-xs sm:text-sm font-semibold border border-bg-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-deepteal-500 text-cream-100 bg-bg-800"
               />
             </div>
 

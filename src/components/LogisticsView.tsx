@@ -119,16 +119,18 @@ export const LogisticsView: React.FC<LogisticsViewProps> = ({
           </div>
 
           <div className="flex items-center gap-3 flex-wrap">
-            <div className="px-4 py-2 bg-bg-800/50 backdrop-blur-md rounded-2xl border border-olive-700/50 text-center">
-              <p className="text-[11px] text-olive-300 font-semibold">Fleet Fuel Savings</p>
-              <p className="text-base font-black text-olive-300">
-                ~{avgFuelSavings}% Saved
+            <div className="metric-tile">
+              <p className="text-[10px] text-cream-500 font-bold uppercase tracking-widest mb-1">Fleet Fuel Savings</p>
+              <p className="text-xl font-display font-bold text-olive-300 flex items-center gap-1.5">
+                <Fuel className="w-4 h-4 text-olive-400" />
+                <span>~{avgFuelSavings}%</span>
               </p>
             </div>
-            <div className="px-4 py-2 bg-bg-800/50 backdrop-blur-md rounded-2xl border border-forest-700/50 text-center">
-              <p className="text-[11px] text-forest-300 font-semibold">Carbon Abated</p>
-              <p className="text-base font-black text-forest-300">
-                {totalCarbonReduced.toFixed(1)} kg CO₂
+            <div className="metric-tile">
+              <p className="text-[10px] text-cream-500 font-bold uppercase tracking-widest mb-1">Carbon Abated</p>
+              <p className="text-xl font-display font-bold text-botanical-300 flex items-center gap-1.5">
+                <Leaf className="w-4 h-4 text-botanical-400" />
+                <span>{totalCarbonReduced.toFixed(1)} kg CO₂</span>
               </p>
             </div>
           </div>

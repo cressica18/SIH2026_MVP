@@ -1,5 +1,19 @@
 import React, { forwardRef } from 'react';
 
+const fieldBase = `
+  w-full rounded-lg transition-all duration-100 text-sm text-cream-100
+  bg-bg-800 border border-bg-650
+  placeholder:text-cream-700
+  hover:border-bg-500 hover:bg-bg-800
+  focus:outline-none focus:border-forest-500 focus:ring-2 focus:ring-forest-500/20 focus:bg-bg-750
+  disabled:bg-bg-700 disabled:cursor-not-allowed disabled:text-cream-600 disabled:opacity-60
+`;
+
+const fieldError = `
+  border-copper-500 focus:border-copper-500 focus:ring-2 focus:ring-copper-500/20
+`;
+
+/* ── Input ── */
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: string;
@@ -31,9 +45,14 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className={fullWidth ? 'w-full' : ''}>
         {label && (
-          <label htmlFor={inputId} className="block text-xs font-medium text-cream-500 uppercase tracking-wider mb-1.5">
+          <label
+            htmlFor={inputId}
+            className="block text-[11px] font-semibold text-cream-500 uppercase tracking-widest mb-1.5"
+          >
             {label}
-            {required && <span className="text-copper-400 ml-1" aria-hidden="true">*</span>}
+            {required && (
+              <span className="text-copper-400 ml-1" aria-hidden="true">*</span>
+            )}
           </label>
         )}
         <div className="relative">
@@ -48,16 +67,15 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             disabled={disabled}
             required={required}
             aria-invalid={error ? 'true' : 'false'}
-            aria-describedby={error ? `${inputId}-error` : hint ? `${inputId}-hint` : undefined}
+            aria-describedby={
+              error ? `${inputId}-error` : hint ? `${inputId}-hint` : undefined
+            }
             className={`
-              w-full rounded-md transition-colors duration-80
-              ${leftIcon ? 'pl-10' : 'pl-3'}
-              ${rightIcon ? 'pr-10' : 'pr-3'}
-              py-2 text-sm
-              ${error
-                ? 'border-copper-500 text-cream-100 placeholder:text-cream-700 focus:border-copper-500 focus:ring-2 focus:ring-copper-500/20'
-                : 'border-bg-600 text-cream-100 placeholder:text-cream-700 focus:border-forest-500 focus:ring-2 focus:ring-forest-500/20'}
-              ${disabled ? 'bg-bg-700 cursor-not-allowed text-cream-700' : 'bg-bg-800 hover:border-bg-500'}
+              ${fieldBase}
+              ${leftIcon ? 'pl-10' : 'pl-3.5'}
+              ${rightIcon ? 'pr-10' : 'pr-3.5'}
+              py-2.5
+              ${error ? fieldError : ''}
               ${className}
             `}
             {...props}
@@ -69,12 +87,16 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           )}
         </div>
         {error && (
-          <p id={`${inputId}-error`} className="mt-1.5 text-xs font-medium text-copper-400" role="alert">
+          <p
+            id={`${inputId}-error`}
+            className="mt-1.5 text-[11px] font-medium text-copper-300 flex items-center gap-1"
+            role="alert"
+          >
             {error}
           </p>
         )}
         {hint && !error && (
-          <p id={`${inputId}-hint`} className="mt-1.5 text-xs text-cream-600">
+          <p id={`${inputId}-hint`} className="mt-1.5 text-[11px] text-cream-600">
             {hint}
           </p>
         )}
@@ -82,9 +104,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     );
   }
 );
-
 Input.displayName = 'Input';
 
+/* ── Textarea ── */
 export interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   label?: string;
   error?: string;
@@ -112,9 +134,14 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
     return (
       <div className={fullWidth ? 'w-full' : ''}>
         {label && (
-          <label htmlFor={textareaId} className="block text-xs font-medium text-cream-500 uppercase tracking-wider mb-1.5">
+          <label
+            htmlFor={textareaId}
+            className="block text-[11px] font-semibold text-cream-500 uppercase tracking-widest mb-1.5"
+          >
             {label}
-            {required && <span className="text-copper-400 ml-1" aria-hidden="true">*</span>}
+            {required && (
+              <span className="text-copper-400 ml-1" aria-hidden="true">*</span>
+            )}
           </label>
         )}
         <textarea
@@ -123,24 +150,28 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           disabled={disabled}
           required={required}
           aria-invalid={error ? 'true' : 'false'}
-          aria-describedby={error ? `${textareaId}-error` : hint ? `${textareaId}-hint` : undefined}
+          aria-describedby={
+            error ? `${textareaId}-error` : hint ? `${textareaId}-hint` : undefined
+          }
           className={`
-            w-full rounded-md transition-colors duration-80 px-3 py-2 text-sm resize-y min-h-[100px]
-            ${error
-              ? 'border-copper-500 text-cream-100 placeholder:text-cream-700 focus:border-copper-500 focus:ring-2 focus:ring-copper-500/20'
-              : 'border-bg-600 text-cream-100 placeholder:text-cream-700 focus:border-forest-500 focus:ring-2 focus:ring-forest-500/20'}
-            ${disabled ? 'bg-bg-700 cursor-not-allowed text-cream-700' : 'bg-bg-800 hover:border-bg-500'}
+            ${fieldBase}
+            px-3.5 py-2.5 resize-y min-h-[100px]
+            ${error ? fieldError : ''}
             ${className}
           `}
           {...props}
         />
         {error && (
-          <p id={`${textareaId}-error`} className="mt-1.5 text-xs font-medium text-copper-400" role="alert">
+          <p
+            id={`${textareaId}-error`}
+            className="mt-1.5 text-[11px] font-medium text-copper-300"
+            role="alert"
+          >
             {error}
           </p>
         )}
         {hint && !error && (
-          <p id={`${textareaId}-hint`} className="mt-1.5 text-xs text-cream-600">
+          <p id={`${textareaId}-hint`} className="mt-1.5 text-[11px] text-cream-600">
             {hint}
           </p>
         )}
@@ -148,5 +179,4 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
     );
   }
 );
-
 Textarea.displayName = 'Textarea';

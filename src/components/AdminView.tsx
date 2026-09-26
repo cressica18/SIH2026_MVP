@@ -106,19 +106,16 @@ export const AdminView: React.FC<AdminViewProps> = ({
             </CardDescription>
           </div>
 
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="tab-strip shrink-0 bg-bg-900/50 backdrop-blur-md">
             <button
               onClick={() => setActiveTab('reports')}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
-                activeTab === 'reports'
-                  ? 'bg-gradient-to-br from-copper-700 to-copper-500 text-cream-50 shadow-[0_2px_8px_-2px_rgb(190_79_18_/_0.5)] border-transparent'
-                  : 'bg-bg-800/50 text-copper-200 hover:bg-copper-900/30 hover:text-copper-100 border border-copper-700/50'
-              }`}
+              className={`tab-item tab-item-admin ${activeTab === 'reports' ? 'tab-active' : ''}`}
             >
-              <AlertTriangle className="w-4 h-4 text-copper-300" />
-              <span>Whistleblower Queue</span>
+              <AlertTriangle className="w-4 h-4" />
+              <span className="hidden sm:inline">Whistleblower Queue</span>
+              <span className="sm:hidden">Queue</span>
               {pendingReportsCount > 0 && (
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-copper-500 text-bg-950">
+                <span className="px-1.5 py-px rounded bg-bg-950/30 text-cream-100 text-[10px]">
                   {pendingReportsCount}
                 </span>
               )}
@@ -126,26 +123,20 @@ export const AdminView: React.FC<AdminViewProps> = ({
 
             <button
               onClick={() => setActiveTab('metrics')}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
-                activeTab === 'metrics'
-                  ? 'bg-gradient-to-br from-forest-700 to-forest-500 text-cream-50 shadow-[0_2px_8px_-2px_rgb(19_115_68_/_0.5)] border-transparent'
-                  : 'bg-bg-800/50 text-forest-200 hover:bg-forest-900/30 hover:text-forest-100 border border-forest-700/50'
-              }`}
+              className={`tab-item tab-item-admin ${activeTab === 'metrics' ? 'tab-active' : ''}`}
             >
-              <BarChart3 className="w-4 h-4 text-forest-300" />
-              <span>Impact KPIs</span>
+              <BarChart3 className="w-4 h-4" />
+              <span className="hidden sm:inline">Impact KPIs</span>
+              <span className="sm:hidden">KPIs</span>
             </button>
 
             <button
               onClick={() => setActiveTab('schemes')}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
-                activeTab === 'schemes'
-                  ? 'bg-gradient-to-br from-sage-700 to-sage-500 text-cream-50 shadow-[0_2px_8px_-2px_rgb(109_196_143_/_0.5)] border-transparent'
-                  : 'bg-bg-800/50 text-sage-200 hover:bg-sage-900/30 hover:text-sage-100 border border-sage-700/50'
-              }`}
+              className={`tab-item tab-item-admin ${activeTab === 'schemes' ? 'tab-active' : ''}`}
             >
-              <Building2 className="w-4 h-4 text-sage-300" />
-              <span>Schemes Registry</span>
+              <Building2 className="w-4 h-4" />
+              <span className="hidden sm:inline">Schemes Registry</span>
+              <span className="sm:hidden">Schemes</span>
             </button>
           </div>
         </div>
@@ -254,67 +245,51 @@ export const AdminView: React.FC<AdminViewProps> = ({
             </CardDescription>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Card variant="outlined" padding="md" className="space-y-2 border-bg-700">
-              <div className="flex items-center justify-between text-cream-500 text-xs font-bold">
-                <span>Total Farmgate GMV</span>
-                <div className="p-2 bg-forest-900/30 text-forest-300 rounded-xl border border-forest-700">
-                  <IndianRupee className="w-4 h-4" />
-                </div>
-              </div>
-              <p className="text-2xl font-black text-cream-50 tracking-tight">
-                ₹38.4 Lakhs
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <div className="metric-tile">
+              <p className="text-[10px] text-cream-500 font-bold uppercase tracking-widest mb-1">Total Farmgate GMV</p>
+              <p className="text-xl font-display font-bold text-cream-50 flex items-center gap-1.5">
+                <IndianRupee className="w-4 h-4 text-forest-400" />
+                <span>₹38.4 L</span>
               </p>
-              <p className="text-xs text-forest-300 font-bold flex items-center gap-1">
+              <p className="text-[11px] text-forest-300 font-bold flex items-center gap-1 mt-1.5">
                 <TrendingUp className="w-3.5 h-3.5" />
                 Direct trade transacted
               </p>
-            </Card>
+            </div>
 
-            <Card variant="outlined" padding="md" className="space-y-2 border-bg-700">
-              <div className="flex items-center justify-between text-cream-500 text-xs font-bold">
-                <span>Farmgate Price Premium</span>
-                <div className="p-2 bg-forest-900/30 text-forest-300 rounded-xl border border-forest-700">
-                  <TrendingUp className="w-4 h-4" />
-                </div>
-              </div>
-              <p className="text-2xl font-black text-forest-300 tracking-tight">
-                +22.4%
+            <div className="metric-tile">
+              <p className="text-[10px] text-cream-500 font-bold uppercase tracking-widest mb-1">Farmgate Price Premium</p>
+              <p className="text-xl font-display font-bold text-forest-300 flex items-center gap-1.5">
+                <TrendingUp className="w-4 h-4 text-forest-400" />
+                <span>+22.4%</span>
               </p>
-              <p className="text-xs text-cream-500 font-medium">
+              <p className="text-[11px] text-cream-500 font-medium mt-1.5">
                 Above local arhat middlemen rates
               </p>
-            </Card>
+            </div>
 
-            <Card variant="outlined" padding="md" className="space-y-2 border-bg-700">
-              <div className="flex items-center justify-between text-cream-500 text-xs font-bold">
-                <span>Verified Farmers</span>
-                <div className="p-2 bg-deepteal-900/30 text-deepteal-300 rounded-xl border border-deepteal-700">
-                  <Users className="w-4 h-4" />
-                </div>
-              </div>
-              <p className="text-2xl font-black text-cream-50 tracking-tight">
-                1,248
+            <div className="metric-tile">
+              <p className="text-[10px] text-cream-500 font-bold uppercase tracking-widest mb-1">Verified Farmers</p>
+              <p className="text-xl font-display font-bold text-cream-50 flex items-center gap-1.5">
+                <Users className="w-4 h-4 text-deepteal-400" />
+                <span>1,248</span>
               </p>
-              <p className="text-xs text-cream-500 font-medium">
+              <p className="text-[11px] text-cream-500 font-medium mt-1.5">
                 Across 4 horticulture districts
               </p>
-            </Card>
+            </div>
 
-            <Card variant="outlined" padding="md" className="space-y-2 border-bg-700">
-              <div className="flex items-center justify-between text-cream-500 text-xs font-bold">
-                <span>Freight Mileage Abated</span>
-                <div className="p-2 bg-olive-900/30 text-olive-300 rounded-xl border border-olive-700">
-                  <Building2 className="w-4 h-4" />
-                </div>
-              </div>
-              <p className="text-2xl font-black text-olive-300 tracking-tight">
-                34.1%
+            <div className="metric-tile">
+              <p className="text-[10px] text-cream-500 font-bold uppercase tracking-widest mb-1">Freight Mileage Abated</p>
+              <p className="text-xl font-display font-bold text-olive-300 flex items-center gap-1.5">
+                <Building2 className="w-4 h-4 text-olive-400" />
+                <span>34.1%</span>
               </p>
-              <p className="text-xs text-cream-500 font-medium">
+              <p className="text-[11px] text-cream-500 font-medium mt-1.5">
                 Via multi-order VRP pooling
               </p>
-            </Card>
+            </div>
           </div>
         </div>
       )}
@@ -381,18 +356,16 @@ export const AdminView: React.FC<AdminViewProps> = ({
             </div>
 
             <div>
-              <label className="block font-bold text-cream-300 mb-1 text-xs">
-                Workflow Moderation Status
-              </label>
-              <select
+              <Select
+                label="Workflow Moderation Status"
+                options={[
+                  { value: 'open', label: 'Open (Under Investigation)' },
+                  { value: 'reviewing', label: 'Reviewing (Assigned to Vigilance)' },
+                  { value: 'resolved', label: 'Resolved (Action Enforced)' }
+                ]}
                 value={newStatus}
                 onChange={(e) => setNewStatus(e.target.value as any)}
-                className="w-full px-3 py-2.5 font-bold bg-bg-800 border border-bg-700 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-forest-500 text-cream-50"
-              >
-                <option value="open">Open (Under Investigation)</option>
-                <option value="reviewing">Reviewing (Assigned to Vigilance)</option>
-                <option value="resolved">Resolved (Action Enforced)</option>
-              </select>
+              />
             </div>
 
             <div>

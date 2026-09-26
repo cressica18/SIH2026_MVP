@@ -511,45 +511,47 @@ export const FarmerView: React.FC<FarmerViewProps> = ({
         </div>
       </div>
 
-      {/* Navigation Tabs - Refined */}
-      <div className="relative">
-        <nav className="flex items-center gap-1 overflow-x-auto pb-2 border-b border-bg-700 scrollbar-hidden" role="tablist" aria-label="Farmer portal sections">
-          {TABS.map((tab) => {
-            const count = tab.id === 'listings' ? listings.length : tab.id === 'orders' ? orders.length : tab.id === 'schemes' ? schemes.length : 0;
-            const isActive = activeTab === tab.id;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id as TabId)}
-                role="tab"
-                aria-selected={isActive}
-                aria-controls={`panel-${tab.id}`}
-                className={`flex items-center gap-2 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-150 cursor-pointer whitespace-nowrap relative ${
+      {/* Navigation Tabs */}
+      <nav
+        className="flex items-center gap-1 overflow-x-auto scrollbar-hidden border-b pb-0"
+        style={{ borderColor: 'var(--color-bg-700)' }}
+        role="tablist" aria-label="Farmer portal sections"
+      >
+        {TABS.map((tab) => {
+          const count = tab.id === 'listings' ? listings.length : tab.id === 'orders' ? orders.length : tab.id === 'schemes' ? schemes.length : 0;
+          const isActive = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id as TabId)}
+              role="tab"
+              aria-selected={isActive}
+              aria-controls={`panel-${tab.id}`}
+              className={`
+                relative flex items-center gap-2 px-4 py-3.5 text-sm font-medium
+                transition-all duration-100 cursor-pointer whitespace-nowrap
+                border-b-2 -mb-px
+                ${isActive
+                  ? 'text-botanical-300 border-botanical-400'
+                  : 'text-cream-500 border-transparent hover:text-cream-200 hover:border-bg-600'
+                }
+              `}
+            >
+              <tab.icon className={`w-4 h-4 ${isActive ? 'text-botanical-400' : 'text-cream-600'}`} aria-hidden="true" />
+              <span>{t.nav[tab.id === 'safety' ? 'safetyReport' : tab.id] || tab.label}</span>
+              {count > 0 && (
+                <span className={`px-1.5 py-px rounded text-[10px] font-bold font-mono ${
                   isActive
-                    ? 'text-botanical-300 bg-botanical-900/30 border border-botanical-700'
-                    : 'text-cream-400 hover:text-cream-100 hover:bg-bg-800'
-                }`}
-              >
-                <tab.icon className={`w-4 h-4 ${isActive ? 'text-botanical-300' : 'text-cream-500'}`} aria-hidden="true" />
-                <span>{t.nav[tab.id === 'safety' ? 'safetyReport' : tab.id] || tab.label}</span>
-                {count > 0 && (
-                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                    isActive
-                      ? 'bg-botanical-700 text-botanical-100'
-                      : 'bg-bg-700 text-cream-500'
-                  }`}>
-                    {count}
-                  </span>
-                )}
-                {/* Active indicator */}
-                {isActive && (
-                  <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-0.5 bg-botanical-400 rounded-full" />
-                )}
-              </button>
-            );
-          })}
-        </nav>
-      </div>
+                    ? 'bg-botanical-800/60 text-botanical-200'
+                    : 'bg-bg-750 text-cream-500'
+                }`}>
+                  {count}
+                </span>
+              )}
+            </button>
+          );
+        })}
+      </nav>
 
       {/* TAB 1: MY LISTINGS */}
       {activeTab === 'listings' && (
@@ -1279,11 +1281,13 @@ function SchemesTab({
           <button
             key={cat}
             onClick={() => setSchemeCategory(cat)}
-            className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all border cursor-pointer ${
-              schemeCategory === cat
-                ? 'bg-gradient-to-br from-forest-700 to-botanical-700 text-cream-50 border-transparent shadow-[0_2px_8px_-2px_rgb(19_115_68_/_0.5)]'
-                : 'bg-bg-800 text-cream-300 border-bg-700 hover:border-forest-500 hover:text-forest-300 hover:bg-forest-900/20'
-            }`}
+            className={`
+              px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all duration-150 cursor-pointer border
+              ${schemeCategory === cat
+                ? 'bg-gradient-to-br from-botanical-700 to-forest-600 text-cream-50 border-transparent shadow-[0_2px_8px_-2px_rgb(29_125_60_/_0.5)]'
+                : 'bg-bg-800 text-cream-400 border-bg-700 hover:border-botanical-500/50 hover:text-cream-200 hover:bg-bg-750'
+              }
+            `}
           >
             {cat}
           </button>
@@ -1378,23 +1382,23 @@ function FinanceTab({
 
         <CardContent className="space-y-4">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="p-3.5 bg-bg-750 rounded-2xl border border-bg-700">
-              <p className="text-xs text-cream-500 font-semibold uppercase tracking-wider">Eligible Advance</p>
-              <p className="text-lg font-bold text-forest-300 mt-1">₹{riskAssessment.eligibleAdvanceAmount.toLocaleString('en-IN')}</p>
+            <div className="metric-tile">
+              <p className="text-[10px] text-cream-500 font-bold uppercase tracking-widest mb-1">Eligible Advance</p>
+              <p className="text-xl font-display font-bold text-forest-300">₹{riskAssessment.eligibleAdvanceAmount.toLocaleString('en-IN')}</p>
             </div>
-            <div className="p-3.5 bg-bg-750 rounded-2xl border border-bg-700">
-              <p className="text-xs text-cream-500 font-semibold uppercase tracking-wider">Risk Score</p>
-              <p className="text-lg font-bold text-cream-100 mt-1">{riskAssessment.riskScore} / 100</p>
+            <div className="metric-tile">
+              <p className="text-[10px] text-cream-500 font-bold uppercase tracking-widest mb-1">Risk Score</p>
+              <p className="text-xl font-display font-bold text-cream-100">{riskAssessment.riskScore} <span className="text-sm font-medium text-cream-500">/ 100</span></p>
             </div>
-            <div className="p-3.5 bg-bg-750 rounded-2xl border border-bg-700">
-              <p className="text-xs text-cream-500 font-semibold uppercase tracking-wider">Fulfillment Rate</p>
-              <p className="text-sm font-bold text-cream-100 mt-1">{riskAssessment.factors.fulfillmentRate}</p>
+            <div className="metric-tile">
+              <p className="text-[10px] text-cream-500 font-bold uppercase tracking-widest mb-1">Fulfillment Rate</p>
+              <p className="text-xl font-display font-bold text-cream-100">{riskAssessment.factors.fulfillmentRate}</p>
             </div>
-            <div className="p-3.5 bg-bg-750 rounded-2xl border border-bg-700">
-              <p className="text-xs text-cream-500 font-semibold uppercase tracking-wider">Reputation Score</p>
-              <p className="text-sm font-bold text-harvest-300 mt-1 flex items-center gap-1">
-                <Star className="w-4 h-4 fill-harvest-400 text-harvest-400" />
-                <span>{riskAssessment.factors.reputationScore} / 5.0</span>
+            <div className="metric-tile">
+              <p className="text-[10px] text-cream-500 font-bold uppercase tracking-widest mb-1">Reputation</p>
+              <p className="text-xl font-display font-bold text-harvest-300 flex items-center gap-1.5">
+                <Star className="w-5 h-5 fill-harvest-400 text-harvest-400" />
+                <span>{riskAssessment.factors.reputationScore}</span>
               </p>
             </div>
           </div>
@@ -1406,15 +1410,18 @@ function FinanceTab({
 
           {advances.length > 0 && (
             <div className="pt-4 border-t border-bg-700">
-              <h4 className="font-bold text-cream-100 mb-3 text-sm">Working Capital Request History</h4>
-              <div className="space-y-3">
+              <h4 className="font-display font-semibold text-cream-100 mb-3 text-sm">Working Capital Request History</h4>
+              <div className="space-y-2.5">
                 {advances.map((adv) => {
                   return (
-                    <div key={adv.id} className="flex justify-between items-center p-3.5 rounded-2xl border border-bg-700 bg-bg-850 shadow-xs">
+                    <div key={adv.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-xl border border-bg-700 bg-bg-850 hover:border-bg-600 transition-colors">
                       <div>
-                        <p className="font-bold text-cream-100 text-sm">₹{adv.amountRequested.toLocaleString('en-IN')}</p>
-                        <p className="text-xs text-cream-500 font-mono">Ref: {adv.aepsTxnRef || adv.id}</p>
-                        {adv.purpose && <p className="text-[11px] text-cream-500 font-medium">{adv.purpose}</p>}
+                        <div className="flex items-center gap-2 mb-1">
+                          <p className="font-display font-bold text-cream-50 text-lg">₹{adv.amountRequested.toLocaleString('en-IN')}</p>
+                          <StatusBadge status={adv.status} />
+                        </div>
+                        <p className="text-[11px] text-cream-500 font-mono tracking-wide">Ref: {adv.aepsTxnRef || adv.id}</p>
+                        {adv.purpose && <p className="text-xs text-cream-400 mt-1">{adv.purpose}</p>}
                       </div>
                       <div className="flex items-center gap-2">
                         {adv.status === 'requested' && (
@@ -1422,13 +1429,12 @@ function FinanceTab({
                             size="sm"
                             variant="outline"
                             onClick={() => onOpenAepsModal(adv.amountRequested, adv.id)}
-                            className="text-xs border-forest-500 text-forest-300 hover:bg-forest-900/30 flex items-center gap-1 font-bold"
+                            className="text-xs border-forest-600 text-forest-300 hover:bg-forest-900/30 font-bold"
                           >
-                            <Fingerprint className="w-3.5 h-3.5" />
+                            <Fingerprint className="w-3.5 h-3.5 mr-1.5" />
                             <span>Cash Out (AEPS)</span>
                           </Button>
                         )}
-                        <StatusBadge status={adv.status} />
                       </div>
                     </div>
                   );
@@ -1578,20 +1584,21 @@ function SafetyTab({
             />
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-start gap-3 p-3 bg-bg-800 rounded-lg border border-bg-700">
             <input
               type="checkbox"
               id="anonCheck"
               checked={safetyAnonymous}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSafetyAnonymous(e.target.checked)}
-              className="w-4 h-4 text-copper-500 rounded-sm focus:ring-copper-500 cursor-pointer bg-bg-800 border-bg-700"
+              className="mt-0.5 w-4 h-4 text-copper-500 rounded focus:ring-copper-500 focus:ring-offset-bg-800 cursor-pointer bg-bg-900 border-bg-650"
             />
-            <label htmlFor="anonCheck" className="text-xs font-semibold text-cream-300 cursor-pointer">
-              Submit 100% Anonymously (Do not associate my farmer ID)
+            <label htmlFor="anonCheck" className="text-xs font-medium text-cream-300 cursor-pointer select-none leading-relaxed">
+              <span className="block font-semibold text-cream-100 mb-0.5">Submit 100% Anonymously</span>
+              Do not associate my farmer ID. Admin will investigate based only on the details provided.
             </label>
           </div>
 
-          <Button type="submit" className="w-full" variant="danger" disabled={isSubmittingSafety} loading={isSubmittingSafety}>
+          <Button type="submit" className="w-full" variant="danger" size="lg" disabled={isSubmittingSafety} loading={isSubmittingSafety}>
             Submit Report to Safety Moderation
           </Button>
         </form>

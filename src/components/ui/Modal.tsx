@@ -77,7 +77,7 @@ export const Modal: React.FC<ModalProps> = ({
 
   const modalContent = (
     <div
-      className="fixed inset-0 z-[400] flex items-center justify-center p-4 sm:p-6 bg-bg-950/80 backdrop-blur-sm animate-fade-in"
+      className="fixed inset-0 z-[400] flex items-center justify-center p-4 sm:p-6 bg-bg-950/85 backdrop-blur-sm animate-fade-in"
       role="dialog"
       aria-modal="true"
       aria-labelledby={title ? 'modal-title' : undefined}
@@ -92,7 +92,7 @@ export const Modal: React.FC<ModalProps> = ({
       <div
         ref={modalRef}
         tabIndex={-1}
-        className={`relative w-full ${sizeStyles[size]} bg-bg-850 rounded-xl shadow-2xl border border-bg-700 overflow-hidden animate-slide-up focus:outline-none flex flex-col max-h-[90vh]`}
+        className={`relative w-full ${sizeStyles[size]} bg-bg-850 rounded-xl shadow-2xl border border-bg-700 overflow-hidden animate-scale-in focus:outline-none flex flex-col max-h-[90vh]`}
       >
         {(title || showCloseButton) && (
           <div className="flex items-start justify-between px-4 py-3 border-b border-bg-700 bg-bg-800/50">

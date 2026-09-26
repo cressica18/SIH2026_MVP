@@ -37,7 +37,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
     return (
       <div className={fullWidth ? 'w-full' : ''}>
         {label && (
-          <label htmlFor={selectId} className="block text-xs font-medium text-cream-500 uppercase tracking-wide mb-1.5">
+          <label htmlFor={selectId} className="block text-xs font-medium text-cream-500 uppercase tracking-wider mb-1.5">
             {label}
             {required && <span className="text-copper-400 ml-1" aria-hidden="true">*</span>}
           </label>
@@ -51,17 +51,21 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
             aria-invalid={error ? 'true' : 'false'}
             aria-describedby={error ? `${selectId}-error` : hint ? `${selectId}-hint` : undefined}
             className={`
-              w-full rounded-md appearance-none transition-colors duration-100 cursor-pointer
+              w-full rounded-md appearance-none transition-colors duration-80 cursor-pointer
               pl-3 pr-9 py-2 text-sm
               ${error
-                ? 'border-copper-500 text-cream-100 focus:border-copper-500 focus:ring-2 focus:ring-copper-500/25'
-                : 'border-bg-600 text-cream-100 focus:border-botanical-500 focus:ring-2 focus:ring-botanical-500/25'}
-              ${disabled ? 'bg-bg-700 cursor-not-allowed text-cream-600' : 'bg-bg-800 hover:border-bg-500'}
+                ? 'border-copper-500 text-cream-100 focus:border-copper-500 focus:ring-2 focus:ring-copper-500/20'
+                : 'border-bg-600 text-cream-100 focus:border-evergreen-500 focus:ring-2 focus:ring-evergreen-500/20'}
+              ${disabled ? 'bg-bg-700 cursor-not-allowed text-cream-700' : 'bg-bg-800 hover:border-bg-500'}
               ${className}
             `}
             {...props}
           >
-            {placeholder && <option value="" disabled>{placeholder}</option>}
+            {placeholder && (
+              <option value="" disabled>
+                {placeholder}
+              </option>
+            )}
             {options.map((option) => (
               <option key={option.value} value={option.value} disabled={option.disabled}>
                 {option.label}

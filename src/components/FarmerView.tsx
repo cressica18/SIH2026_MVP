@@ -1019,7 +1019,7 @@ function OrderCard({
   isRevealed: boolean;
   onUpdateOrderStatus?: (orderId: string, status: string) => void;
 }) {
-  const STATUS_VARIANTS: Record<OrderStatus, 'success' | 'warning' | 'danger' | 'info' | 'default' | 'harvest' | 'botanical' | 'teal' | 'copper'> = {
+  const STATUS_VARIANTS: Record<OrderStatus, 'success' | 'warning' | 'danger' | 'info' | 'default' | 'harvest' | 'botanical' | 'deepteal' | 'copper'> = {
     pending: 'warning',
     confirmed: 'info',
     in_transit: 'info',

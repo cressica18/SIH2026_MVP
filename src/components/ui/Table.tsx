@@ -63,7 +63,7 @@ export function Table<T>({
             <tr
               key={keyExtractor(item)}
               className={`
-                transition-colors duration-100
+                transition-colors duration-80
                 ${striped && index % 2 === 1 ? 'bg-bg-800/50' : ''}
                 ${hoverable && onRowClick ? 'hover:bg-bg-750 cursor-pointer' : ''}
               `}
@@ -90,7 +90,7 @@ export interface TableActionColumnProps<T> {
   actions: Array<{
     label: string;
     onClick: (item: T, e: React.MouseEvent) => void;
-    variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'harvest' | 'botanical';
+    variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'ochre' | 'evergreen' | 'deepteal';
     icon?: React.ReactNode;
     disabled?: boolean;
   }>;

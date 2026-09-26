@@ -31,7 +31,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className={fullWidth ? 'w-full' : ''}>
         {label && (
-          <label htmlFor={inputId} className="block text-xs font-medium text-cream-500 uppercase tracking-wide mb-1.5">
+          <label htmlFor={inputId} className="block text-xs font-medium text-cream-500 uppercase tracking-wider mb-1.5">
             {label}
             {required && <span className="text-copper-400 ml-1" aria-hidden="true">*</span>}
           </label>
@@ -50,14 +50,14 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             aria-invalid={error ? 'true' : 'false'}
             aria-describedby={error ? `${inputId}-error` : hint ? `${inputId}-hint` : undefined}
             className={`
-              w-full rounded-md transition-colors duration-100
+              w-full rounded-md transition-colors duration-80
               ${leftIcon ? 'pl-10' : 'pl-3'}
               ${rightIcon ? 'pr-10' : 'pr-3'}
               py-2 text-sm
               ${error
-                ? 'border-copper-500 text-cream-100 placeholder:text-cream-700 focus:border-copper-500 focus:ring-2 focus:ring-copper-500/25'
-                : 'border-bg-600 text-cream-100 placeholder:text-cream-700 focus:border-botanical-500 focus:ring-2 focus:ring-botanical-500/25'}
-              ${disabled ? 'bg-bg-700 cursor-not-allowed text-cream-600' : 'bg-bg-800 hover:border-bg-500'}
+                ? 'border-copper-500 text-cream-100 placeholder:text-cream-700 focus:border-copper-500 focus:ring-2 focus:ring-copper-500/20'
+                : 'border-bg-600 text-cream-100 placeholder:text-cream-700 focus:border-evergreen-500 focus:ring-2 focus:ring-evergreen-500/20'}
+              ${disabled ? 'bg-bg-700 cursor-not-allowed text-cream-700' : 'bg-bg-800 hover:border-bg-500'}
               ${className}
             `}
             {...props}
@@ -112,7 +112,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
     return (
       <div className={fullWidth ? 'w-full' : ''}>
         {label && (
-          <label htmlFor={textareaId} className="block text-xs font-medium text-cream-500 uppercase tracking-wide mb-1.5">
+          <label htmlFor={textareaId} className="block text-xs font-medium text-cream-500 uppercase tracking-wider mb-1.5">
             {label}
             {required && <span className="text-copper-400 ml-1" aria-hidden="true">*</span>}
           </label>
@@ -125,11 +125,11 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           aria-invalid={error ? 'true' : 'false'}
           aria-describedby={error ? `${textareaId}-error` : hint ? `${textareaId}-hint` : undefined}
           className={`
-            w-full rounded-md transition-colors duration-100 px-3 py-2 text-sm resize-y min-h-[100px]
+            w-full rounded-md transition-colors duration-80 px-3 py-2 text-sm resize-y min-h-[100px]
             ${error
-              ? 'border-copper-500 text-cream-100 placeholder:text-cream-700 focus:border-copper-500 focus:ring-2 focus:ring-copper-500/25'
-              : 'border-bg-600 text-cream-100 placeholder:text-cream-700 focus:border-botanical-500 focus:ring-2 focus:ring-botanical-500/25'}
-            ${disabled ? 'bg-bg-700 cursor-not-allowed text-cream-600' : 'bg-bg-800 hover:border-bg-500'}
+              ? 'border-copper-500 text-cream-100 placeholder:text-cream-700 focus:border-copper-500 focus:ring-2 focus:ring-copper-500/20'
+              : 'border-bg-600 text-cream-100 placeholder:text-cream-700 focus:border-evergreen-500 focus:ring-2 focus:ring-evergreen-500/20'}
+            ${disabled ? 'bg-bg-700 cursor-not-allowed text-cream-700' : 'bg-bg-800 hover:border-bg-500'}
             ${className}
           `}
           {...props}

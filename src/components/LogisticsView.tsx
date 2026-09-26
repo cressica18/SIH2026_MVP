@@ -332,7 +332,7 @@ export const LogisticsView: React.FC<LogisticsViewProps> = ({
                       <div>
                         <div className="flex items-center gap-2">
                           <Badge
-                            variant={stop.stopType === 'pickup' ? 'harvest' : 'teal'}
+                            variant={stop.stopType === 'pickup' ? 'harvest' : 'deepteal'}
                             size="sm"
                           >
                             {stop.stopType === 'pickup' ? 'Pickup' : 'Dropoff'}

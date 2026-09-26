@@ -345,7 +345,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                 <Card key={sch.id} variant="outlined" padding="md" className="space-y-3 flex flex-col justify-between border-bg-700">
                   <div className="space-y-2 text-xs sm:text-sm">
                     <div className="flex items-center justify-between font-bold">
-                      <Badge variant="teal" size="sm">{sch.category}</Badge>
+                      <Badge variant="deepteal" size="sm">{sch.category}</Badge>
                       <span className="font-mono text-cream-500 text-xs font-bold">{sch.id}</span>
                     </div>
                     <CardTitle className="text-base">{sch.title}</CardTitle>

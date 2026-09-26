@@ -199,11 +199,11 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
           <div className="space-y-2">
             <div className="flex items-center gap-2 flex-wrap">
-              <Badge variant="teal" size="sm" className="gap-1.5">
+              <Badge variant="deepteal" size="sm" className="gap-1.5">
                 <ShieldCheck className="w-3.5 h-3.5" />
                 Verified Buyer / Procurement
               </Badge>
-              <Badge variant="teal" size="sm" className="gap-1.5">
+              <Badge variant="deepteal" size="sm" className="gap-1.5">
                 <Sparkles className="w-3.5 h-3.5" />
                 Direct Farmgate Access
               </Badge>

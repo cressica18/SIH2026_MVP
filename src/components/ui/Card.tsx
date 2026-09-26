@@ -1,7 +1,7 @@
 import React, { forwardRef } from 'react';
 
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
-  variant?: 'default' | 'elevated' | 'outlined' | 'panel' | 'farmer' | 'buyer' | 'logistics' | 'admin' | 'neutral' | 'subtle-harvest' | 'subtle-teal' | 'subtle-forest' | 'subtle-copper' | 'subtle-sage' | 'subtle-botanical';
+  variant?: 'default' | 'elevated' | 'outlined' | 'panel' | 'farmer' | 'buyer' | 'logistics' | 'admin' | 'neutral' | 'glass' | 'borderless' | 'subtle-harvest' | 'subtle-teal' | 'subtle-botanical' | 'subtle-ochre' | 'subtle-evergreen' | 'subtle-deepteal' | 'subtle-sage' | 'subtle-copper';
   padding?: 'none' | 'sm' | 'md' | 'lg';
   hover?: boolean;
   interactive?: boolean;
@@ -30,12 +30,16 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
       logistics: 'bg-card-logistics',
       admin: 'bg-card-admin',
       neutral: 'bg-card-neutral',
+      glass: 'bg-card-glass',
+      borderless: 'bg-transparent border-0',
       'subtle-harvest': 'bg-bg-850 border border-harvest-800/50',
-      'subtle-teal': 'bg-bg-850 border border-teal-800/50',
-      'subtle-forest': 'bg-bg-850 border border-botanical-800/50',
-      'subtle-copper': 'bg-bg-850 border border-copper-800/50',
-      'subtle-sage': 'bg-bg-850 border border-sage-800/50',
+      'subtle-teal': 'bg-bg-850 border border-deepteal-800/50',
       'subtle-botanical': 'bg-bg-850 border border-botanical-800/50',
+      'subtle-ochre': 'bg-bg-850 border border-ochre-800/50',
+      'subtle-evergreen': 'bg-bg-850 border border-evergreen-800/50',
+      'subtle-deepteal': 'bg-bg-850 border border-deepteal-800/50',
+      'subtle-sage': 'bg-bg-850 border border-sage-800/50',
+      'subtle-copper': 'bg-bg-850 border border-copper-800/50',
     };
 
     const paddingStyles = {
@@ -46,7 +50,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
     };
 
     const hoverStyles = (hover || interactive)
-      ? 'transition-all duration-150 hover:shadow-md hover:border-bg-600'
+      ? 'transition-all duration-140 hover:shadow-md hover:border-bg-600'
       : '';
 
     const cursorStyles = interactive ? 'cursor-pointer' : '';

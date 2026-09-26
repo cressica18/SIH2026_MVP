@@ -31,14 +31,14 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className={fullWidth ? 'w-full' : ''}>
         {label && (
-          <label htmlFor={inputId} className="block text-sm font-medium text-cream-300 mb-1.5">
+          <label htmlFor={inputId} className="block text-xs font-medium text-cream-500 uppercase tracking-wide mb-1.5">
             {label}
             {required && <span className="text-copper-400 ml-1" aria-hidden="true">*</span>}
           </label>
         )}
         <div className="relative">
           {leftIcon && (
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-cream-500">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-cream-600">
               {leftIcon}
             </div>
           )}
@@ -50,31 +50,31 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             aria-invalid={error ? 'true' : 'false'}
             aria-describedby={error ? `${inputId}-error` : hint ? `${inputId}-hint` : undefined}
             className={`
-              w-full rounded-lg border transition-colors duration-100
+              w-full rounded-md transition-colors duration-100
               ${leftIcon ? 'pl-10' : 'pl-3'}
               ${rightIcon ? 'pr-10' : 'pr-3'}
-              py-2.5 text-sm
+              py-2 text-sm
               ${error
-                ? 'border-copper-500 text-cream-100 placeholder:text-cream-500 focus:border-copper-500 focus:ring-2 focus:ring-copper-500/30'
-                : 'border-bg-600 text-cream-100 placeholder:text-cream-500 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/30'}
-              ${disabled ? 'bg-bg-700 cursor-not-allowed text-cream-500' : 'bg-bg-800 hover:border-bg-500'}
+                ? 'border-copper-500 text-cream-100 placeholder:text-cream-700 focus:border-copper-500 focus:ring-2 focus:ring-copper-500/25'
+                : 'border-bg-600 text-cream-100 placeholder:text-cream-700 focus:border-botanical-500 focus:ring-2 focus:ring-botanical-500/25'}
+              ${disabled ? 'bg-bg-700 cursor-not-allowed text-cream-600' : 'bg-bg-800 hover:border-bg-500'}
               ${className}
             `}
             {...props}
           />
           {rightIcon && (
-            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-cream-500">
+            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-cream-600">
               {rightIcon}
             </div>
           )}
         </div>
         {error && (
-          <p id={`${inputId}-error`} className="mt-1.5 text-sm font-medium text-copper-400" role="alert">
+          <p id={`${inputId}-error`} className="mt-1.5 text-xs font-medium text-copper-400" role="alert">
             {error}
           </p>
         )}
         {hint && !error && (
-          <p id={`${inputId}-hint`} className="mt-1.5 text-xs text-cream-500">
+          <p id={`${inputId}-hint`} className="mt-1.5 text-xs text-cream-600">
             {hint}
           </p>
         )}
@@ -112,7 +112,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
     return (
       <div className={fullWidth ? 'w-full' : ''}>
         {label && (
-          <label htmlFor={textareaId} className="block text-sm font-medium text-cream-300 mb-1.5">
+          <label htmlFor={textareaId} className="block text-xs font-medium text-cream-500 uppercase tracking-wide mb-1.5">
             {label}
             {required && <span className="text-copper-400 ml-1" aria-hidden="true">*</span>}
           </label>
@@ -125,22 +125,22 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           aria-invalid={error ? 'true' : 'false'}
           aria-describedby={error ? `${textareaId}-error` : hint ? `${textareaId}-hint` : undefined}
           className={`
-            w-full rounded-lg border transition-colors duration-100 px-3 py-2.5 text-sm resize-y min-h-[100px]
+            w-full rounded-md transition-colors duration-100 px-3 py-2 text-sm resize-y min-h-[100px]
             ${error
-              ? 'border-copper-500 text-cream-100 placeholder:text-cream-500 focus:border-copper-500 focus:ring-2 focus:ring-copper-500/30'
-              : 'border-bg-600 text-cream-100 placeholder:text-cream-500 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/30'}
-            ${disabled ? 'bg-bg-700 cursor-not-allowed text-cream-500' : 'bg-bg-800 hover:border-bg-500'}
+              ? 'border-copper-500 text-cream-100 placeholder:text-cream-700 focus:border-copper-500 focus:ring-2 focus:ring-copper-500/25'
+              : 'border-bg-600 text-cream-100 placeholder:text-cream-700 focus:border-botanical-500 focus:ring-2 focus:ring-botanical-500/25'}
+            ${disabled ? 'bg-bg-700 cursor-not-allowed text-cream-600' : 'bg-bg-800 hover:border-bg-500'}
             ${className}
           `}
           {...props}
         />
         {error && (
-          <p id={`${textareaId}-error`} className="mt-1.5 text-sm font-medium text-copper-400" role="alert">
+          <p id={`${textareaId}-error`} className="mt-1.5 text-xs font-medium text-copper-400" role="alert">
             {error}
           </p>
         )}
         {hint && !error && (
-          <p id={`${textareaId}-hint`} className="mt-1.5 text-xs text-cream-500">
+          <p id={`${textareaId}-hint`} className="mt-1.5 text-xs text-cream-600">
             {hint}
           </p>
         )}

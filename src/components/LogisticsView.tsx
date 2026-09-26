@@ -105,7 +105,7 @@ export const LogisticsView: React.FC<LogisticsViewProps> = ({
                 <Truck className="w-3.5 h-3.5" />
                 Logistics Carrier Partner
               </Badge>
-              <Badge variant="success" size="sm" className="gap-1.5">
+              <Badge variant="botanical" size="sm" className="gap-1.5">
                 <Leaf className="w-3.5 h-3.5" />
                 Pooled Route Optimization (VRP)
               </Badge>
@@ -268,7 +268,7 @@ export const LogisticsView: React.FC<LogisticsViewProps> = ({
 
                 {currentPool.status === 'in_transit' && (
                   <Button
-                    variant="teal"
+                    variant="primary"
                     fullWidth
                     onClick={() => onUpdatePoolStatus(currentPool.id, 'delivered')}
                   >

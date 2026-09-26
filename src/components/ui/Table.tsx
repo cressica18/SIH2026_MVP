@@ -43,7 +43,7 @@ export function Table<T>({
   }
 
   return (
-    <div className={`overflow-x-auto rounded-xl border border-bg-700 bg-bg-850 ${className}`}>
+    <div className={`overflow-x-auto rounded-lg border border-bg-700 bg-bg-850 ${className}`}>
       <table className="w-full" role="grid">
         <thead className="bg-bg-800 border-b border-bg-700">
           <tr>
@@ -51,7 +51,7 @@ export function Table<T>({
               <th
                 key={column.key}
                 scope="col"
-                className={`px-4 py-3 text-left text-xs font-semibold text-cream-500 uppercase tracking-wider ${column.headerClassName || ''}`}
+                className={`px-3 py-2.5 text-left text-xs font-semibold text-cream-500 uppercase tracking-wider ${column.headerClassName || ''}`}
               >
                 {column.header}
               </th>
@@ -72,7 +72,7 @@ export function Table<T>({
               {columns.map((column) => (
                 <td
                   key={column.key}
-                  className={`px-4 py-3 text-sm text-cream-100 ${column.className || ''}`}
+                  className={`px-3 py-2.5 text-sm text-cream-200 ${column.className || ''}`}
                 >
                   {column.render ? column.render(item, index) : (item as any)[column.key]}
                 </td>
@@ -90,7 +90,7 @@ export interface TableActionColumnProps<T> {
   actions: Array<{
     label: string;
     onClick: (item: T, e: React.MouseEvent) => void;
-    variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'harvest' | 'forest' | 'teal' | 'copper';
+    variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'harvest' | 'botanical';
     icon?: React.ReactNode;
     disabled?: boolean;
   }>;
@@ -98,8 +98,8 @@ export interface TableActionColumnProps<T> {
 
 export function TableActionCell<T>({ item, actions }: TableActionColumnProps<T>) {
   return (
-    <td className="px-4 py-3">
-      <div className="flex items-center gap-2">
+    <td className="px-3 py-2.5">
+      <div className="flex items-center gap-1.5">
         {actions.map((action, index) => (
           <Button
             key={index}

@@ -168,7 +168,7 @@ const SAFETY_CATEGORIES = [
 ];
 
 const getGradeVariant = (grade: 'A' | 'B' | 'C') => 
-  grade === 'A' ? 'success' : grade === 'B' ? 'warning' : 'danger';
+  grade === 'A' ? 'botanical' : grade === 'B' ? 'harvest' : 'copper';
 
 const getGradeLabel = (grade: 'A' | 'B' | 'C') => 
   grade === 'A' ? 'Premium' : grade === 'B' ? 'Standard' : 'Basic';
@@ -348,16 +348,15 @@ export const FarmerView: React.FC<FarmerViewProps> = ({
 
   return (
     <div className="space-y-6">
-      {/* Farmer Profile Header - New Dark Theme */}
-      <div className="relative">
-        <div className="absolute inset-0 bg-radial-glow-forest" />
+      {/* Farmer Profile Header - Refined Dark Theme */}
+      <div className="relative bg-atmosphere-farmer">
         
         <div className="relative grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
           {/* Left: Identity & Location */}
           <div className="md:col-span-2 space-y-5">
             {/* Status badges row */}
             <div className="flex flex-wrap items-center gap-2">
-              <Badge variant="forest" size="sm" className="gap-1.5">
+              <Badge variant="botanical" size="sm" className="gap-1.5">
                 <BadgeCheck className="w-3 h-3" />
                 <span>Verified Farmer</span>
               </Badge>
@@ -397,7 +396,7 @@ export const FarmerView: React.FC<FarmerViewProps> = ({
             <Button
               onClick={() => setShowCreateModal(true)}
               size="lg"
-              variant="forest"
+              variant="botanical"
               className="w-full sm:w-auto mt-2 gap-2"
             >
               <Mic className="w-5 h-5" />
@@ -409,7 +408,7 @@ export const FarmerView: React.FC<FarmerViewProps> = ({
           <div className="hidden md:block">
             <div className="grid grid-cols-2 gap-3">
               {/* Trust Reputation */}
-              <Card variant="farmer" padding="md" className="text-center hover:shadow-lg transition-shadow border-forest-700">
+              <Card variant="farmer" padding="md" className="text-center hover:shadow-lg transition-shadow border-botanical-700">
                 <div className="flex items-center justify-center gap-1.5 mb-2">
                   <Award className="w-5 h-5 text-harvest-400" />
                   <span className="text-xs font-semibold text-cream-500 uppercase tracking-wider">Trust Score</span>
@@ -469,47 +468,47 @@ export const FarmerView: React.FC<FarmerViewProps> = ({
                   <p className="font-semibold text-cream-100">Active</p>
                 </div>
               </div>
-            </Card>
+</Card>
           </div>
-        </div>
 
-        {/* Mobile metrics - shown below on mobile */}
-        <div className="md:hidden mt-6 space-y-3">
-          <div className="grid grid-cols-2 gap-3">
-            <Card variant="farmer" padding="md" className="text-center border-forest-700">
-              <div className="flex items-center justify-center gap-1.5 mb-1">
-                <Award className="w-4 h-4 text-harvest-400" />
-                <span className="text-xs font-semibold text-cream-500 uppercase tracking-wider">Trust Score</span>
-              </div>
-              <div className="flex items-center justify-center gap-1 text-xl font-bold text-cream-50">
-                <Star className="w-5 h-5 fill-harvest-400 text-harvest-400" />
-                <span>{farmer.reputationScore.toFixed(1)}</span>
-                <span className="text-base font-normal text-cream-500">/ 5.0</span>
-              </div>
-              <p className="text-xs text-cream-500 mt-1">{farmer.totalOrdersFulfilled} fulfilled</p>
-            </Card>
+          {/* Mobile metrics - shown below on mobile */}
+          <div className="md:hidden mt-6 space-y-3">
+            <div className="grid grid-cols-2 gap-3">
+              <Card variant="farmer" padding="md" className="text-center border-botanical-700">
+                <div className="flex items-center justify-center gap-1.5 mb-1">
+                  <Award className="w-4 h-4 text-harvest-400" />
+                  <span className="text-xs font-semibold text-cream-500 uppercase tracking-wider">Trust Score</span>
+                </div>
+                <div className="flex items-center justify-center gap-1 text-xl font-bold text-cream-50">
+                  <Star className="w-5 h-5 fill-harvest-400 text-harvest-400" />
+                  <span>{farmer.reputationScore.toFixed(1)}</span>
+                  <span className="text-base font-normal text-cream-500">/ 5.0</span>
+                </div>
+                <p className="text-xs text-cream-500 mt-1">{farmer.totalOrdersFulfilled} fulfilled</p>
+              </Card>
 
-            <Card variant="subtle-harvest" padding="md" className="text-center border-harvest-700">
-              <div className="flex items-center justify-center gap-1.5 mb-1">
-                <Wallet className="w-4 h-4 text-harvest-400" />
-                <span className="text-xs font-semibold text-cream-500 uppercase tracking-wider">Eligible Advance</span>
-              </div>
-              <p className="text-xl font-bold text-harvest-300">
-                ₹{riskAssessment.eligibleAdvanceAmount.toLocaleString('en-IN')}
-              </p>
-              <Badge 
-                variant={riskAssessment.riskTier === 'Low Risk' ? 'success' : riskAssessment.riskTier === 'Moderate Risk' ? 'warning' : 'danger'} 
-                size="xs" 
-                className="mt-1.5"
-              >
-                {riskAssessment.riskTier}
-              </Badge>
-            </Card>
+              <Card variant="subtle-harvest" padding="md" className="text-center border-harvest-700">
+                <div className="flex items-center justify-center gap-1.5 mb-1">
+                  <Wallet className="w-4 h-4 text-harvest-400" />
+                  <span className="text-xs font-semibold text-cream-500 uppercase tracking-wider">Eligible Advance</span>
+                </div>
+                <p className="text-xl font-bold text-harvest-300">
+                  ₹{riskAssessment.eligibleAdvanceAmount.toLocaleString('en-IN')}
+                </p>
+                <Badge 
+                  variant={riskAssessment.riskTier === 'Low Risk' ? 'success' : riskAssessment.riskTier === 'Moderate Risk' ? 'warning' : 'danger'} 
+                  size="xs" 
+                  className="mt-1.5"
+                >
+                  {riskAssessment.riskTier}
+                </Badge>
+              </Card>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Navigation Tabs - New Dark Theme */}
+      {/* Navigation Tabs - Refined */}
       <div className="relative">
         <nav className="flex items-center gap-1 overflow-x-auto pb-2 border-b border-bg-700 scrollbar-hidden" role="tablist" aria-label="Farmer portal sections">
           {TABS.map((tab) => {
@@ -524,16 +523,16 @@ export const FarmerView: React.FC<FarmerViewProps> = ({
                 aria-controls={`panel-${tab.id}`}
                 className={`flex items-center gap-2 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-150 cursor-pointer whitespace-nowrap relative ${
                   isActive
-                    ? 'text-forest-300 bg-forest-900/30 border border-forest-700'
+                    ? 'text-botanical-300 bg-botanical-900/30 border border-botanical-700'
                     : 'text-cream-400 hover:text-cream-100 hover:bg-bg-800'
                 }`}
               >
-                <tab.icon className={`w-4 h-4 ${isActive ? 'text-forest-300' : 'text-cream-500'}`} aria-hidden="true" />
+                <tab.icon className={`w-4 h-4 ${isActive ? 'text-botanical-300' : 'text-cream-500'}`} aria-hidden="true" />
                 <span>{t.nav[tab.id === 'safety' ? 'safetyReport' : tab.id] || tab.label}</span>
                 {count > 0 && (
                   <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
                     isActive
-                      ? 'bg-forest-700 text-forest-100'
+                      ? 'bg-botanical-700 text-botanical-100'
                       : 'bg-bg-700 text-cream-500'
                   }`}>
                     {count}
@@ -541,7 +540,7 @@ export const FarmerView: React.FC<FarmerViewProps> = ({
                 )}
                 {/* Active indicator */}
                 {isActive && (
-                  <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-0.5 bg-forest-400 rounded-full" />
+                  <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-0.5 bg-botanical-400 rounded-full" />
                 )}
               </button>
             );
@@ -555,8 +554,8 @@ export const FarmerView: React.FC<FarmerViewProps> = ({
           {/* Header with title and primary action */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-forest-900/30 border border-forest-700 flex items-center justify-center">
-                <FileText className="w-5 h-5 text-forest-400" />
+              <div className="w-10 h-10 rounded-lg bg-botanical-900/30 border border-botanical-700 flex items-center justify-center">
+                <FileText className="w-5 h-5 text-botanical-400" />
               </div>
               <div>
                 <h2 className="font-display text-xl font-semibold text-cream-50">My Harvest Batches</h2>
@@ -564,7 +563,7 @@ export const FarmerView: React.FC<FarmerViewProps> = ({
               </div>
             </div>
             <Button 
-              variant="forest" 
+              variant="botanical" 
               size="sm" 
               onClick={() => setShowCreateModal(true)}
               className="sm:ml-auto"
@@ -578,7 +577,7 @@ export const FarmerView: React.FC<FarmerViewProps> = ({
             /* Empty State */
             <Card variant="panel" padding="lg" className="text-center border-bg-700">
               <div className="mx-auto mb-4 w-16 h-16 rounded-xl bg-bg-800 border border-bg-700 flex items-center justify-center">
-                <Sprout className="w-8 h-8 text-forest-400" />
+                <Sprout className="w-8 h-8 text-botanical-400" />
               </div>
               <h3 className="font-display text-lg font-semibold text-cream-50 mb-2">No harvest batches yet</h3>
               <p className="text-cream-400 mb-6 max-w-xs mx-auto">
@@ -586,7 +585,7 @@ export const FarmerView: React.FC<FarmerViewProps> = ({
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <Button 
-                  variant="forest" 
+                  variant="botanical" 
                   size="md" 
                   onClick={() => setShowCreateModal(true)}
                   className="w-full sm:w-auto gap-2"
@@ -614,7 +613,7 @@ export const FarmerView: React.FC<FarmerViewProps> = ({
                   className="group relative"
                   data-listing-id={item.id}
                 >
-                  <Card variant="panel" padding="none" className="overflow-hidden h-full transition-all duration-200 hover:shadow-xl hover:border-forest-600 border-bg-700">
+                  <Card variant="panel" padding="none" className="overflow-hidden h-full transition-all duration-200 hover:shadow-xl hover:border-botanical-600 border-bg-700">
                     {/* Image Section - Larger, more prominent */}
                     <div className="relative aspect-[4/3] overflow-hidden bg-bg-750">
                       <ImageWithFallback
@@ -736,7 +735,7 @@ export const FarmerView: React.FC<FarmerViewProps> = ({
                         {/* Quantity */}
                         <div className="p-3 bg-bg-750 rounded-lg border border-bg-700">
                           <div className="flex items-center gap-2 mb-1">
-                            <Scale className="w-4 h-4 text-forest-400" />
+                            <Scale className="w-4 h-4 text-botanical-400" />
                             <span className="text-xs font-semibold text-cream-500 uppercase tracking-wider">
                               Available
                             </span>
@@ -766,22 +765,22 @@ export const FarmerView: React.FC<FarmerViewProps> = ({
                         </div>
                       </div>
 
-                      {/* Quality Details Row */}
-                      <div className="p-3 bg-forest-900/30 rounded-lg border border-forest-700">
+{/* Quality Details Row */}
+                      <div className="p-3 bg-botanical-900/30 rounded-lg border border-botanical-700">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
-                            <BadgeCheck className="w-4 h-4 text-forest-400" />
-                            <span className="text-xs font-semibold text-forest-300 uppercase tracking-wider">
+                            <BadgeCheck className="w-4 h-4 text-botanical-400" />
+                            <span className="text-xs font-semibold text-botanical-300 uppercase tracking-wider">
                               Quality Assessment
                             </span>
                           </div>
-                          <div className="flex items-center gap-3 text-xs text-forest-300">
+                          <div className="flex items-center gap-3 text-xs text-botanical-300">
                             <span className="flex items-center gap-1 font-medium">
-                              <span className="w-1.5 h-1.5 rounded-full bg-forest-400" />
+                              <span className="w-1.5 h-1.5 rounded-full bg-botanical-400" />
                               Color: {item.quality.colorUniformity}%
                             </span>
                             <span className="flex items-center gap-1 font-medium">
-                              <span className="w-1.5 h-1.5 rounded-full bg-forest-400" />
+                              <span className="w-1.5 h-1.5 rounded-full bg-botanical-400" />
                               Firm: {item.quality.firmnessScore}%
                             </span>
                             <span className="flex items-center gap-1 font-medium">
@@ -801,7 +800,7 @@ export const FarmerView: React.FC<FarmerViewProps> = ({
                           <MapPin className="w-3.5 h-3.5" />
                           <span>{item.village}, {item.district}</span>
                         </div>
-                        <span className="text-xs font-medium text-forest-300 flex items-center gap-1">
+                        <span className="text-xs font-medium text-botanical-300 flex items-center gap-1">
                           <GripVertical className="w-3.5 h-3.5" />
                           {item.status === 'active' ? 'Active' : item.status}
                         </span>
@@ -1020,7 +1019,7 @@ function OrderCard({
   isRevealed: boolean;
   onUpdateOrderStatus?: (orderId: string, status: string) => void;
 }) {
-  const STATUS_VARIANTS: Record<OrderStatus, 'success' | 'warning' | 'danger' | 'info' | 'default' | 'harvest' | 'forest' | 'teal' | 'copper'> = {
+  const STATUS_VARIANTS: Record<OrderStatus, 'success' | 'warning' | 'danger' | 'info' | 'default' | 'harvest' | 'botanical' | 'teal' | 'copper'> = {
     pending: 'warning',
     confirmed: 'info',
     in_transit: 'info',
@@ -1072,7 +1071,7 @@ function OrderCard({
             </Badge>
             
             {isRevealed && (
-              <Badge variant="success" size="sm" dot className="gap-1.5">
+              <Badge variant="botanical" size="sm" dot className="gap-1.5">
                 <Unlock className="w-3 h-3" />
                 Identity Revealed
               </Badge>
@@ -1089,7 +1088,7 @@ function OrderCard({
           {/* Harvest Item Column */}
           <div className="p-3 bg-bg-750 rounded-lg border border-bg-700">
             <div className="flex items-center gap-2 mb-2">
-              <Package className="w-4 h-4 text-forest-400" />
+              <Package className="w-4 h-4 text-botanical-400" />
               <span className="text-xs font-semibold text-cream-500 uppercase tracking-wider">Harvest Item</span>
             </div>
             <p className="font-semibold text-cream-100 text-sm">{order.crop} <span className="font-normal text-cream-500">({order.variety})</span></p>
@@ -1172,7 +1171,7 @@ function OrderCard({
           <div className="pt-2 flex flex-col sm:flex-row sm:justify-end gap-2 border-t border-bg-700">
             {order.status === 'pending' && (
               <Button 
-                variant="forest" 
+                variant="botanical" 
                 size="sm" 
                 onClick={() => onUpdateOrderStatus(order.id, 'confirmed')}
                 className="gap-2"
@@ -1882,7 +1881,7 @@ function CreateListingModal({
 
         <div className="flex items-center justify-end gap-2 pt-4 border-t border-bg-700">
           <Button variant="secondary" onClick={onClose} disabled={isPublishing}>Cancel</Button>
-          <Button variant="forest" onClick={onPublish} disabled={isPublishing} loading={isPublishing}>
+          <Button variant="botanical" onClick={onPublish} disabled={isPublishing} loading={isPublishing}>
             Publish Anonymously
           </Button>
         </div>

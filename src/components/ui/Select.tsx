@@ -37,7 +37,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
     return (
       <div className={fullWidth ? 'w-full' : ''}>
         {label && (
-          <label htmlFor={selectId} className="block text-sm font-medium text-cream-300 mb-1.5">
+          <label htmlFor={selectId} className="block text-xs font-medium text-cream-500 uppercase tracking-wide mb-1.5">
             {label}
             {required && <span className="text-copper-400 ml-1" aria-hidden="true">*</span>}
           </label>
@@ -51,40 +51,36 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
             aria-invalid={error ? 'true' : 'false'}
             aria-describedby={error ? `${selectId}-error` : hint ? `${selectId}-hint` : undefined}
             className={`
-              w-full rounded-lg appearance-none transition-colors duration-100 cursor-pointer
-              pl-3 pr-10 py-2.5 text-sm
+              w-full rounded-md appearance-none transition-colors duration-100 cursor-pointer
+              pl-3 pr-9 py-2 text-sm
               ${error
-                ? 'border-copper-500 text-cream-100 focus:border-copper-500 focus:ring-2 focus:ring-copper-500/30'
-                : 'border-bg-600 text-cream-100 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/30'}
-              ${disabled ? 'bg-bg-700 cursor-not-allowed text-cream-500' : 'bg-bg-800 hover:border-bg-500'}
+                ? 'border-copper-500 text-cream-100 focus:border-copper-500 focus:ring-2 focus:ring-copper-500/25'
+                : 'border-bg-600 text-cream-100 focus:border-botanical-500 focus:ring-2 focus:ring-botanical-500/25'}
+              ${disabled ? 'bg-bg-700 cursor-not-allowed text-cream-600' : 'bg-bg-800 hover:border-bg-500'}
               ${className}
             `}
             {...props}
           >
-            {placeholder && (
-              <option value="" disabled>
-                {placeholder}
-              </option>
-            )}
+            {placeholder && <option value="" disabled>{placeholder}</option>}
             {options.map((option) => (
               <option key={option.value} value={option.value} disabled={option.disabled}>
                 {option.label}
               </option>
             ))}
           </select>
-          <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-cream-500">
+          <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-cream-600">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>
           </div>
         </div>
         {error && (
-          <p id={`${selectId}-error`} className="mt-1.5 text-sm font-medium text-copper-400" role="alert">
+          <p id={`${selectId}-error`} className="mt-1.5 text-xs font-medium text-copper-400" role="alert">
             {error}
           </p>
         )}
         {hint && !error && (
-          <p id={`${selectId}-hint`} className="mt-1.5 text-xs text-cream-500">
+          <p id={`${selectId}-hint`} className="mt-1.5 text-xs text-cream-600">
             {hint}
           </p>
         )}

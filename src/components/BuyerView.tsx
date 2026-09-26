@@ -203,7 +203,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                 <ShieldCheck className="w-3.5 h-3.5" />
                 Verified Buyer / Procurement
               </Badge>
-              <Badge variant="info" size="sm" className="gap-1.5">
+              <Badge variant="teal" size="sm" className="gap-1.5">
                 <Sparkles className="w-3.5 h-3.5" />
                 Direct Farmgate Access
               </Badge>
@@ -306,13 +306,13 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                         <span className="text-cream-300 font-bold">
                           Lot: {item.quantityKg} kg
                         </span>
-                        <Button
-                          size="sm"
-                          variant="teal"
-                          onClick={() => handleOpenOrderModal(item)}
-                        >
-                          Procure Lot
-                        </Button>
+<Button
+                           size="sm"
+                           variant="primary"
+                           onClick={() => handleOpenOrderModal(item)}
+                         >
+                           Procure Lot
+                         </Button>
                       </div>
                     </div>
                   </Card>
@@ -397,7 +397,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                         className="w-full h-full object-cover"
                       />
                       <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
-                        <Badge variant={item.quality.grade === 'A' ? 'success' : item.quality.grade === 'B' ? 'warning' : 'danger'} size="sm">
+                        <Badge variant={item.quality.grade === 'A' ? 'botanical' : item.quality.grade === 'B' ? 'harvest' : 'copper'} size="sm">
                           Grade {item.quality.grade}
                         </Badge>
                         <Badge variant="cream" size="sm" className="font-mono bg-bg-800 text-harvest-300 border-bg-700">
@@ -406,7 +406,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                       </div>
 
                       <div className="absolute bottom-2.5 right-2.5">
-                        <Badge variant="success" size="sm" className="bg-forest-900/50 text-forest-300 border-forest-700 flex items-center gap-1 shadow-xs border-none">
+                        <Badge variant="botanical" size="sm" className="flex items-center gap-1 shadow-xs border-none">
                           <Star className="w-3 h-3 fill-forest-300 text-forest-300" />
                           <span>{item.farmerReputation}</span>
                         </Badge>
@@ -461,7 +461,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
 
                   <div className="p-4 pt-0">
                     <Button
-                      variant="teal"
+                      variant="primary"
                       fullWidth
                       onClick={() => handleOpenOrderModal(item)}
                     >
@@ -575,13 +575,13 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                   {ord.status === 'delivered' && (
                     <div className="pt-2 flex justify-end">
                       <Button
-                        variant="teal"
-                        size="sm"
-                        onClick={() => onUpdateOrderStatus(ord.id, 'settled')}
-                      >
-                        <IndianRupee className="w-3.5 h-3.5" />
-                        <span>Release Payment & Settle Trade</span>
-                      </Button>
+                       variant="primary"
+                       size="sm"
+                       onClick={() => onUpdateOrderStatus(ord.id, 'settled')}
+                     >
+                       <IndianRupee className="w-3.5 h-3.5" />
+                       <span>Release Payment & Settle Trade</span>
+                     </Button>
                     </div>
                   )}
 
@@ -589,14 +589,14 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                   {ord.status === 'settled' && !ord.buyerRating && (
                     <div className="pt-2 flex justify-end">
                       <Button
-                        variant="harvest"
-                        size="sm"
-                        onClick={() => setRatingOrderId(ord.id)}
-                        className="bg-harvest-900/30 text-harvest-300 border-harvest-700 hover:bg-harvest-900/50"
-                      >
-                        <Star className="w-3.5 h-3.5 text-harvest-400 fill-current" />
-                        <span>Rate Farmer Fulfillment</span>
-                      </Button>
+                       variant="harvest"
+                       size="sm"
+                       onClick={() => setRatingOrderId(ord.id)}
+                       className="bg-harvest-900/30 text-harvest-300 border-harvest-700 hover:bg-harvest-900/50"
+                     >
+                       <Star className="w-3.5 h-3.5 text-harvest-400 fill-current" />
+                       <span>Rate Farmer Fulfillment</span>
+                     </Button>
                     </div>
                   )}
                 </Card>
@@ -688,7 +688,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
             </div>
 
             <Button
-              variant="teal"
+              variant="primary"
               fullWidth
               loading={isSubmittingOrder}
               onClick={handleSubmitOrder}
@@ -750,7 +750,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
               Cancel
             </Button>
             <Button
-              variant="teal"
+              variant="primary"
               fullWidth
               loading={isSubmittingRating}
               onClick={handleRateSubmit}

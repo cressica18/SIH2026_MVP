@@ -1,7 +1,7 @@
 import React from 'react';
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
-  variant?: 'default' | 'success' | 'warning' | 'danger' | 'info' | 'harvest' | 'forest' | 'teal' | 'copper' | 'cream' | 'pending';
+  variant?: 'default' | 'success' | 'warning' | 'danger' | 'info' | 'harvest' | 'botanical' | 'teal' | 'copper' | 'cream';
   size?: 'xs' | 'sm' | 'md' | 'lg';
   dot?: boolean;
 }
@@ -19,24 +19,16 @@ export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
     ref
   ) => {
     const variantStyles: Record<string, string> = {
-      default: 'bg-bg-700 text-cream-300 border-bg-600',
-      success: 'bg-forest-900/50 text-forest-300 border-forest-700',
-      warning: 'bg-harvest-900/50 text-harvest-300 border-harvest-700',
-      danger: 'bg-copper-900/50 text-copper-300 border-copper-700',
-      info: 'bg-teal-900/50 text-teal-300 border-teal-700',
-      harvest: 'bg-harvest-900/50 text-harvest-300 border-harvest-700',
-      forest: 'bg-forest-900/50 text-forest-300 border-forest-700',
-      teal: 'bg-teal-900/50 text-teal-300 border-teal-700',
-      copper: 'bg-copper-900/50 text-copper-300 border-copper-700',
+      default: 'bg-bg-700 text-cream-400 border-bg-600',
+      success: 'bg-botanical-900/40 text-botanical-300 border-botanical-800',
+      warning: 'bg-harvest-900/40 text-harvest-300 border-harvest-800',
+      danger: 'bg-copper-900/40 text-copper-300 border-copper-800',
+      info: 'bg-teal-900/40 text-teal-300 border-teal-800',
+      harvest: 'bg-harvest-900/40 text-harvest-300 border-harvest-800',
+      botanical: 'bg-botanical-900/40 text-botanical-300 border-botanical-800',
+      teal: 'bg-teal-900/40 text-teal-300 border-teal-800',
+      copper: 'bg-copper-900/40 text-copper-300 border-copper-800',
       cream: 'bg-cream-200 text-bg-900 border-cream-300',
-      pending: 'bg-harvest-900/50 text-harvest-300 border-harvest-700',
-    };
-
-    const sizeStyles = {
-      xs: 'px-2 py-0.5 text-[10px] gap-1',
-      sm: 'px-2.5 py-0.5 text-xs gap-1.5',
-      md: 'px-3 py-1 text-sm gap-2',
-      lg: 'px-3.5 py-1.5 text-base gap-2.5',
     };
 
     return (
@@ -44,7 +36,12 @@ export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
         ref={ref}
         className={`
           inline-flex items-center rounded-full border font-medium select-none
-          ${variantStyles[variant] || variantStyles.default} ${sizeStyles[size]} ${className}
+          ${variantStyles[variant] || variantStyles.default}
+          ${size === 'xs' ? 'px-2 py-0.5 text-[10px] gap-1' : ''}
+          ${size === 'sm' ? 'px-2.5 py-0.5 text-[11px] gap-1.5' : ''}
+          ${size === 'md' ? 'px-3 py-1 text-xs gap-2' : ''}
+          ${size === 'lg' ? 'px-3.5 py-1.5 text-sm gap-2.5' : ''}
+          ${className}
         `}
         {...props}
       >
@@ -59,11 +56,11 @@ Badge.displayName = 'Badge';
 
 export interface StatusBadgeProps {
   status: string;
-  variant?: 'default' | 'success' | 'warning' | 'danger' | 'info' | 'harvest' | 'forest' | 'teal' | 'copper';
+  variant?: 'default' | 'success' | 'warning' | 'danger' | 'info' | 'harvest' | 'botanical' | 'teal' | 'copper';
 }
 
 export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, variant }) => {
-  const statusVariants: Record<string, 'success' | 'warning' | 'danger' | 'info' | 'default' | 'harvest' | 'forest' | 'teal' | 'copper'> = {
+  const statusVariants: Record<string, 'success' | 'warning' | 'danger' | 'info' | 'default' | 'harvest' | 'botanical' | 'teal' | 'copper'> = {
     active: 'success',
     pending: 'warning',
     matched: 'info',

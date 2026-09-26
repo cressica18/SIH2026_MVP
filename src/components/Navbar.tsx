@@ -15,11 +15,8 @@ import {
   X,
   ChevronDown,
   Menu,
-  Leaf,
-  Building2,
 } from 'lucide-react';
 import { Button } from './ui/Button';
-import { Modal } from './ui/Modal';
 import { EmptyState } from './ui/EmptyState';
 
 interface NavbarProps {
@@ -40,25 +37,25 @@ const LANGUAGES: { code: Language; label: string; nativeLabel: string }[] = [
   { code: 'pa', label: 'Punjabi', nativeLabel: 'ਪੰਜਾਬੀ' },
 ];
 
-const ROLE_CONFIG: Record<Role, { label: string; icon: React.ReactNode; accent: string }> = {
-  farmer: { label: 'Farmer', icon: <Sprout className="w-4 h-4" />, accent: 'forest' },
-  buyer: { label: 'Buyer', icon: <UserCheck className="w-4 h-4" />, accent: 'teal' },
-  logistics: { label: 'Logistics', icon: <Truck className="w-4 h-4" />, accent: 'harvest' },
-  admin: { label: 'Admin', icon: <ShieldCheck className="w-4 h-4" />, accent: 'sage' },
+const ROLE_CONFIG: Record<Role, { label: string; icon: React.ReactNode }> = {
+  farmer: { label: 'Farmer', icon: <Sprout className="w-4 h-4" /> },
+  buyer: { label: 'Buyer', icon: <UserCheck className="w-4 h-4" /> },
+  logistics: { label: 'Logistics', icon: <Truck className="w-4 h-4" /> },
+  admin: { label: 'Admin', icon: <ShieldCheck className="w-4 h-4" /> },
 };
 
-const ROLE_ACCENT_CLASSES: Record<Role, string> = {
-  farmer: 'border-forest-600 bg-forest-900/30 text-forest-300 hover:bg-forest-900/50',
-  buyer: 'border-teal-600 bg-teal-900/30 text-teal-300 hover:bg-teal-900/50',
-  logistics: 'border-harvest-600 bg-harvest-900/30 text-harvest-300 hover:bg-harvest-900/50',
-  admin: 'border-sage-600 bg-sage-900/30 text-sage-300 hover:bg-sage-900/50',
+const ROLE_CLASSES: Record<Role, string> = {
+  farmer: 'bg-botanical-900/40 text-botanical-300 border-botanical-800 hover:bg-botanical-900/60',
+  buyer: 'bg-teal-900/40 text-teal-300 border-teal-800 hover:bg-teal-900/60',
+  logistics: 'bg-harvest-900/40 text-harvest-300 border-harvest-800 hover:bg-harvest-900/60',
+  admin: 'bg-sage-900/40 text-sage-300 border-sage-800 hover:bg-sage-900/60',
 };
 
-const ROLE_ACCENT_ACTIVE: Record<Role, string> = {
-  farmer: 'bg-forest-600 text-bg-950 border-forest-600 shadow-sm shadow-forest-600/30',
-  buyer: 'bg-teal-600 text-bg-950 border-teal-600 shadow-sm shadow-teal-600/30',
-  logistics: 'bg-harvest-600 text-bg-950 border-harvest-600 shadow-sm shadow-harvest-600/30',
-  admin: 'bg-sage-600 text-bg-950 border-sage-600 shadow-sm shadow-sage-600/30',
+const ROLE_ACTIVE: Record<Role, string> = {
+  farmer: 'bg-botanical-500 text-bg-950 border-botanical-500 shadow-sm shadow-botanical-500/20',
+  buyer: 'bg-teal-500 text-bg-950 border-teal-500 shadow-sm shadow-teal-500/20',
+  logistics: 'bg-harvest-500 text-bg-950 border-harvest-500 shadow-sm shadow-harvest-500/20',
+  admin: 'bg-sage-500 text-bg-950 border-sage-500 shadow-sm shadow-sage-500/20',
 };
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -127,26 +124,26 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div className="flex items-center justify-between h-16 sm:h-20 gap-4">
           {/* Brand */}
           <div className="flex items-center gap-3 min-w-0 flex-shrink-0">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-gradient-to-br from-forest-600 to-teal-600 flex items-center justify-center text-bg-950 shadow-sm shrink-0">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-botanical-500 flex items-center justify-center text-bg-950 shadow-sm shrink-0">
               <Sprout className="w-6 h-6 sm:w-7 sm:h-7" />
             </div>
             <div className="min-w-0 hidden sm:block">
               <div className="flex items-center gap-2">
-                <span className="font-display font-semibold text-lg sm:text-xl text-cream-50 tracking-tight truncate">
+                <span className="font-display font-semibold text-lg sm:text-xl text-cream-100 tracking-tight truncate">
                   {t.appName}
                 </span>
-                <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-bg-800 text-cream-300 border border-bg-700 whitespace-nowrap">
+                <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-bg-800 text-cream-500 border border-bg-700 whitespace-nowrap">
                   SIH 2026 MVP
                 </span>
               </div>
-              <p className="text-xs text-cream-400 truncate">
+              <p className="text-xs text-cream-500 truncate">
                 {t.tagline}
               </p>
             </div>
           </div>
 
-          {/* Desktop Role Switcher */}
-          <div className="hidden lg:flex items-center gap-1 p-1 bg-bg-800 rounded-lg border border-bg-700">
+          {/* Desktop Role Switcher - Minimal, Typographic */}
+          <div className="hidden lg:flex items-center gap-1 p-1 bg-bg-800 rounded-md border border-bg-700">
             {(Object.keys(ROLE_CONFIG) as Role[]).map((role) => {
               const config = ROLE_CONFIG[role];
               const isActive = currentRole === role;
@@ -154,10 +151,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <button
                   key={role}
                   onClick={() => handleRoleChange(role)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
-                    isActive
-                      ? ROLE_ACCENT_ACTIVE[role]
-                      : `${ROLE_ACCENT_CLASSES[role]} hover:border-${config.accent}-500`
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-xs font-medium transition-all ${
+                    isActive ? ROLE_ACTIVE[role] : `${ROLE_CLASSES[role]}`
                   }`}
                 >
                   {config.icon}
@@ -170,23 +165,13 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* Right Actions */}
           <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
             {/* Demo Guide */}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={onOpenDemoGuide}
-              className="hidden sm:flex gap-1.5"
-            >
+            <Button variant="outline" size="sm" onClick={onOpenDemoGuide} className="hidden sm:flex gap-1.5">
               <Sparkles className="w-4 h-4" />
               <span>Demo Guide</span>
             </Button>
 
             {/* Insights */}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onOpenInsights}
-              className="hidden md:flex gap-1.5"
-            >
+            <Button variant="ghost" size="sm" onClick={onOpenInsights} className="hidden md:flex gap-1.5">
               <TrendingUp className="w-4 h-4" />
               <span>Insights</span>
             </Button>
@@ -216,7 +201,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       onClick={() => handleLanguageChange(lang.code)}
                       className={`w-full px-3 py-2 text-left text-sm font-medium transition-colors ${
                         currentLanguage === lang.code
-                          ? 'bg-bg-700 text-teal-300'
+                          ? 'bg-bg-700 text-botanical-300'
                           : 'text-cream-300 hover:bg-bg-800'
                       }`}
                     >
@@ -252,13 +237,11 @@ export const Navbar: React.FC<NavbarProps> = ({
               {showNotifications && (
                 <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-bg-850 rounded-lg shadow-xl border border-bg-700 z-50 animate-fade-in">
                   <div className="flex items-center justify-between px-4 py-3 border-b border-bg-700">
-                    <h4 className="font-semibold text-sm text-cream-50 flex items-center gap-2">
+                    <h4 className="font-semibold text-sm text-cream-100 flex items-center gap-2">
                       <Bell className="w-4 h-4 text-teal-400" />
                       Notifications
                     </h4>
-                    <span className="text-xs text-cream-500">
-                      {unreadCount} unread
-                    </span>
+                    <span className="text-xs text-cream-500">{unreadCount} unread</span>
                   </div>
                   <div className="divide-y divide-bg-700 max-h-72 overflow-y-auto">
                     {notifications.length === 0 ? (
@@ -273,26 +256,19 @@ export const Navbar: React.FC<NavbarProps> = ({
                           }`}
                         >
                           <div className="flex items-start justify-between gap-2">
-                            <p className={`text-xs font-semibold ${notif.read ? 'text-cream-300' : 'text-cream-50'}`}>
+                            <p className={`text-xs font-semibold ${notif.read ? 'text-cream-300' : 'text-cream-100'}`}>
                               {notif.title}
                             </p>
                             <span className="text-[10px] text-cream-500 whitespace-nowrap flex-shrink-0">
                               {notif.timestamp}
                             </span>
                           </div>
-                          <p className="text-xs text-cream-400 mt-1 line-clamp-2">
-                            {notif.message}
-                          </p>
+                          <p className="text-xs text-cream-400 mt-1 line-clamp-2">{notif.message}</p>
                         </button>
                       ))
                     )}
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="w-full px-4 py-2 border-t border-bg-700"
-                    onClick={() => setShowNotifications(false)}
-                  >
+                  <Button variant="ghost" size="sm" className="w-full px-4 py-2 border-t border-bg-700" onClick={() => setShowNotifications(false)}>
                     Close
                   </Button>
                 </div>
@@ -301,14 +277,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             {/* Mobile Menu Trigger */}
             <div className="lg:hidden" ref={mobileMenuRef}>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowMobileMenu(!showMobileMenu)}
-                className="p-2"
-                aria-label="Open menu"
-                aria-expanded={showMobileMenu}
-              >
+              <Button variant="ghost" size="sm" onClick={() => setShowMobileMenu(!showMobileMenu)} className="p-2" aria-label="Open menu" aria-expanded={showMobileMenu}>
                 <Menu className="w-5 h-5 text-cream-400" />
               </Button>
 
@@ -319,18 +288,17 @@ export const Navbar: React.FC<NavbarProps> = ({
                     <p className="text-xs font-semibold text-cream-500 uppercase tracking-wider mb-2">Switch Role</p>
                     <div className="space-y-1">
                       {(Object.keys(ROLE_CONFIG) as Role[]).map((role) => {
-                        const config = ROLE_CONFIG[role];
                         return (
                           <button
                             key={role}
                             onClick={() => handleRoleChange(role)}
                             className={`w-full px-3 py-2 rounded-md text-left text-sm font-medium transition-colors flex items-center gap-2 ${
                               currentRole === role
-                                ? `${ROLE_ACCENT_ACTIVE[role]}`
-                                : `${ROLE_ACCENT_CLASSES[role]} hover:border-${config.accent}-500`
+                                ? ROLE_ACTIVE[role]
+                                : ROLE_CLASSES[role]
                             }`}
                           >
-                            {config.icon}
+                            {ROLE_CONFIG[role].icon}
                             <span>{t.roles[role]}</span>
                           </button>
                         );
@@ -348,7 +316,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                           onClick={() => handleLanguageChange(lang.code)}
                           className={`w-full px-3 py-2 rounded-md text-left text-sm font-medium transition-colors flex items-center gap-2 ${
                             currentLanguage === lang.code
-                              ? 'bg-bg-700 text-teal-300'
+                              ? 'bg-bg-700 text-botanical-300'
                               : 'text-cream-300 hover:bg-bg-800'
                           }`}
                         >
@@ -360,12 +328,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   </div>
 
                   {/* Demo Guide in Mobile Menu */}
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={onOpenDemoGuide}
-                    className="w-full mx-4 justify-start"
-                  >
+                  <Button variant="outline" size="sm" onClick={onOpenDemoGuide} className="w-full mx-4 justify-start">
                     <Sparkles className="w-4 h-4" />
                     <span>Demo Guide</span>
                   </Button>
@@ -375,12 +338,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             {/* Mobile Role Switcher (Dropdown) */}
             <div className="lg:hidden" ref={roleRef}>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowRoleMenu(!showRoleMenu)}
-                className="w-full justify-between"
-              >
+              <Button variant="ghost" size="sm" onClick={() => setShowRoleMenu(!showRoleMenu)} className="w-full justify-between">
                 <span className="flex items-center gap-2">
                   {currentRoleConfig.icon}
                   <span className="font-medium text-cream-300">{t.roles[currentRole]}</span>
@@ -390,47 +348,39 @@ export const Navbar: React.FC<NavbarProps> = ({
 
               {showRoleMenu && (
                 <div className="absolute bottom-full left-0 right-0 mb-2 bg-bg-850 rounded-lg shadow-xl border border-bg-700 py-1 z-50 animate-fade-in">
-                  {(Object.keys(ROLE_CONFIG) as Role[]).map((role) => {
-                    const config = ROLE_CONFIG[role];
-                    return (
-                      <button
-                        key={role}
-                        onClick={() => handleRoleChange(role)}
-                        className={`w-full px-4 py-3 text-left font-semibold transition-colors ${
-                          currentRole === role
-                            ? ROLE_ACCENT_ACTIVE[role]
-                            : `${ROLE_ACCENT_CLASSES[role]} hover:border-${config.accent}-500`
-                        }`}
-                      >
-                        <span className="flex items-center gap-2">
-                          {config.icon}
-                          <span>{t.roles[role]}</span>
-                        </span>
-                      </button>
-                    );
-                  })}
+                  {(Object.keys(ROLE_CONFIG) as Role[]).map((role) => (
+                    <button
+                      key={role}
+                      onClick={() => handleRoleChange(role)}
+                      className={`w-full px-4 py-3 text-left font-semibold transition-colors ${
+                        currentRole === role ? ROLE_ACTIVE[role] : ROLE_CLASSES[role]
+                      }`}
+                    >
+                      <span className="flex items-center gap-2">
+                        {ROLE_CONFIG[role].icon}
+                        <span>{t.roles[role]}</span>
+                      </span>
+                    </button>
+                  ))}
                 </div>
               )}
             </div>
           </div>
         </div>
 
-        {/* Mobile Role Strip - Only show on mobile, with proper overflow handling */}
+        {/* Mobile Role Strip */}
         <div className="lg:hidden flex overflow-x-auto py-2 border-t border-bg-700 gap-2 scrollbar-hidden pb-2 -mx-4 px-4">
           {(Object.keys(ROLE_CONFIG) as Role[]).map((role) => {
-            const config = ROLE_CONFIG[role];
             const isActive = currentRole === role;
             return (
               <button
                 key={role}
                 onClick={() => handleRoleChange(role)}
                 className={`px-3 py-1.5 rounded-md text-xs font-bold whitespace-nowrap flex items-center gap-1.5 shrink-0 ${
-                  isActive
-                    ? ROLE_ACCENT_ACTIVE[role]
-                    : ROLE_ACCENT_CLASSES[role]
+                  isActive ? ROLE_ACTIVE[role] : ROLE_CLASSES[role]
                 }`}
               >
-                {config.icon}
+                {ROLE_CONFIG[role].icon}
                 <span>{t.roles[role]}</span>
               </button>
             );

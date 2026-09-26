@@ -90,7 +90,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
           <div className="space-y-2">
             <div className="flex items-center gap-2 flex-wrap">
-              <Badge variant="success" size="sm" className="gap-1.5">
+              <Badge variant="botanical" size="sm" className="gap-1.5">
                 <ShieldCheck className="w-3.5 h-3.5" />
                 Platform Oversight & Whistleblower Desk
               </Badge>
@@ -345,7 +345,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                 <Card key={sch.id} variant="outlined" padding="md" className="space-y-3 flex flex-col justify-between border-bg-700">
                   <div className="space-y-2 text-xs sm:text-sm">
                     <div className="flex items-center justify-between font-bold">
-                      <Badge variant="info" size="sm">{sch.category}</Badge>
+                      <Badge variant="teal" size="sm">{sch.category}</Badge>
                       <span className="font-mono text-cream-500 text-xs font-bold">{sch.id}</span>
                     </div>
                     <CardTitle className="text-base">{sch.title}</CardTitle>
@@ -417,7 +417,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                 Cancel
               </Button>
               <Button
-                variant="forest"
+                variant="botanical"
                 fullWidth
                 loading={isSaving}
                 onClick={handleSaveResolution}

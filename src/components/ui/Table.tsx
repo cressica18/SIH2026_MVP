@@ -90,7 +90,7 @@ export interface TableActionColumnProps<T> {
   actions: Array<{
     label: string;
     onClick: (item: T, e: React.MouseEvent) => void;
-    variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'ochre' | 'evergreen' | 'deepteal';
+    variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'ochre' | 'forest' | 'deepteal' | 'botanical' | 'olive';
     icon?: React.ReactNode;
     disabled?: boolean;
   }>;

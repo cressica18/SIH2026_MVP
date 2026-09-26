@@ -47,14 +47,14 @@ const ROLE_CONFIG: Record<Role, { label: string; icon: React.ReactNode }> = {
 const ROLE_CLASSES: Record<Role, string> = {
   farmer: 'bg-botanical-900/40 text-botanical-300 border-botanical-800 hover:bg-botanical-900/60',
   buyer: 'bg-deepteal-900/40 text-deepteal-300 border-deepteal-800 hover:bg-deepteal-900/60',
-  logistics: 'bg-ochre-900/40 text-ochre-300 border-ochre-800 hover:bg-ochre-900/60',
+  logistics: 'bg-olive-900/40 text-olive-300 border-olive-800 hover:bg-olive-900/60',
   admin: 'bg-sage-900/40 text-sage-300 border-sage-800 hover:bg-sage-900/60',
 };
 
 const ROLE_ACTIVE: Record<Role, string> = {
   farmer: 'bg-botanical-500 text-bg-950 border-botanical-500 shadow-sm shadow-botanical-500/20',
   buyer: 'bg-deepteal-500 text-bg-950 border-deepteal-500 shadow-sm shadow-deepteal-500/20',
-  logistics: 'bg-ochre-500 text-bg-950 border-ochre-500 shadow-sm shadow-ochre-500/20',
+  logistics: 'bg-olive-500 text-bg-950 border-olive-500 shadow-sm shadow-olive-500/20',
   admin: 'bg-sage-500 text-bg-950 border-sage-500 shadow-sm shadow-sage-500/20',
 };
 
@@ -124,7 +124,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div className="flex items-center justify-between h-16 sm:h-20 gap-4">
           {/* Brand */}
           <div className="flex items-center gap-3 min-w-0 flex-shrink-0">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-gradient-to-br from-evergreen-500 via-botanical-400 to-deepteal-400 flex items-center justify-center text-bg-950 shadow-sm shrink-0 brand-mark" />
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-gradient-to-br from-forest-500 via-botanical-400 to-deepteal-400 flex items-center justify-center text-bg-950 shadow-sm shrink-0 brand-mark" />
             <div className="min-w-0 hidden sm:block">
               <div className="flex items-center gap-2">
                 <span className="font-display font-semibold text-lg sm:text-xl text-cream-100 tracking-tight truncate">
@@ -199,7 +199,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       onClick={() => handleLanguageChange(lang.code)}
                       className={`w-full px-3 py-2 text-left text-sm font-medium transition-colors ${
                         currentLanguage === lang.code
-                          ? 'bg-bg-700 text-evergreen-300'
+                          ? 'bg-bg-700 text-forest-300'
                           : 'text-cream-300 hover:bg-bg-800'
                       }`}
                     >
@@ -310,7 +310,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                           onClick={() => handleLanguageChange(lang.code)}
                           className={`w-full px-3 py-2 rounded-md text-left text-sm font-medium transition-colors flex items-center gap-2 ${
                             currentLanguage === lang.code
-                              ? 'bg-bg-700 text-evergreen-300'
+                              ? 'bg-bg-700 text-forest-300'
                               : 'text-cream-300 hover:bg-bg-800'
                           }`}
                         >

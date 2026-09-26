@@ -168,7 +168,7 @@ const SAFETY_CATEGORIES = [
 ];
 
 const getGradeVariant = (grade: 'A' | 'B' | 'C') => 
-  grade === 'A' ? 'botanical' : grade === 'B' ? 'harvest' : 'copper';
+  grade === 'A' ? 'botanical' : grade === 'B' ? 'olive' : 'copper';
 
 const getGradeLabel = (grade: 'A' | 'B' | 'C') => 
   grade === 'A' ? 'Premium' : grade === 'B' ? 'Standard' : 'Basic';
@@ -962,8 +962,8 @@ function OrdersTab({
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-teal-900/30 border border-teal-700 flex items-center justify-center">
-            <ClipboardList className="w-5 h-5 text-teal-400" />
+          <div className="w-10 h-10 rounded-lg bg-deepteal-900/30 border border-deepteal-700 flex items-center justify-center">
+            <ClipboardList className="w-5 h-5 text-deepteal-400" />
           </div>
           <div>
             <h2 className="font-display text-xl font-semibold text-cream-50">Orders & Lifecycle</h2>
@@ -1019,7 +1019,7 @@ function OrderCard({
   isRevealed: boolean;
   onUpdateOrderStatus?: (orderId: string, status: string) => void;
 }) {
-  const STATUS_VARIANTS: Record<OrderStatus, 'success' | 'warning' | 'danger' | 'info' | 'default' | 'harvest' | 'botanical' | 'deepteal' | 'copper'> = {
+  const STATUS_VARIANTS: Record<OrderStatus, 'success' | 'warning' | 'danger' | 'info' | 'default' | 'olive' | 'botanical' | 'deepteal' | 'copper'> = {
     pending: 'warning',
     confirmed: 'info',
     in_transit: 'info',
@@ -1034,7 +1034,7 @@ function OrderCard({
       {/* Status Lifecycle Progress Bar */}
       <div className="relative h-1.5 bg-bg-700">
         <div 
-          className="absolute top-0 left-0 h-full bg-teal-500 rounded-full transition-all duration-500"
+          className="absolute top-0 left-0 h-full bg-deepteal-500 rounded-full transition-all duration-500"
           style={{ width: `${((statusIdx + 1) / STATUS_STEPS.length) * 100}%` }}
         />
         {STATUS_STEPS.map((step, idx) => (
@@ -1042,7 +1042,7 @@ function OrderCard({
             key={step}
             className={`absolute top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full border-2 transition-all duration-300 ${
               idx <= statusIdx 
-                ? 'bg-teal-500 border-teal-500' 
+                ? 'bg-deepteal-500 border-deepteal-500' 
                 : 'bg-bg-850 border-bg-700'
             }`}
             style={{ left: `${(idx / (STATUS_STEPS.length - 1)) * 100}%` }}
@@ -1193,7 +1193,7 @@ function OrderCard({
             )}
             {order.status === 'delivered' && (
               <Button 
-                variant="harvest" 
+                variant="olive" 
                 size="sm" 
                 onClick={() => onUpdateOrderStatus(order.id, 'settled')}
                 className="gap-2"
@@ -1348,7 +1348,7 @@ function FinanceTab({
             </div>
             <Button
               size="lg"
-              variant="harvest"
+              variant="olive"
               onClick={() => {
                 const existingRequested = advances.find((a) => a.status === 'requested');
                 if (existingRequested) {
@@ -1396,7 +1396,7 @@ function FinanceTab({
             </div>
           </div>
 
-          <div className="p-4 bg-teal-900/30 border border-teal-700 rounded-2xl text-xs text-teal-100 space-y-1">
+          <div className="p-4 bg-deepteal-900/30 border border-deepteal-700 rounded-2xl text-xs text-deepteal-100 space-y-1">
             <p className="font-bold text-teal-100">AI Credit Model Explanation:</p>
             <p className="leading-relaxed text-cream-300 font-medium">{riskAssessment.explanation}</p>
           </div>
@@ -1513,7 +1513,7 @@ function SafetyTab({
   };
 
   return (
-    <Card variant="subtle-copper" padding="lg" className="max-w-2xl mx-auto space-y-4 border-copper-700">
+    <Card variant="panel" padding="lg" className="max-w-2xl mx-auto space-y-4 border-copper-700">
       <div className="flex items-center gap-3">
         <div className="p-3 bg-copper-900/30 text-copper-300 rounded-2xl"><AlertTriangle className="w-6 h-6" /></div>
         <div>
@@ -1763,7 +1763,7 @@ function CreateListingModal({
             )}
             <div className="absolute top-2 left-2">
               {isAssessingQuality ? (
-                <Badge variant="warning" size="sm" className="animate-pulse">CNN Analysing...</Badge>
+                <Badge variant="olive" size="sm" className="animate-pulse">CNN Analysing...</Badge>
               ) : qualityGrade ? (
                 <Badge variant={qualityGrade.grade === 'A' ? 'success' : qualityGrade.grade === 'B' ? 'warning' : 'danger'} size="sm">
                   Grade {qualityGrade.grade} · {qualityGrade.confidence}%

@@ -195,7 +195,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
   return (
     <div className="space-y-6">
       {/* Buyer Header Banner - Premium Marketplace Feel */}
-      <Card variant="buyer" padding="lg" className="border-teal-700 shadow-xl shadow-teal-900/20">
+      <Card variant="buyer" padding="lg" className="border-deepteal-700 shadow-xl shadow-deepteal-900/20">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
           <div className="space-y-2">
             <div className="flex items-center gap-2 flex-wrap">
@@ -211,7 +211,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
             <CardTitle className="text-xl sm:text-2xl font-black text-cream-50 tracking-tight">
               {buyer.businessName || buyer.name}
             </CardTitle>
-            <CardDescription className="text-xs sm:text-sm text-teal-300 font-semibold">
+            <CardDescription className="text-xs sm:text-sm text-deepteal-300 font-semibold">
               Procurement Location: {buyer.district}, {buyer.state} • Type: {buyer.buyerType.toUpperCase()}
             </CardDescription>
           </div>
@@ -221,8 +221,8 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
               onClick={() => setActiveTab('marketplace')}
               className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
                 activeTab === 'marketplace'
-                  ? 'bg-teal-600 text-bg-950 shadow-md shadow-teal-600/30'
-                  : 'bg-bg-800/50 text-teal-200 hover:bg-teal-900/30 hover:text-teal-100 border border-teal-700/50'
+                  ? 'bg-deepteal-600 text-bg-950 shadow-md shadow-deepteal-600/30'
+                  : 'bg-bg-800/50 text-deepteal-200 hover:bg-deepteal-900/30 hover:text-deepteal-100 border border-deepteal-700/50'
               }`}
             >
               <ShoppingCart className="w-4 h-4" />
@@ -232,14 +232,14 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
               onClick={() => setActiveTab('orders')}
               className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
                 activeTab === 'orders'
-                  ? 'bg-teal-600 text-bg-950 shadow-md shadow-teal-600/30'
-                  : 'bg-bg-800/50 text-teal-200 hover:bg-teal-900/30 hover:text-teal-100 border border-teal-700/50'
+                  ? 'bg-deepteal-600 text-bg-950 shadow-md shadow-deepteal-600/30'
+                  : 'bg-bg-800/50 text-deepteal-200 hover:bg-deepteal-900/30 hover:text-deepteal-100 border border-deepteal-700/50'
               }`}
             >
               <Package className="w-4 h-4" />
               <span>My Orders</span>
               {orders.length > 0 && (
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-harvest-500 text-bg-950">
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-olive-500 text-bg-950">
                   {orders.length}
                 </span>
               )}
@@ -255,8 +255,8 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <div className="p-2 bg-harvest-900/30 rounded-xl border border-harvest-700">
-                    <Sparkles className="w-5 h-5 text-harvest-400" />
+                  <div className="p-2 bg-olive-900/30 rounded-xl border border-olive-700">
+                    <Sparkles className="w-5 h-5 text-olive-400" />
                   </div>
                   <CardTitle>{t.buyer.recommendedForYou}</CardTitle>
                 </div>
@@ -269,9 +269,9 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                 {recommendedListings.slice(0, 2).map((item) => (
                   <Card
                     key={`rec_${item.id}`}
-                    variant="subtle-teal"
+                    variant="subtle-deepteal"
                     padding="sm"
-                    className="border-teal-700/50 flex flex-col sm:flex-row gap-4"
+                    className="border-deepteal-700/50 flex flex-col sm:flex-row gap-4"
                   >
                     <ImageWithFallback
                       src={item.imageUrl}
@@ -281,10 +281,10 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                     />
                     <div className="space-y-2 flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-1">
-                        <Badge variant="cream" size="sm" className="font-mono bg-bg-800 text-harvest-300 border-bg-700">
+                        <Badge variant="cream" size="sm" className="font-mono bg-bg-800 text-olive-300 border-bg-700">
                           {item.anonSellerId}
                         </Badge>
-                        <Badge variant="harvest" size="sm" className="flex items-center gap-1 border-none shadow-xs font-extrabold">
+                        <Badge variant="olive" size="sm" className="flex items-center gap-1 border-none shadow-xs font-extrabold">
                           <Sparkles className="w-3 h-3" />
                           {item.matchScore}% Match
                         </Badge>
@@ -331,7 +331,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                   placeholder="Search by crop, variety, or district..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2 text-xs font-semibold bg-bg-800 border border-bg-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 text-cream-100 placeholder:text-cream-500"
+                  className="w-full pl-9 pr-3 py-2 text-xs font-semibold bg-bg-800 border border-bg-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-deepteal-500 text-cream-100 placeholder:text-cream-500"
                 />
               </div>
 
@@ -368,7 +368,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                     step={2}
                     value={maxPrice}
                     onChange={(e) => setMaxPrice(Number(e.target.value))}
-                    className="w-16 accent-teal-500 cursor-pointer"
+                    className="w-16 accent-deepteal-500 cursor-pointer"
                   />
                 </div>
               </div>
@@ -397,10 +397,10 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                         className="w-full h-full object-cover"
                       />
                       <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
-                        <Badge variant={item.quality.grade === 'A' ? 'botanical' : item.quality.grade === 'B' ? 'harvest' : 'copper'} size="sm">
+                        <Badge variant={item.quality.grade === 'A' ? 'botanical' : item.quality.grade === 'B' ? 'olive' : 'copper'} size="sm">
                           Grade {item.quality.grade}
                         </Badge>
-                        <Badge variant="cream" size="sm" className="font-mono bg-bg-800 text-harvest-300 border-bg-700">
+                        <Badge variant="cream" size="sm" className="font-mono bg-bg-800 text-olive-300 border-bg-700">
                           {item.anonSellerId}
                         </Badge>
                       </div>
@@ -452,8 +452,8 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                         </div>
                       </div>
 
-                      <div className="p-2 bg-teal-900/30 rounded-lg text-[11px] text-teal-100 flex items-center gap-1.5 border border-teal-700 font-medium">
-                        <ShieldCheck className="w-3.5 h-3.5 text-teal-400 shrink-0" />
+                      <div className="p-2 bg-deepteal-900/30 rounded-lg text-[11px] text-deepteal-100 flex items-center gap-1.5 border border-deepteal-700 font-medium">
+                        <ShieldCheck className="w-3.5 h-3.5 text-deepteal-400 shrink-0" />
                         <span>Anonymous seller. Details unlock upon order confirm.</span>
                       </div>
                     </CardContent>
@@ -558,10 +558,10 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
 
                   {/* Identity Reveal Success Alert Box */}
                   {ord.identityRevealed && (
-                    <div className="p-3 bg-teal-900/30 border border-teal-700 rounded-xl text-xs text-teal-100 flex items-start gap-2.5">
-                      <CheckCircle2 className="w-4 h-4 text-teal-400 mt-0.5 shrink-0" />
+                    <div className="p-3 bg-deepteal-900/30 border border-deepteal-700 rounded-xl text-xs text-deepteal-100 flex items-start gap-2.5">
+                      <CheckCircle2 className="w-4 h-4 text-deepteal-400 mt-0.5 shrink-0" />
                       <div>
-                        <p className="font-bold text-teal-100">
+                        <p className="font-bold text-deepteal-100">
                           Identity Reveal Complete: Direct Farmer Contact Unlocked
                         </p>
                         <p className="text-cream-400 mt-0.5 font-medium">
@@ -589,12 +589,12 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                   {ord.status === 'settled' && !ord.buyerRating && (
                     <div className="pt-2 flex justify-end">
                       <Button
-                       variant="harvest"
+                       variant="olive"
                        size="sm"
                        onClick={() => setRatingOrderId(ord.id)}
-                       className="bg-harvest-900/30 text-harvest-300 border-harvest-700 hover:bg-harvest-900/50"
+                       className="bg-olive-900/30 text-olive-300 border-olive-700 hover:bg-olive-900/50"
                      >
-                       <Star className="w-3.5 h-3.5 text-harvest-400 fill-current" />
+                       <Star className="w-3.5 h-3.5 text-olive-400 fill-current" />
                        <span>Rate Farmer Fulfillment</span>
                      </Button>
                     </div>
@@ -622,9 +622,9 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
               </div>
             )}
 
-            <div className="p-3 bg-teal-900/30 border border-teal-700 rounded-xl text-teal-100 space-y-1">
-              <p className="font-bold flex items-center gap-1.5 text-teal-100">
-                <ShieldCheck className="w-4 h-4 text-teal-400" />
+            <div className="p-3 bg-deepteal-900/30 border border-deepteal-700 rounded-xl text-deepteal-100 space-y-1">
+              <p className="font-bold flex items-center gap-1.5 text-deepteal-100">
+                <ShieldCheck className="w-4 h-4 text-deepteal-400" />
                 Farmer Approval Required
               </p>
               <p className="text-cream-400 text-xs font-medium">
@@ -653,7 +653,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                 step={50}
                 value={orderQuantity}
                 onChange={(e) => setOrderQuantity(Number(e.target.value))}
-                className="w-full px-3 py-2 text-sm font-bold border border-bg-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 text-cream-100 bg-bg-800"
+                className="w-full px-3 py-2 text-sm font-bold border border-bg-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-deepteal-500 text-cream-100 bg-bg-800"
               />
               <span className="text-[10px] text-cream-500 mt-0.5 block font-semibold">
                 Max Available in Lot: {selectedListing.quantityKg} kg
@@ -668,7 +668,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                 type="text"
                 value={deliveryAddress}
                 onChange={(e) => setDeliveryAddress(e.target.value)}
-                className="w-full px-3 py-2 text-xs sm:text-sm font-semibold border border-bg-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 text-cream-100 bg-bg-800"
+                className="w-full px-3 py-2 text-xs sm:text-sm font-semibold border border-bg-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-deepteal-500 text-cream-100 bg-bg-800"
               />
             </div>
 
@@ -729,7 +729,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                 <Star
                   className={`w-8 h-8 ${
                     star <= selectedStarRating
-                      ? 'text-harvest-400 fill-harvest-400'
+                      ? 'text-olive-400 fill-olive-400'
                       : 'text-cream-600'
                   }`}
                 />

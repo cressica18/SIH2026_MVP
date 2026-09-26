@@ -56,7 +56,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
               py-2 text-sm
               ${error
                 ? 'border-copper-500 text-cream-100 placeholder:text-cream-700 focus:border-copper-500 focus:ring-2 focus:ring-copper-500/20'
-                : 'border-bg-600 text-cream-100 placeholder:text-cream-700 focus:border-evergreen-500 focus:ring-2 focus:ring-evergreen-500/20'}
+                : 'border-bg-600 text-cream-100 placeholder:text-cream-700 focus:border-forest-500 focus:ring-2 focus:ring-forest-500/20'}
               ${disabled ? 'bg-bg-700 cursor-not-allowed text-cream-700' : 'bg-bg-800 hover:border-bg-500'}
               ${className}
             `}
@@ -128,7 +128,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
             w-full rounded-md transition-colors duration-80 px-3 py-2 text-sm resize-y min-h-[100px]
             ${error
               ? 'border-copper-500 text-cream-100 placeholder:text-cream-700 focus:border-copper-500 focus:ring-2 focus:ring-copper-500/20'
-              : 'border-bg-600 text-cream-100 placeholder:text-cream-700 focus:border-evergreen-500 focus:ring-2 focus:ring-evergreen-500/20'}
+              : 'border-bg-600 text-cream-100 placeholder:text-cream-700 focus:border-forest-500 focus:ring-2 focus:ring-forest-500/20'}
             ${disabled ? 'bg-bg-700 cursor-not-allowed text-cream-700' : 'bg-bg-800 hover:border-bg-500'}
             ${className}
           `}

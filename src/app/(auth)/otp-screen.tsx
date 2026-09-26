@@ -120,15 +120,21 @@ export const OtpScreen: React.FC<OtpScreenProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-atmosphere-admin flex items-center justify-center p-4 sm:p-6 selection:bg-harvest-500 selection:text-bg-950">
+    <div className="min-h-screen bg-atmosphere-login flex items-center justify-center p-4 sm:p-6 selection:bg-olive-500 selection:text-bg-950">
+      {/* Subtle atmospheric texture */}
+      <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 400%22%3E%3Cfilter id=%22noise%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.9%22 numOctaves=%224%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noise)%22 opacity=%220.03%22/%3E%3C/svg%3E')]" />
+      {/* Subtle animated gradient orb */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-80 h-80 rounded-full bg-gradient-to-r from-forest-500/10 to-deepteal-500/5 opacity-50 animate-[ambientFloat_8s_ease-in-out_infinite]" />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 rounded-full bg-gradient-to-r from-olive-500/10 to-deepteal-500/5 opacity-50 animate-[ambientFloat_10s_ease-in-out_infinite_reverse]" />
+      </div>
+
       <div className="relative w-full max-w-md bg-bg-850 rounded-2xl shadow-2xl border border-bg-700 overflow-hidden flex flex-col animate-scale-in">
         
         {/* Header - Atmospheric gradient */}
-        <div className="flex items-center justify-between px-5 py-4 bg-gradient-to-r from-botanical-900/60 to-teal-900/40 text-cream-100 border-b border-bg-700">
+        <div className="flex items-center justify-between px-5 py-4 bg-gradient-to-r from-forest-900/60 to-deepteal-900/40 text-cream-100 border-b border-bg-700">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-botanical-500/30 flex items-center justify-center shrink-0 border border-botanical-800/50">
-              <Sprout className="w-5 h-5 text-botanical-400" />
-            </div>
+            <div className="w-9 h-9 rounded-lg bg-forest-500/30 flex items-center justify-center shrink-0 border border-forest-800/50 brand-mark-sm" />
             <div>
               <h1 className="font-display font-semibold text-base tracking-tight text-cream-100">Vasundhara / वसुंधरा</h1>
               <p className="text-xs text-botanical-300 font-medium">{t.appName} — {t.tagline}</p>
@@ -138,9 +144,9 @@ export const OtpScreen: React.FC<OtpScreenProps> = ({
 
         <div className="p-5 space-y-4">
           {/* Quick Demo Login Bar for Judges - Subtle */}
-          <div className="p-3 bg-harvest-900/30 border border-harvest-800/50 rounded-xl space-y-2">
-            <div className="flex items-center gap-1.5 text-xs font-semibold text-harvest-100">
-              <Sparkles className="w-3.5 h-3.5 text-harvest-400 shrink-0" />
+          <div className="p-3 bg-olive-900/30 border border-olive-800/50 rounded-xl space-y-2">
+            <div className="flex items-center gap-1.5 text-xs font-semibold text-olive-100">
+              <Sparkles className="w-3.5 h-3.5 text-olive-400 shrink-0" />
               <span>SIH Demo Mode — Instant Role Switcher</span>
             </div>
             <div className="grid grid-cols-2 gap-1.5 text-xs">
@@ -148,12 +154,12 @@ export const OtpScreen: React.FC<OtpScreenProps> = ({
                 <Sprout className="w-3.5 h-3.5 text-botanical-400" />
                 <span>Farmer</span>
               </button>
-              <button type="button" onClick={() => handleQuickDemoLogin('buyer')} className="flex items-center gap-1.5 px-2.5 py-1.5 bg-bg-800 border border-bg-700 hover:border-teal-700 hover:bg-teal-900/40 text-cream-100 rounded-lg font-medium transition-all cursor-pointer shadow-xs">
-                <ShoppingCart className="w-3.5 h-3.5 text-teal-400" />
+              <button type="button" onClick={() => handleQuickDemoLogin('buyer')} className="flex items-center gap-1.5 px-2.5 py-1.5 bg-bg-800 border border-bg-700 hover:border-deepteal-700 hover:bg-deepteal-900/40 text-cream-100 rounded-lg font-medium transition-all cursor-pointer shadow-xs">
+                <ShoppingCart className="w-3.5 h-3.5 text-deepteal-400" />
                 <span>Buyer</span>
               </button>
-              <button type="button" onClick={() => handleQuickDemoLogin('logistics')} className="flex items-center gap-1.5 px-2.5 py-1.5 bg-bg-800 border border-bg-700 hover:border-harvest-700 hover:bg-harvest-900/40 text-cream-100 rounded-lg font-medium transition-all cursor-pointer shadow-xs">
-                <Truck className="w-3.5 h-3.5 text-harvest-400" />
+              <button type="button" onClick={() => handleQuickDemoLogin('logistics')} className="flex items-center gap-1.5 px-2.5 py-1.5 bg-bg-800 border border-bg-700 hover:border-olive-700 hover:bg-olive-900/40 text-cream-100 rounded-lg font-medium transition-all cursor-pointer shadow-xs">
+                <Truck className="w-3.5 h-3.5 text-olive-400" />
                 <span>Logistics</span>
               </button>
               <button type="button" onClick={() => handleQuickDemoLogin('admin')} className="flex items-center gap-1.5 px-2.5 py-1.5 bg-bg-800 border border-bg-700 hover:border-sage-700 hover:bg-sage-900/40 text-cream-100 rounded-lg font-medium transition-all cursor-pointer shadow-xs">
@@ -171,7 +177,7 @@ export const OtpScreen: React.FC<OtpScreenProps> = ({
               id="lang-select"
               value={language}
               onChange={(e) => setLanguage(e.target.value as typeof language)}
-              className="ml-auto bg-bg-700 border border-bg-600 rounded-md px-2 py-1.5 text-xs font-medium text-cream-100 focus:outline-none focus:ring-2 focus:ring-botanical-500 cursor-pointer"
+              className="ml-auto bg-bg-700 border border-bg-600 rounded-md px-2 py-1.5 text-xs font-medium text-cream-100 focus:outline-none focus:ring-2 focus:ring-forest-500 cursor-pointer"
             >
               <option value="en">English (EN)</option>
               <option value="hi">हिंदी (HI)</option>
@@ -197,7 +203,7 @@ export const OtpScreen: React.FC<OtpScreenProps> = ({
                     onChange={(e) => setPhone(e.target.value)}
                     onKeyDown={(e) => handleKeyDown(e, handleSendOtp)}
                     placeholder="+91 98765 43210"
-                    className="w-full pl-9 pr-4 py-2.5 text-sm font-medium bg-bg-800 border border-bg-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-botanical-500 focus:border-botanical-500 transition-colors text-cream-100 placeholder:text-cream-600"
+                    className="w-full pl-9 pr-4 py-2.5 text-sm font-medium bg-bg-800 border border-bg-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-forest-500 focus:border-forest-500 transition-colors text-cream-100 placeholder:text-cream-600"
                     maxLength={15}
                     inputMode="tel"
                   />

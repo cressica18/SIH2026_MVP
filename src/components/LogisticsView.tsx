@@ -97,11 +97,11 @@ export const LogisticsView: React.FC<LogisticsViewProps> = ({
   return (
     <div className="space-y-6">
       {/* Logistics Header Banner - Operations/Control Room Feel */}
-      <Card variant="logistics" padding="lg" className="border-harvest-700 shadow-xl shadow-harvest-900/20">
+      <Card variant="logistics" padding="lg" className="border-olive-700 shadow-xl shadow-olive-900/20">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
           <div className="space-y-2">
             <div className="flex items-center gap-2 flex-wrap">
-              <Badge variant="harvest" size="sm" className="gap-1.5">
+              <Badge variant="olive" size="sm" className="gap-1.5">
                 <Truck className="w-3.5 h-3.5" />
                 Logistics Carrier Partner
               </Badge>
@@ -113,15 +113,15 @@ export const LogisticsView: React.FC<LogisticsViewProps> = ({
             <CardTitle className="text-xl sm:text-2xl font-black text-cream-50 tracking-tight">
               {logistics.name}
             </CardTitle>
-            <CardDescription className="text-xs sm:text-sm text-harvest-300 font-semibold">
+            <CardDescription className="text-xs sm:text-sm text-olive-300 font-semibold">
               Vehicle: {logistics.vehicleType} • Service Radius: {logistics.serviceRadiusKm} km • Base: {logistics.district}, {logistics.state}
             </CardDescription>
           </div>
 
           <div className="flex items-center gap-3 flex-wrap">
-            <div className="px-4 py-2 bg-bg-800/50 backdrop-blur-md rounded-2xl border border-harvest-700/50 text-center">
-              <p className="text-[11px] text-harvest-300 font-semibold">Fleet Fuel Savings</p>
-              <p className="text-base font-black text-harvest-300">
+            <div className="px-4 py-2 bg-bg-800/50 backdrop-blur-md rounded-2xl border border-olive-700/50 text-center">
+              <p className="text-[11px] text-olive-300 font-semibold">Fleet Fuel Savings</p>
+              <p className="text-base font-black text-olive-300">
                 ~{avgFuelSavings}% Saved
               </p>
             </div>
@@ -141,7 +141,7 @@ export const LogisticsView: React.FC<LogisticsViewProps> = ({
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
-                <Package className="w-5 h-5 text-harvest-400" />
+                <Package className="w-5 h-5 text-olive-400" />
                 <span>Unassigned Confirmed Orders in Corridor</span>
               </CardTitle>
               <CardDescription className="text-cream-400 font-medium">
@@ -149,7 +149,7 @@ export const LogisticsView: React.FC<LogisticsViewProps> = ({
               </CardDescription>
             </div>
             <Button
-              variant="harvest"
+              variant="olive"
               onClick={handleCreatePoolClick}
               disabled={selectedOrdersForPool.length === 0 || isCreatingPool}
               loading={isCreatingPool}
@@ -198,7 +198,7 @@ export const LogisticsView: React.FC<LogisticsViewProps> = ({
           <div className="lg:col-span-1 space-y-4">
             <Card variant="panel" padding="md" className="space-y-4 border-bg-700">
               <div className="flex items-center justify-between">
-                <span className="px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-bg-800 text-harvest-300 border border-bg-700">
+                <span className="px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-bg-800 text-olive-300 border border-bg-700">
                   {currentPool.id}
                 </span>
                 <StatusBadge status={currentPool.status} />
@@ -224,7 +224,7 @@ export const LogisticsView: React.FC<LogisticsViewProps> = ({
                 </div>
                 <div className="w-full h-2.5 bg-bg-700 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-forest-400 to-teal-400 rounded-full transition-all"
+                    className="h-full bg-gradient-to-r from-forest-400 to-botanical-400 rounded-full transition-all"
                     style={{
                       width: `${Math.min(
                         100,
@@ -257,7 +257,7 @@ export const LogisticsView: React.FC<LogisticsViewProps> = ({
               <div className="space-y-2 pt-2">
                 {currentPool.status !== 'in_transit' && currentPool.status !== 'delivered' && (
                   <Button
-                    variant="harvest"
+                    variant="olive"
                     fullWidth
                     onClick={() => onUpdatePoolStatus(currentPool.id, 'in_transit')}
                   >
@@ -332,7 +332,7 @@ export const LogisticsView: React.FC<LogisticsViewProps> = ({
                       <div>
                         <div className="flex items-center gap-2">
                           <Badge
-                            variant={stop.stopType === 'pickup' ? 'harvest' : 'deepteal'}
+                            variant={stop.stopType === 'pickup' ? 'olive' : 'deepteal'}
                             size="sm"
                           >
                             {stop.stopType === 'pickup' ? 'Pickup' : 'Dropoff'}
@@ -358,7 +358,7 @@ export const LogisticsView: React.FC<LogisticsViewProps> = ({
                         ) : (
                           <Button
                             size="sm"
-                            variant="harvest"
+                            variant="olive"
                             onClick={() => onCompleteStop(currentPool.id, stop.id)}
                           >
                             Mark Stop Done
@@ -390,9 +390,9 @@ export const LogisticsView: React.FC<LogisticsViewProps> = ({
                         }`}
                       >
                         {stop.stopType === 'pickup' ? (
-                          <Package className="w-3.5 h-3.5 text-harvest-300" />
+                          <Package className="w-3.5 h-3.5 text-olive-300" />
                         ) : (
-                          <MapPin className="w-3.5 h-3.5 text-teal-300" />
+                          <MapPin className="w-3.5 h-3.5 text-deepteal-300" />
                         )}
                         <span>{stop.locationName}</span>
                       </span>

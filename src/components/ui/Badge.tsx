@@ -1,7 +1,7 @@
 import React from 'react';
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
-  variant?: 'default' | 'success' | 'warning' | 'danger' | 'info' | 'ochre' | 'evergreen' | 'deepteal' | 'copper' | 'cream' | 'botanical' | 'sage' | 'harvest';
+  variant?: 'default' | 'success' | 'warning' | 'danger' | 'info' | 'ochre' | 'forest' | 'deepteal' | 'copper' | 'cream' | 'botanical' | 'sage' | 'olive';
   size?: 'xs' | 'sm' | 'md' | 'lg';
   dot?: boolean;
 }
@@ -20,18 +20,18 @@ export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
   ) => {
     const variantStyles: Record<string, string> = {
       default: 'bg-bg-700 text-cream-400 border-bg-600',
-      success: 'bg-evergreen-900/40 text-evergreen-300 border-evergreen-800',
-      warning: 'bg-ochre-900/40 text-ochre-300 border-ochre-800',
+      success: 'bg-forest-900/40 text-forest-300 border-forest-800',
+      warning: 'bg-olive-900/40 text-olive-300 border-olive-800',
       danger: 'bg-copper-900/40 text-copper-300 border-copper-800',
       info: 'bg-deepteal-900/40 text-deepteal-300 border-deepteal-800',
-      ochre: 'bg-ochre-900/40 text-ochre-300 border-ochre-800',
-      evergreen: 'bg-evergreen-900/40 text-evergreen-300 border-evergreen-800',
+      ochre: 'bg-olive-900/40 text-olive-300 border-olive-800',
+      forest: 'bg-forest-900/40 text-forest-300 border-forest-800',
       deepteal: 'bg-deepteal-900/40 text-deepteal-300 border-deepteal-800',
       copper: 'bg-copper-900/40 text-copper-300 border-copper-800',
       cream: 'bg-cream-200 text-bg-900 border-cream-300',
       botanical: 'bg-botanical-900/40 text-botanical-300 border-botanical-800',
       sage: 'bg-sage-900/40 text-sage-300 border-sage-800',
-      harvest: 'bg-harvest-900/40 text-harvest-300 border-harvest-800',
+      olive: 'bg-olive-900/40 text-olive-300 border-olive-800',
     };
 
     return (
@@ -59,11 +59,11 @@ Badge.displayName = 'Badge';
 
 export interface StatusBadgeProps {
   status: string;
-  variant?: 'default' | 'success' | 'warning' | 'danger' | 'info' | 'ochre' | 'evergreen' | 'deepteal' | 'copper' | 'botanical' | 'sage';
+  variant?: 'default' | 'success' | 'warning' | 'danger' | 'info' | 'ochre' | 'forest' | 'deepteal' | 'copper' | 'botanical' | 'sage' | 'olive';
 }
 
 export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, variant }) => {
-  const statusVariants: Record<string, 'success' | 'warning' | 'danger' | 'info' | 'default' | 'ochre' | 'evergreen' | 'deepteal' | 'copper' | 'botanical' | 'sage'> = {
+  const statusVariants: Record<string, 'success' | 'warning' | 'danger' | 'info' | 'default' | 'ochre' | 'forest' | 'deepteal' | 'copper' | 'botanical' | 'sage' | 'olive'> = {
     active: 'success',
     pending: 'warning',
     matched: 'info',

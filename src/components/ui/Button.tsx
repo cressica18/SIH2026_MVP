@@ -1,7 +1,7 @@
 import React, { forwardRef } from 'react';
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'ochre' | 'evergreen' | 'deepteal' | 'botanical' | 'harvest';
+  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'ochre' | 'forest' | 'deepteal' | 'botanical' | 'olive';
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'icon' | 'icon-sm';
   loading?: boolean;
   fullWidth?: boolean;
@@ -28,14 +28,14 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
     const variantStyles: Record<string, string> = {
       primary:
-        'bg-evergreen-500 text-bg-950 hover:bg-evergreen-400 active:bg-evergreen-600 ' +
-        'shadow-sm shadow-evergreen-500/20 focus:ring-evergreen-500',
+        'bg-forest-500 text-bg-950 hover:bg-forest-400 active:bg-forest-600 ' +
+        'shadow-sm shadow-forest-500/20 focus:ring-forest-500',
       secondary:
         'bg-bg-700 text-cream-100 hover:bg-bg-600 active:bg-bg-500 ' +
         'border border-bg-600 focus:ring-bg-500',
       outline:
-        'bg-transparent text-evergreen-400 hover:bg-evergreen-500/10 active:bg-evergreen-500/15 ' +
-        'border border-evergreen-500/40 focus:ring-evergreen-500',
+        'bg-transparent text-forest-400 hover:bg-forest-500/10 active:bg-forest-500/15 ' +
+        'border border-forest-500/40 focus:ring-forest-500',
       ghost:
         'bg-transparent text-cream-300 hover:bg-bg-700 active:bg-bg-600 ' +
         'focus:ring-bg-500',
@@ -43,20 +43,20 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         'bg-copper-500 text-bg-950 hover:bg-copper-400 active:bg-copper-600 ' +
         'shadow-sm shadow-copper-500/20 focus:ring-copper-500',
       ochre:
-        'bg-ochre-500 text-bg-950 hover:bg-ochre-400 active:bg-ochre-600 ' +
-        'shadow-sm shadow-ochre-500/20 focus:ring-ochre-500',
-      evergreen:
-        'bg-evergreen-500 text-bg-950 hover:bg-evergreen-400 active:bg-evergreen-600 ' +
-        'shadow-sm shadow-evergreen-500/20 focus:ring-evergreen-500',
+        'bg-olive-500 text-bg-950 hover:bg-olive-400 active:bg-olive-600 ' +
+        'shadow-sm shadow-olive-500/20 focus:ring-olive-500',
+      forest:
+        'bg-forest-500 text-bg-950 hover:bg-forest-400 active:bg-forest-600 ' +
+        'shadow-sm shadow-forest-500/20 focus:ring-forest-500',
       deepteal:
         'bg-deepteal-500 text-bg-950 hover:bg-deepteal-400 active:bg-deepteal-600 ' +
         'shadow-sm shadow-deepteal-500/20 focus:ring-deepteal-500',
       botanical:
         'bg-botanical-500 text-bg-950 hover:bg-botanical-400 active:bg-botanical-600 ' +
         'shadow-sm shadow-botanical-500/20 focus:ring-botanical-500',
-      harvest:
-        'bg-harvest-500 text-bg-950 hover:bg-harvest-400 active:bg-harvest-600 ' +
-        'shadow-sm shadow-harvest-500/20 focus:ring-harvest-500',
+      olive:
+        'bg-olive-500 text-bg-950 hover:bg-olive-400 active:bg-olive-600 ' +
+        'shadow-sm shadow-olive-500/20 focus:ring-olive-500',
     };
 
     const sizeStyles = {

@@ -182,7 +182,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                       </span>
                       <Badge variant="danger" size="sm">{rep.category}</Badge>
                       {rep.isAnonymous ? (
-                        <Badge variant="cream" size="sm" className="bg-bg-800 text-harvest-300 border-bg-700 flex items-center gap-1 font-extrabold">
+                        <Badge variant="cream" size="sm" className="bg-bg-800 text-olive-300 border-bg-700 flex items-center gap-1 font-extrabold">
                           <Lock className="w-3 h-3" />
                           100% Anonymous Submitter
                         </Badge>
@@ -289,7 +289,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
             <Card variant="outlined" padding="md" className="space-y-2 border-bg-700">
               <div className="flex items-center justify-between text-cream-500 text-xs font-bold">
                 <span>Verified Farmers</span>
-                <div className="p-2 bg-teal-900/30 text-teal-300 rounded-xl border border-teal-700">
+                <div className="p-2 bg-deepteal-900/30 text-deepteal-300 rounded-xl border border-deepteal-700">
                   <Users className="w-4 h-4" />
                 </div>
               </div>
@@ -304,11 +304,11 @@ export const AdminView: React.FC<AdminViewProps> = ({
             <Card variant="outlined" padding="md" className="space-y-2 border-bg-700">
               <div className="flex items-center justify-between text-cream-500 text-xs font-bold">
                 <span>Freight Mileage Abated</span>
-                <div className="p-2 bg-harvest-900/30 text-harvest-300 rounded-xl border border-harvest-700">
+                <div className="p-2 bg-olive-900/30 text-olive-300 rounded-xl border border-olive-700">
                   <Building2 className="w-4 h-4" />
                 </div>
               </div>
-              <p className="text-2xl font-black text-harvest-300 tracking-tight">
+              <p className="text-2xl font-black text-olive-300 tracking-tight">
                 34.1%
               </p>
               <p className="text-xs text-cream-500 font-medium">

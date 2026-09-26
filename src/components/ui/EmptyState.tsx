@@ -36,7 +36,7 @@ const variantConfigs: Record<string, { icon: React.ReactNode; defaultTitle: stri
     defaultDescription: 'Reports you submit or admin actions will appear here.',
   },
   matches: {
-    icon: <Search className="w-10 h-10 text-ochre-400" />,
+    icon: <Search className="w-10 h-10 text-olive-400" />,
     defaultTitle: 'No matches found',
     defaultDescription: 'No listings match your current filters. Try adjusting your search.',
   },
@@ -46,12 +46,12 @@ const variantConfigs: Record<string, { icon: React.ReactNode; defaultTitle: stri
     defaultDescription: 'You\'re all caught up. New alerts will appear here.',
   },
   pools: {
-    icon: <Truck className="w-10 h-10 text-ochre-400" />,
+    icon: <Truck className="w-10 h-10 text-olive-400" />,
     defaultTitle: 'No logistics pools',
     defaultDescription: 'Pools will appear when confirmed orders are grouped for pickup.',
   },
   finance: {
-    icon: <IndianRupee className="w-10 h-10 text-ochre-400" />,
+    icon: <IndianRupee className="w-10 h-10 text-olive-400" />,
     defaultTitle: 'No finance data',
     defaultDescription: 'Working capital advances and history will appear here.',
   },

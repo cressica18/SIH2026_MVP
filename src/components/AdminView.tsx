@@ -111,7 +111,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
               onClick={() => setActiveTab('reports')}
               className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
                 activeTab === 'reports'
-                  ? 'bg-copper-600 text-bg-950 shadow-md shadow-copper-600/30'
+                  ? 'bg-gradient-to-br from-copper-700 to-copper-500 text-cream-50 shadow-[0_2px_8px_-2px_rgb(190_79_18_/_0.5)] border-transparent'
                   : 'bg-bg-800/50 text-copper-200 hover:bg-copper-900/30 hover:text-copper-100 border border-copper-700/50'
               }`}
             >
@@ -128,7 +128,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
               onClick={() => setActiveTab('metrics')}
               className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
                 activeTab === 'metrics'
-                  ? 'bg-forest-600 text-bg-950 shadow-md shadow-forest-600/30'
+                  ? 'bg-gradient-to-br from-forest-700 to-forest-500 text-cream-50 shadow-[0_2px_8px_-2px_rgb(19_115_68_/_0.5)] border-transparent'
                   : 'bg-bg-800/50 text-forest-200 hover:bg-forest-900/30 hover:text-forest-100 border border-forest-700/50'
               }`}
             >
@@ -140,7 +140,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
               onClick={() => setActiveTab('schemes')}
               className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
                 activeTab === 'schemes'
-                  ? 'bg-sage-600 text-bg-950 shadow-md shadow-sage-600/30'
+                  ? 'bg-gradient-to-br from-sage-700 to-sage-500 text-cream-50 shadow-[0_2px_8px_-2px_rgb(109_196_143_/_0.5)] border-transparent'
                   : 'bg-bg-800/50 text-sage-200 hover:bg-sage-900/30 hover:text-sage-100 border border-sage-700/50'
               }`}
             >

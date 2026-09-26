@@ -349,9 +349,12 @@ export const FarmerView: React.FC<FarmerViewProps> = ({
   return (
     <div className="space-y-6">
       {/* Farmer Profile Header - Refined Dark Theme */}
-      <div className="relative bg-atmosphere-farmer">
+      <div className="relative bg-atmosphere-farmer px-5 py-8 sm:px-8 sm:py-10 rounded-3xl border border-forest-800/40 overflow-hidden shadow-2xl mb-8">
         
-        <div className="relative grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+        {/* Topographic field visualization from index.css */}
+        <div className="hero-field-viz" />
+        
+        <div className="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
           {/* Left: Identity & Location */}
           <div className="md:col-span-2 space-y-5">
             {/* Status badges row */}
@@ -1278,7 +1281,7 @@ function SchemesTab({
             onClick={() => setSchemeCategory(cat)}
             className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all border cursor-pointer ${
               schemeCategory === cat
-                ? 'bg-forest-600 text-bg-950 border-forest-600 shadow-sm shadow-forest-600/20'
+                ? 'bg-gradient-to-br from-forest-700 to-botanical-700 text-cream-50 border-transparent shadow-[0_2px_8px_-2px_rgb(19_115_68_/_0.5)]'
                 : 'bg-bg-800 text-cream-300 border-bg-700 hover:border-forest-500 hover:text-forest-300 hover:bg-forest-900/20'
             }`}
           >

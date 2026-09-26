@@ -72,7 +72,7 @@
   --color-deepteal-100: #a3f3e6;
   --color-deepteal-50:  #d5faf5;
 
-  /* ===== OLIVE — earthy harvest accent ===== */
+  /* ===== OLIVE / HARVEST — earthy harvest accent ===== */
   --color-olive-950:  #121002;
   --color-olive-900:  #211d03;
   --color-olive-800:  #383105;
@@ -84,6 +84,18 @@
   --color-olive-200:  #f2e476;
   --color-olive-100:  #f8f2b4;
   --color-olive-50:   #fefae6;
+  
+  --color-harvest-950: var(--color-olive-950);
+  --color-harvest-900: var(--color-olive-900);
+  --color-harvest-800: var(--color-olive-800);
+  --color-harvest-700: var(--color-olive-700);
+  --color-harvest-600: var(--color-olive-600);
+  --color-harvest-500: var(--color-olive-500);
+  --color-harvest-400: var(--color-olive-400);
+  --color-harvest-300: var(--color-olive-300);
+  --color-harvest-200: var(--color-olive-200);
+  --color-harvest-100: var(--color-olive-100);
+  --color-harvest-50:  var(--color-olive-50);
 
   /* ===== OCHRE — amber/golden for finance, emphasis ===== */
   --color-ochre-950:  #180e00;

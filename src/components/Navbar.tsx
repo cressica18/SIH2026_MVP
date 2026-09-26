@@ -45,17 +45,17 @@ const ROLE_CONFIG: Record<Role, { label: string; icon: React.ReactNode }> = {
 };
 
 const ROLE_CLASSES: Record<Role, string> = {
-  farmer: 'bg-botanical-900/40 text-botanical-300 border-botanical-800 hover:bg-botanical-900/60',
-  buyer: 'bg-deepteal-900/40 text-deepteal-300 border-deepteal-800 hover:bg-deepteal-900/60',
-  logistics: 'bg-olive-900/40 text-olive-300 border-olive-800 hover:bg-olive-900/60',
-  admin: 'bg-sage-900/40 text-sage-300 border-sage-800 hover:bg-sage-900/60',
+  farmer: 'bg-transparent text-cream-400 border-transparent hover:bg-forest-900/30 hover:text-forest-300',
+  buyer: 'bg-transparent text-cream-400 border-transparent hover:bg-deepteal-900/30 hover:text-deepteal-300',
+  logistics: 'bg-transparent text-cream-400 border-transparent hover:bg-ochre-900/30 hover:text-ochre-300',
+  admin: 'bg-transparent text-cream-400 border-transparent hover:bg-sage-900/30 hover:text-sage-300',
 };
 
 const ROLE_ACTIVE: Record<Role, string> = {
-  farmer: 'bg-botanical-500 text-bg-950 border-botanical-500 shadow-sm shadow-botanical-500/20',
-  buyer: 'bg-deepteal-500 text-bg-950 border-deepteal-500 shadow-sm shadow-deepteal-500/20',
-  logistics: 'bg-olive-500 text-bg-950 border-olive-500 shadow-sm shadow-olive-500/20',
-  admin: 'bg-sage-500 text-bg-950 border-sage-500 shadow-sm shadow-sage-500/20',
+  farmer: 'bg-gradient-to-br from-forest-700 via-forest-600 to-botanical-600 text-cream-50 border-transparent shadow-[0_2px_8px_-2px_rgb(19_115_68_/_0.5)]',
+  buyer: 'bg-gradient-to-br from-deepteal-700 via-deepteal-600 to-deepteal-500 text-cream-50 border-transparent shadow-[0_2px_8px_-2px_rgb(18_137_117_/_0.5)]',
+  logistics: 'bg-gradient-to-br from-olive-800 via-olive-700 to-ochre-700 text-cream-50 border-transparent shadow-[0_2px_8px_-2px_rgb(173_152_18_/_0.5)]',
+  admin: 'bg-gradient-to-br from-sage-700 via-sage-600 to-sage-500 text-cream-50 border-transparent shadow-[0_2px_8px_-2px_rgb(109_196_143_/_0.5)]',
 };
 
 export const Navbar: React.FC<NavbarProps> = ({

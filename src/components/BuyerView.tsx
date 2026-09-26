@@ -221,7 +221,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
               onClick={() => setActiveTab('marketplace')}
               className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
                 activeTab === 'marketplace'
-                  ? 'bg-deepteal-600 text-bg-950 shadow-md shadow-deepteal-600/30'
+                  ? 'bg-gradient-to-br from-deepteal-700 to-deepteal-500 text-cream-50 shadow-[0_2px_8px_-2px_rgb(18_137_117_/_0.5)] border-transparent'
                   : 'bg-bg-800/50 text-deepteal-200 hover:bg-deepteal-900/30 hover:text-deepteal-100 border border-deepteal-700/50'
               }`}
             >
@@ -232,7 +232,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
               onClick={() => setActiveTab('orders')}
               className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
                 activeTab === 'orders'
-                  ? 'bg-deepteal-600 text-bg-950 shadow-md shadow-deepteal-600/30'
+                  ? 'bg-gradient-to-br from-deepteal-700 to-deepteal-500 text-cream-50 shadow-[0_2px_8px_-2px_rgb(18_137_117_/_0.5)] border-transparent'
                   : 'bg-bg-800/50 text-deepteal-200 hover:bg-deepteal-900/30 hover:text-deepteal-100 border border-deepteal-700/50'
               }`}
             >
@@ -308,7 +308,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                         </span>
 <Button
                            size="sm"
-                           variant="primary"
+                           variant="teal"
                            onClick={() => handleOpenOrderModal(item)}
                          >
                            Procure Lot
@@ -461,7 +461,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
 
                   <div className="p-4 pt-0">
                     <Button
-                      variant="primary"
+                      variant="teal"
                       fullWidth
                       onClick={() => handleOpenOrderModal(item)}
                     >
@@ -575,7 +575,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                   {ord.status === 'delivered' && (
                     <div className="pt-2 flex justify-end">
                       <Button
-                       variant="primary"
+                       variant="teal"
                        size="sm"
                        onClick={() => onUpdateOrderStatus(ord.id, 'settled')}
                      >
@@ -688,7 +688,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
             </div>
 
             <Button
-              variant="primary"
+              variant="teal"
               fullWidth
               loading={isSubmittingOrder}
               onClick={handleSubmitOrder}
@@ -750,7 +750,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
               Cancel
             </Button>
             <Button
-              variant="primary"
+              variant="teal"
               fullWidth
               loading={isSubmittingRating}
               onClick={handleRateSubmit}

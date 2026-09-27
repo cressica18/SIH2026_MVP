@@ -431,14 +431,14 @@ export const FarmerView: React.FC<FarmerViewProps> = ({
                   <span className="text-xs font-semibold text-cream-500 uppercase tracking-wider">Eligible Advance</span>
                 </div>
                 <p className="text-2xl font-bold text-harvest-300">
-                  ₹{riskAssessment.eligibleAdvanceAmount.toLocaleString('en-IN')}
+                  ₹{riskAssessment?.eligibleAdvanceAmount?.toLocaleString('en-IN') || 0}
                 </p>
                 <Badge 
-                  variant={riskAssessment.riskTier === 'Low Risk' ? 'success' : riskAssessment.riskTier === 'Moderate Risk' ? 'warning' : 'danger'} 
+                  variant={riskAssessment?.riskTier === 'Low Risk' ? 'success' : riskAssessment?.riskTier === 'Moderate Risk' ? 'warning' : 'danger'} 
                   size="sm" 
                   className="mt-2"
                 >
-                  {riskAssessment.riskTier}
+                  {riskAssessment?.riskTier || 'Pending'}
                 </Badge>
               </Card>
             </div>
@@ -450,12 +450,12 @@ export const FarmerView: React.FC<FarmerViewProps> = ({
                   <BarChart2 className="w-5 h-5 text-teal-400" />
                   <div>
                     <p className="text-xs text-cream-500 uppercase tracking-wider">Risk Score</p>
-                    <p className="font-semibold text-cream-100">{riskAssessment.riskScore} / 100</p>
+                    <p className="font-semibold text-cream-100">{riskAssessment?.riskScore || 0} / 100</p>
                   </div>
                 </div>
                 <div className="text-right">
                   <p className="text-xs text-cream-500 uppercase tracking-wider">Fulfillment</p>
-                  <p className="font-semibold text-cream-100">{riskAssessment.factors.fulfillmentRate}</p>
+                  <p className="font-semibold text-cream-100">{riskAssessment?.factors?.fulfillmentRate || '0%'}</p>
                 </div>
               </div>
               <div className="flex items-center justify-between p-3 bg-bg-750 rounded-lg border border-bg-700">
@@ -496,14 +496,14 @@ export const FarmerView: React.FC<FarmerViewProps> = ({
                   <span className="text-xs font-semibold text-cream-500 uppercase tracking-wider">Eligible Advance</span>
                 </div>
                 <p className="text-xl font-bold text-harvest-300">
-                  ₹{riskAssessment.eligibleAdvanceAmount.toLocaleString('en-IN')}
+                  ₹{riskAssessment?.eligibleAdvanceAmount?.toLocaleString('en-IN') || 0}
                 </p>
                 <Badge 
-                  variant={riskAssessment.riskTier === 'Low Risk' ? 'success' : riskAssessment.riskTier === 'Moderate Risk' ? 'warning' : 'danger'} 
+                  variant={riskAssessment?.riskTier === 'Low Risk' ? 'success' : riskAssessment?.riskTier === 'Moderate Risk' ? 'warning' : 'danger'} 
                   size="xs" 
                   className="mt-1.5"
                 >
-                  {riskAssessment.riskTier}
+                  {riskAssessment?.riskTier || 'Pending'}
                 </Badge>
               </Card>
             </div>

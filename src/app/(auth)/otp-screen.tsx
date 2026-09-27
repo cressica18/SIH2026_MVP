@@ -10,158 +10,143 @@ interface OtpScreenProps {
   onSuccess?: (role: UserRole) => void;
 }
 
-// Atmospheric SVG for login background — professional topographic/field geometry
-const AtmosphericBackground = () => (
-  <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
-    {/* Layered radial gradients for depth */}
-    <div className="absolute inset-0 bg-atmosphere-login" />
+// Atmospheric SVG for login background — premium agritech/technology environment
+const AtmosphericBackground = React.memo(() => {
+  // Pre-calculate dust particle properties so they don't shift on re-renders if ever triggered
+  const dustParticles = Array.from({ length: 25 }).map((_, i) => ({
+    id: i,
+    left: Math.random() * 100,
+    duration: 15 + Math.random() * 20,
+    delay: -(Math.random() * 20),
+    size: Math.random() * 3 + 1,
+    isAmber: Math.random() > 0.8,
+  }));
 
-    {/* Noise texture overlay */}
-    <div
-      className="absolute inset-0 opacity-[0.028]"
-      style={{
-        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
-        backgroundRepeat: 'repeat',
-        backgroundSize: '256px 256px',
-      }}
-    />
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none bg-bg-950" aria-hidden="true">
+      <style>{`
+        @keyframes float-slow {
+          0%, 100% { transform: translate(0, 0) scale(1); }
+          33% { transform: translate(2%, 3%) scale(1.05); }
+          66% { transform: translate(-2%, 1%) scale(0.95); }
+        }
+        @keyframes float-slower {
+          0%, 100% { transform: translate(0, 0) rotate(0deg); }
+          50% { transform: translate(-3%, -2%) rotate(2deg); }
+        }
+        @keyframes wave-move {
+          0% { transform: translateX(-5%); }
+          100% { transform: translateX(5%); }
+        }
+        @keyframes drift-up {
+          0% { transform: translateY(110vh) scale(0.5); opacity: 0; }
+          20% { opacity: 0.4; }
+          80% { opacity: 0.4; }
+          100% { transform: translateY(-20vh) scale(1.2); opacity: 0; }
+        }
+        .particle {
+          animation: drift-up linear infinite;
+        }
+      `}</style>
 
-    {/* Topographic / contour SVG visualization */}
-    <svg
-      className="absolute inset-0 w-full h-full"
-      viewBox="0 0 1400 900"
-      preserveAspectRatio="xMidYMid slice"
-      fill="none"
-    >
-      <defs>
-        <radialGradient id="glowForest" cx="40%" cy="0%" r="60%">
-          <stop offset="0%" stopColor="#137344" stopOpacity="0.25" />
-          <stop offset="100%" stopColor="#137344" stopOpacity="0" />
-        </radialGradient>
-        <radialGradient id="glowTeal" cx="70%" cy="100%" r="50%">
-          <stop offset="0%" stopColor="#128975" stopOpacity="0.15" />
-          <stop offset="100%" stopColor="#128975" stopOpacity="0" />
-        </radialGradient>
-        <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="#137344" stopOpacity="0" />
-          <stop offset="40%" stopColor="#137344" stopOpacity="0.4" />
-          <stop offset="60%" stopColor="#128975" stopOpacity="0.3" />
-          <stop offset="100%" stopColor="#128975" stopOpacity="0" />
-        </linearGradient>
-        <filter id="glow">
-          <feGaussianBlur stdDeviation="2" result="blur" />
-          <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
-        </filter>
-      </defs>
-
-      {/* Large atmospheric blobs */}
-      <ellipse cx="280" cy="-60" rx="500" ry="380" fill="url(#glowForest)" />
-      <ellipse cx="1100" cy="960" rx="460" ry="340" fill="url(#glowTeal)" />
-
-      {/* Topographic contour lines — field elevation aesthetic */}
-      {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => (
-        <ellipse
-          key={`contour-${i}`}
-          cx={700 + i * 12}
-          cy={450 + i * 8}
-          rx={580 - i * 60}
-          ry={320 - i * 28}
-          stroke="#28b86e"
-          strokeWidth="0.5"
-          strokeOpacity={0.06 + i * 0.01}
-          fill="none"
-          strokeDasharray={i % 2 === 0 ? "none" : "8 12"}
-          style={{
-            animation: `contourPulse ${5 + i * 0.6}s ease-in-out ${i * 0.4}s infinite`,
-          }}
+      {/* 1. Deep Atmospheric Gradient Base */}
+      <div className="absolute inset-0">
+        <div 
+          className="absolute -top-[20%] -left-[10%] w-[70%] h-[70%] rounded-full blur-[120px] mix-blend-screen opacity-50"
+          style={{ background: 'radial-gradient(circle, var(--color-forest-700) 0%, transparent 70%)', animation: 'float-slow 20s ease-in-out infinite' }}
         />
-      ))}
-
-      {/* Meridian field lines */}
-      {[0, 1, 2, 3, 4].map((i) => (
-        <line
-          key={`field-${i}`}
-          x1={200 + i * 280}
-          y1={0}
-          x2={100 + i * 260}
-          y2={900}
-          stroke="#137344"
-          strokeWidth="0.4"
-          strokeOpacity={0.05 + i * 0.005}
-          strokeDasharray="4 20"
+        <div 
+          className="absolute top-[10%] -right-[20%] w-[80%] h-[80%] rounded-full blur-[140px] mix-blend-screen opacity-40"
+          style={{ background: 'radial-gradient(circle, var(--color-deepteal-800) 0%, transparent 70%)', animation: 'float-slower 25s ease-in-out infinite reverse' }}
         />
-      ))}
+        <div 
+          className="absolute -bottom-[20%] left-[20%] w-[60%] h-[60%] rounded-full blur-[100px] mix-blend-screen opacity-30"
+          style={{ background: 'radial-gradient(circle, var(--color-ochre-800) 0%, transparent 60%)', animation: 'float-slow 18s ease-in-out infinite 5s' }}
+        />
+      </div>
 
-      {/* Horizon gradient line — single prominent subtle line */}
-      <line
-        x1="0" y1="420" x2="1400" y2="440"
-        stroke="url(#lineGradient)"
-        strokeWidth="0.8"
-        strokeOpacity="0.6"
+      {/* 2. SVG Topography, Meshes and Lines */}
+      <svg className="absolute inset-0 w-full h-full opacity-60" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 900" preserveAspectRatio="xMidYMid slice">
+        <defs>
+          <pattern id="agri-grid" width="100" height="100" patternUnits="userSpaceOnUse">
+            <path d="M 100 0 L 0 0 0 100" fill="none" stroke="var(--color-botanical-500)" strokeWidth="0.5" strokeOpacity="0.1" />
+            <circle cx="100" cy="100" r="1.5" fill="var(--color-botanical-400)" fillOpacity="0.2" />
+          </pattern>
+          <linearGradient id="wave-grad-1" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="var(--color-forest-500)" stopOpacity="0" />
+            <stop offset="50%" stopColor="var(--color-forest-400)" stopOpacity="0.5" />
+            <stop offset="100%" stopColor="var(--color-forest-500)" stopOpacity="0" />
+          </linearGradient>
+          <linearGradient id="wave-grad-2" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="var(--color-deepteal-500)" stopOpacity="0" />
+            <stop offset="50%" stopColor="var(--color-deepteal-400)" stopOpacity="0.4" />
+            <stop offset="100%" stopColor="var(--color-deepteal-500)" stopOpacity="0" />
+          </linearGradient>
+        </defs>
+
+        {/* Very faint tech/agri grid */}
+        <rect width="100%" height="100%" fill="url(#agri-grid)" />
+
+        {/* Topographic concentric rings (animated) */}
+        <g stroke="var(--color-sage-500)" strokeWidth="0.5" fill="none" opacity="0.25" transform="translate(1190 135)">
+          {[...Array(6)].map((_, i) => (
+            <circle 
+              key={`topo-${i}`} 
+              cx="0" 
+              cy="0" 
+              r={100 + i * 80} 
+              strokeDasharray={i % 2 === 0 ? "4 12" : "none"} 
+              style={{ 
+                animation: `float-slower ${20 + i * 2}s linear infinite`,
+                animationDirection: i % 2 === 0 ? 'normal' : 'reverse',
+                transformOrigin: 'center'
+              }} 
+            />
+          ))}
+        </g>
+        
+        {/* Organic landscape contour waves */}
+        <g style={{ animation: 'wave-move 30s ease-in-out infinite alternate' }}>
+          <path d="M-200,400 C300,500 500,200 1200,400 C1600,500 2000,300 2200,400" fill="none" stroke="url(#wave-grad-1)" strokeWidth="1.5" />
+          <path d="M-200,500 C400,350 600,600 1300,450 C1700,350 2000,550 2200,500" fill="none" stroke="url(#wave-grad-2)" strokeWidth="1" opacity="0.7" />
+          <path d="M-200,650 C200,750 700,500 1100,650 C1500,800 1800,600 2200,650" fill="none" stroke="url(#wave-grad-1)" strokeWidth="0.5" opacity="0.5" />
+        </g>
+      </svg>
+
+      {/* 3. Subtle floating dust/particles */}
+      <div className="absolute inset-0">
+        {dustParticles.map((p) => (
+          <div
+            key={`dust-${p.id}`}
+            className="absolute rounded-full particle"
+            style={{
+              left: `${p.left}%`,
+              width: `${p.size}px`,
+              height: `${p.size}px`,
+              backgroundColor: p.isAmber ? 'var(--color-ochre-400)' : 'var(--color-botanical-200)',
+              animationDuration: `${p.duration}s`,
+              animationDelay: `${p.delay}s`,
+              boxShadow: `0 0 ${p.size * 2}px ${p.isAmber ? 'var(--color-ochre-400)' : 'var(--color-botanical-300)'}`
+            }}
+          />
+        ))}
+      </div>
+
+      {/* 4. Film Grain / Noise Overlay for tactile premium feel */}
+      <div
+        className="absolute inset-0 opacity-[0.035] mix-blend-overlay"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+          backgroundRepeat: 'repeat',
+          backgroundSize: '128px 128px',
+        }}
       />
 
-      {/* Agricultural data points — minimal dot matrix */}
-      {[
-        [140, 200], [280, 350], [180, 520], [340, 140],
-        [1100, 180], [1250, 320], [1060, 420], [1200, 560],
-        [900, 680], [1300, 740],
-      ].map(([cx, cy], i) => (
-        <circle
-          key={`dot-${i}`}
-          cx={cx}
-          cy={cy}
-          r="1.5"
-          fill="#28b86e"
-          fillOpacity={0.2 + Math.random() * 0.15}
-          style={{
-            animation: `breathe ${3 + i * 0.7}s ease-in-out ${i * 0.5}s infinite`,
-          }}
-        />
-      ))}
-
-      {/* Corner geometric accent — subtle grid */}
-      <g opacity="0.04" transform="translate(40 40)">
-        {[0, 1, 2, 3, 4, 5].map((i) => (
-          <line key={`g-h-${i}`} x1="0" y1={i * 20} x2="120" y2={i * 20} stroke="#137344" strokeWidth="0.5" />
-        ))}
-        {[0, 1, 2, 3, 4, 5, 6].map((i) => (
-          <line key={`g-v-${i}`} x1={i * 20} y1="0" x2={i * 20} y2="100" stroke="#137344" strokeWidth="0.5" />
-        ))}
-      </g>
-
-      {/* Floating scan line — very subtle, slow */}
-      <rect
-        x="0" y="0" width="100%" height="2"
-        fill="url(#lineGradient)"
-        opacity="0.15"
-        style={{ animation: 'fieldScan 12s linear infinite' }}
-      />
-    </svg>
-
-    {/* Corner ambient orbs */}
-    <div
-      className="absolute -top-32 -right-32 w-96 h-96 rounded-full"
-      style={{
-        background: 'radial-gradient(circle, rgba(19,115,68,0.12) 0%, transparent 70%)',
-        animation: 'ambientFloat 9s ease-in-out infinite',
-      }}
-    />
-    <div
-      className="absolute -bottom-48 -left-48 w-[500px] h-[500px] rounded-full"
-      style={{
-        background: 'radial-gradient(circle, rgba(18,137,117,0.09) 0%, transparent 70%)',
-        animation: 'ambientFloat 12s ease-in-out 2s infinite reverse',
-      }}
-    />
-    <div
-      className="absolute top-1/2 left-1/4 w-80 h-80 rounded-full"
-      style={{
-        background: 'radial-gradient(circle, rgba(204,118,14,0.04) 0%, transparent 70%)',
-        animation: 'ambientFloat 15s ease-in-out 4s infinite',
-      }}
-    />
-  </div>
-);
+      {/* 5. Vignette/Darken edges to focus on center card */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_20%,var(--color-bg-950)_100%)] opacity-80" />
+    </div>
+  );
+});
 
 // SVG Farmer icon (professional, not emoji)
 const FarmerIcon = ({ className }: { className?: string }) => (

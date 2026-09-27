@@ -202,9 +202,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Log out current user and clear all auth state
     logout();
     // Initiate login with demo phone for the target role
-    // logout already clears user, pendingPhone, and localStorage tokens
     const phone = DEMO_PHONES[role];
     await loginWithOtp(phone);
+    // Auto-verify OTP for seamless role switching in demo mode
+    await verifyOtp(phone, '123456');
   };
 
   if (isLoading) {

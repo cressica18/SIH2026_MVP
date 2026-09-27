@@ -1,7 +1,7 @@
 # Kisan Setu (वसुंधरा)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Tests](https://img.shields.io/badge/tests-255%2F255%20passing-brightgreen.svg)]()
+[![Tests](https://img.shields.io/badge/tests-330%2F330%20passing-brightgreen.svg)]()
 [![TypeScript](https://img.shields.io/badge/TypeScript-7.0-blue.svg)]()
 [![Vite](https://img.shields.io/badge/Vite-8.3-646CFF.svg)]()
 [![Node.js](https://img.shields.io/badge/Node.js-22%2B-339933.svg)]()

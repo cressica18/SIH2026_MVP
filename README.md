@@ -363,17 +363,6 @@ npm run dev           # Terminal 2: Frontend on :3000 (proxies /api to :4000)
 
 ---
 
-## 15. Team — Bumble Bee 404
-
-| Member | Role | Contribution |
-|---|---|---|
-| **Lead** | Full-stack Architecture | System design, RBAC, state machine, matching engine |
-| **Member 2** | Backend Services | Quality, risk, logistics, market, voice, reputation services |
-| **Member 3** | Frontend & UX | Role-specific views, voice capture, i18n, design system |
-| **Member 4** | Testing & QA | 330 tests, edge-case audit, CI pipeline |
-
----
-
 ## License
 
 MIT License — See `LICENSE` for details.

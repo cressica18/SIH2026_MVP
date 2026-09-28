@@ -16,10 +16,10 @@ Kisan Setu is a **direct farmgate-to-buyer digital commerce platform** that elim
 
 | Problem in Traditional Markets | Kisan Setu Technical Solution |
 |---|---|
-| **Price opacity** — farmers sell at mandi rates without benchmarks | `marketService.ts` provides AI price bands with live mandi baselines (Agmarknet) per crop |
-| **Subjective grading** — quality disputes favor middlemen | `qualityService.ts` automates A/B/C grading with sub-scores (color, firmness, defects) via deterministic CNN simulation |
+| **Price opacity** — farmers sell at mandi rates without benchmarks | `marketService.ts` provides AI price bands with static Agmarknet baselines per crop |
+| **Subjective grading** — quality disputes favor middlemen | `qualityService.ts` automates A/B/C grading with sub-scores (color, firmness, defects) via deterministic hash-based simulation |
 | **Identity exploitation** — brokers capture farmer contacts early | `listingController.ts` enforces anonymous `FARM-XXXXX` listings; real identity revealed **only on farmer acceptance** |
-| **No logistics access** — small lots can't access pooled transport | `logisticsService.ts` geo-clusters confirmed orders (DBSCAN-style) + optimizes multi-stop routes (nearest-neighbor VRP heuristic) |
+| **No logistics access** — small lots can't access pooled transport | `logisticsService.ts` geo-clusters confirmed orders (greedy merge) + optimizes multi-stop routes (nearest-neighbor VRP heuristic) |
 | **Credit exclusion** — banks lack repayment data for smallholders | `riskService.ts` builds deterministic credit profiles from platform activity (fulfillment, quality, reputation, land) |
 
 ---
@@ -28,12 +28,12 @@ Kisan Setu is a **direct farmgate-to-buyer digital commerce platform** that elim
 
 | Capability | What It Does | How It Works (Concise) | Why It Matters |
 |---|---|---|---|
-| **Anonymous Voice Listings** | Farmers create listings by speaking in 5 languages | Browser Web Speech API + keyword NLP extracts crop, variety, qty, price → `voiceService.ts` | Removes literacy barrier; 90%+ extraction accuracy on seed transcripts |
-| **AI Price Band & Mandi Benchmarks** | Real-time fair/min/max price per crop per region | Hardcoded 7-crop Agmarknet baselines in `marketService.ts` → returned as `PriceBand` | Gives farmers negotiation power; buyers see transparent benchmarks |
-| **Automated Quality Grading** | CNN-style A/B/C grade + sub-scores per image | Deterministic hash-based simulation per crop profile in `qualityService.ts` | Removes subjective disputes; grade feeds matching & risk scoring |
+| **Anonymous Voice Listings** | Farmers create listings by speaking in 5 languages | Browser Web Speech API + keyword NLP extracts crop, variety, qty, price → `voiceService.ts` | Removes literacy barrier; keyword extraction on seed transcripts |
+| **AI Price Band & Mandi Benchmarks** | Fair/min/max price per crop per region | Hardcoded 7-crop Agmarknet baselines in `marketService.ts` → returned as `PriceBand` | Gives farmers negotiation power; buyers see transparent benchmarks |
+| **Automated Quality Grading** | A/B/C grade + sub-scores per image | Deterministic hash-based simulation per crop profile in `qualityService.ts` | Removes subjective disputes; grade feeds matching & risk scoring |
 | **Ranked Matching Engine** | Buyers see listings scored by proximity, quality, price, reputation | Haversine distance (35pts) + Quality (25pts) + Price fit (25pts) + Reputation (15pts) in `matchingService.ts` | Reduces search friction; surfaces best-fit trades first |
 | **Identity Protection** | Farmer real name/phone hidden until **they accept** an order | `listingController.ts` scrubs PII for all non-admin calls; `orderController.ts` reveals on `confirmed` transition | Prevents broker harassment; farmer controls disclosure |
-| **Pooled Logistics & VRP** | Multiple farmgate pickups → single vehicle route | Greedy geo-clustering (150km radius) + nearest-neighbor pickup-first sequencing in `logisticsService.ts` | Cuts freight 30–40%; makes small lots viable for transport |
+| **Pooled Logistics & VRP** | Multiple farmgate pickups → single vehicle route | Greedy geo-clustering (150km radius) + nearest-neighbor pickup-first sequencing in `logisticsService.ts` | Simulated fuel savings tracked; makes small lots viable for transport |
 | **Deterministic Risk & Advances** | Rule-based credit score → instant AEPS advance eligibility | Transparent formula: price volatility + fulfillment + quality + reputation + land in `riskService.ts` | Unlocks working capital without bank branch visits |
 | **Anonymous Safety Reporting** | Farmers report cartels/brokers without revealing identity | `reportController.ts` accepts `isAnonymous=true`; admin triage queue | Enables whistleblowing without retaliation |
 
@@ -55,29 +55,32 @@ Kisan Setu is a **direct farmgate-to-buyer digital commerce platform** that elim
 ```mermaid
 flowchart TD
     subgraph F["Farmer"]
-        F1["Voice/Text Listing\n(5 languages)"] --> F2["AI Quality Grade\n(A/B/C + sub-scores)"]
-        F2 --> F3["AI Price Band\n(Mandi benchmark)"]
-        F3 --> F4["Publish Anonymously\n(FARM-XXXXX)"]
+        F1["Voice/Text Listing (5 languages)"] --> F2["AI Quality Grade (A/B/C + sub-scores)"]
+        F2 --> F3["AI Price Band (Mandi benchmark)"]
+        F3 --> F4["Publish Anonymously (FARM-XXXXX)"]
     end
     subgraph B["Buyer"]
-        B1["Ranked Marketplace\n(matchScore, distance, grade)"] --> B2["Place Order\n(quantity, delivery addr)"]
+        B1["Ranked Marketplace (matchScore, distance, grade)"] --> B2["Place Order (quantity, delivery addr)"]
         B2 --> B3["Track → Settle → Rate"]
     end
     subgraph L["Logistics"]
-        L1["Auto-Pool Confirmed Orders\n(geo-cluster ≤150km)"] --> L2["Optimize Route\n(Nearest-neighbor VRP)"]
-        L2 --> L3["Complete Pickup/Dropoff\nStops"]
+        L1["Auto-Pool Confirmed Orders (geo-cluster ≤150km)"] --> L2["Optimize Route (Nearest-neighbor VRP)"]
+        L2 --> L3["Complete Pickup/Dropoff Stops"]
     end
     subgraph S["Settlement"]
         S1["Buyer Releases Payment"] --> S2["Farmer Receives via AEPS"]
         S2 --> S3["Ratings Update Reputation"]
     end
 
-    F4 -->|Listings visible| B1
-    B2 -->|Order pending (buyer ID shown to farmer)| F4
-    F4 -->|Farmer confirms → identity revealed| B2
-    B2 -->|Order confirmed → enters pool queue| L1
-    L3 -->|All stops done → delivered| B3
+    F4 -.-> B1
+    B2 -.-> F4
+    F4 -.-> B2
+    B2 -.-> L1
+    L3 -.-> B3
     B3 --> S1
+    
+    classDef flow stroke-dasharray: 5 5;
+    linkStyle 4,5,6,7,8 stroke-dasharray: 5 5;
 ```
 
 ---
@@ -87,22 +90,35 @@ flowchart TD
 ```mermaid
 graph TB
     subgraph "Client Layer"
-        UI[React 19 SPA + Tailwind 4] --> Auth[AuthContext + JWT]
-        UI --> Voice[useVoiceCapture Hook]
+        UI[React 19 SPA + Tailwind 4]
+        Auth[AuthContext + JWT]
+        Voice[useVoiceCapture Hook]
     end
     subgraph "Service Layer (Node 22 + Express)"
-        API[Express Controllers] --> Guards[requireRole Middleware]
-        Guards --> Services[Business Services]
-        Services --> Store[(In-Memory Store\nJSON-serializable)]
+        API[Express Controllers]
+        Guards[requireRole Middleware]
+        Services[Business Services]
+        Store[(In-Memory Store\nJSON-serializable)]
     end
     subgraph "Deterministic Simulations (Production Swap Points)"
-        Services --> Q[qualityService]
-        Services --> R[riskService]
-        Services --> L[logisticsService]
-        Services --> M[marketService]
-        Services --> V[voiceService]
+        Q[qualityService]
+        R[riskService]
+        L[logisticsService]
+        M[marketService]
+        V[voiceService]
     end
-    UI -- HTTP/REST + Proxy --> API
+    
+    UI --> Auth
+    UI --> Voice
+    UI --> API
+    API --> Guards
+    Guards --> Services
+    Services --> Store
+    Services --> Q
+    Services --> R
+    Services --> L
+    Services --> M
+    Services --> V
 ```
 
 | Layer | Technology | Notes |
@@ -297,7 +313,7 @@ npm run dev           # Terminal 2: Frontend on :3000 (proxies /api to :4000)
 
 ### 6-Minute End-to-End Demo Script
 
-1. **Farmer** logs in → uses **voice** ("Tomato, 20 quintal, 18 rupees") → AI extracts fields → quality scan (CNN simulation) → price band (₹16–21) → publishes as **FARM-88214**
+1. **Farmer** logs in → uses **voice** ("Tomato, 20 quintal, 18 rupees") → AI extracts fields → quality scan (hash-based simulation) → price band (₹16–21) → publishes as **FARM-88214**
 2. **Buyer** opens marketplace → sees ranked listings with match scores → places order on anonymous listing
 3. **Farmer** receives pending order notification → **accepts** → identity **permanently revealed** to buyer
 4. **Logistics** sees confirmed order → creates **auto-pool** → nearest-neighbor route generated → marks pickup/dropoff **delivered**

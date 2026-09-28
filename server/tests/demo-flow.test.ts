@@ -13,26 +13,29 @@ describe('End-to-End SIH Demo Path Flow Test', () => {
   const logisticsPhone = '+91 98224 55198'; // Kailash Shinde
   const adminPhone = '+91 99999 99999';
 
+  async function authenticate(phone: string): Promise<string> {
+    const sendRes = await request(app).post('/api/auth/otp/send').send({ phone });
+    expect(sendRes.status).toBe(200);
+    expect(sendRes.body.otpChallenge).toBeTruthy();
+    const verifyRes = await request(app)
+      .post('/api/auth/otp/verify')
+      .send({ phone, otp: '123456', otpChallenge: sendRes.body.otpChallenge });
+    expect(verifyRes.status).toBe(200);
+    return verifyRes.body.tokens.accessToken;
+  }
+
   beforeAll(async () => {
     // 1. Authenticate Farmer
-    await request(app).post('/api/auth/otp/send').send({ phone: farmerPhone });
-    const farmerRes = await request(app).post('/api/auth/otp/verify').send({ phone: farmerPhone, otp: '123456' });
-    farmerToken = farmerRes.body.tokens.accessToken;
+    farmerToken = await authenticate(farmerPhone);
 
     // 2. Authenticate Buyer
-    await request(app).post('/api/auth/otp/send').send({ phone: buyerPhone });
-    const buyerRes = await request(app).post('/api/auth/otp/verify').send({ phone: buyerPhone, otp: '123456' });
-    buyerToken = buyerRes.body.tokens.accessToken;
+    buyerToken = await authenticate(buyerPhone);
 
     // 3. Authenticate Logistics
-    await request(app).post('/api/auth/otp/send').send({ phone: logisticsPhone });
-    const logRes = await request(app).post('/api/auth/otp/verify').send({ phone: logisticsPhone, otp: '123456' });
-    logisticsToken = logRes.body.tokens.accessToken;
+    logisticsToken = await authenticate(logisticsPhone);
 
     // 4. Authenticate Admin
-    await request(app).post('/api/auth/otp/send').send({ phone: adminPhone });
-    const adminRes = await request(app).post('/api/auth/otp/verify').send({ phone: adminPhone, otp: '123456' });
-    adminToken = adminRes.body.tokens.accessToken;
+    adminToken = await authenticate(adminPhone);
   });
 
   it('1. Farmer creates anonymous crop listing', async () => {

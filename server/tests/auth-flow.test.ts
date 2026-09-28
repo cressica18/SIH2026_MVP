@@ -9,9 +9,11 @@ const server = createServer(app);
 
 // Capture OTP from console.log (dev mode logs OTP to console)
 let capturedOtp: string | null = null;
+let capturedOtpChallenge: string | null = null;
 const originalLog = console.log;
 beforeEach(() => {
   capturedOtp = null;
+  capturedOtpChallenge = null;
   console.log = (...args: unknown[]) => {
     const msg = args.join(' ');
     if (msg.includes('[OTP]') && msg.includes('OTP:')) {
@@ -34,11 +36,13 @@ async function loginAs(phone: string) {
     .send({ phone });
 
   expect(sendRes.status).toBe(200);
+  expect(sendRes.body.otpChallenge).toBeTruthy();
+  capturedOtpChallenge = sendRes.body.otpChallenge;
   expect(capturedOtp).toBeTruthy();
 
   const verifyRes = await request(server)
     .post('/api/auth/otp/verify')
-    .send({ phone, otp: capturedOtp! });
+    .send({ phone, otp: capturedOtp!, otpChallenge: capturedOtpChallenge! });
 
   expect(verifyRes.status).toBe(200);
   return verifyRes.body;
@@ -261,11 +265,12 @@ describe('Auth Flow Verification — All 4 Demo Roles', () => {
 
       expect(sendRes.status).toBe(200);
       expect(sendRes.body.phone).toBe('+91 99801 88301');
+      expect(sendRes.body.otpChallenge).toBeTruthy();
 
       // Only the buyer OTP should be valid for that phone
       const verifyRes = await request(server)
         .post('/api/auth/otp/verify')
-        .send({ phone: '+91 99801 88301', otp: capturedOtp! });
+        .send({ phone: '+91 99801 88301', otp: capturedOtp!, otpChallenge: sendRes.body.otpChallenge });
 
       expect(verifyRes.status).toBe(200);
       expect(verifyRes.body.user.role).toBe('buyer');
@@ -278,10 +283,11 @@ describe('Auth Flow Verification — All 4 Demo Roles', () => {
         .send({ phone });
 
       expect(sendRes.status).toBe(200);
+      expect(sendRes.body.otpChallenge).toBeTruthy();
 
       const verifyRes = await request(server)
         .post('/api/auth/otp/verify')
-        .send({ phone, otp: capturedOtp! });
+        .send({ phone, otp: capturedOtp!, otpChallenge: sendRes.body.otpChallenge });
 
       expect(verifyRes.status).toBe(201);
       expect(verifyRes.body.user.role).toBe('farmer');

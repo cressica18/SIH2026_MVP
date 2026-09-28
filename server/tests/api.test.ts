@@ -872,30 +872,52 @@ describe('POST /api/logistics/pools', () => {
 
   describe('POST /api/auth/otp/verify', () => {
     it('should return 400 if OTP is wrong for a phone without a pending request', async () => {
-      // Note: otpStore is module-level and persists across tests within the same suite run.
-      // Use a fresh phone that no prior test sent an OTP to.
       const res = await request(server)
         .post('/api/auth/otp/verify')
-        .send({ phone: '+91 00000 00001', otp: '123456' });
+        .send({ phone: '+91 00000 00001', otp: '123456', otpChallenge: 'invalid.challenge' });
       expect(res.status).toBe(400);
       expect(res.body).toHaveProperty('error');
     });
 
-    it('should return tokens for a seeded phone after correct OTP flow', async () => {
-      const phone = '+91 98231 44521'; // farmer_1
-
-      // Step 1: request OTP (captures it from console in real usage; we intercept via test)
+    it('should return 400 if OTP challenge is missing', async () => {
+      const phone = '+91 98231 44521';
       const sendRes = await request(server)
         .post('/api/auth/otp/send')
         .send({ phone });
       expect(sendRes.status).toBe(200);
 
-      // Step 2: We can't easily capture the OTP from console in test, so we test the negative path
+      const res = await request(server)
+        .post('/api/auth/otp/verify')
+        .send({ phone, otp: '123456' }); // missing otpChallenge
+      expect(res.status).toBe(400);
+      expect(res.body.error).toMatch(/OTP challenge required/i);
+    });
+
+    it('should return tokens for a seeded phone after correct OTP flow', async () => {
+      const phone = '+91 98231 44521'; // farmer_1
+
+      // Step 1: request OTP
+      const sendRes = await request(server)
+        .post('/api/auth/otp/send')
+        .send({ phone });
+      expect(sendRes.status).toBe(200);
+      expect(sendRes.body.otpChallenge).toBeTruthy();
+
+      // Step 2: verify with wrong OTP (but correct challenge)
       const badOtpRes = await request(server)
         .post('/api/auth/otp/verify')
-        .send({ phone, otp: '000000' });
+        .send({ phone, otp: '000000', otpChallenge: sendRes.body.otpChallenge });
       expect(badOtpRes.status).toBe(400);
       expect(badOtpRes.body.error).toMatch(/Invalid OTP/i);
+
+      // Step 3: verify with correct test OTP
+      const goodOtpRes = await request(server)
+        .post('/api/auth/otp/verify')
+        .send({ phone, otp: '123456', otpChallenge: sendRes.body.otpChallenge });
+      expect(goodOtpRes.status).toBe(200);
+      expect(goodOtpRes.body.tokens).toHaveProperty('accessToken');
+      expect(goodOtpRes.body.tokens).toHaveProperty('refreshToken');
+      expect(goodOtpRes.body.user).toHaveProperty('role', 'farmer');
     });
 
     it('should return 400 for missing fields', async () => {
@@ -903,6 +925,41 @@ describe('POST /api/logistics/pools', () => {
         .post('/api/auth/otp/verify')
         .send({ phone: '+91 98231 44521' }); // missing otp
       expect(res.status).toBe(400);
+    });
+
+    it('should reject expired OTP challenge', async () => {
+      // Create a manually expired challenge token
+      const { generateOtpChallenge } = await import('../src/core/security.js');
+      const expiredChallenge = generateOtpChallenge({ phone: '+91 98231 44521', otp: '123456' });
+      // Manually create an expired token by signing with past expiry
+      // This tests the expiry validation
+      const jwt = await import('jsonwebtoken');
+      const OTP_CHALLENGE_SECRET = process.env.OTP_CHALLENGE_SECRET || process.env.JWT_SECRET || 'vasundhara-otp-challenge-secret';
+      const expiredToken = jwt.default.sign(
+        { phone: '+91 98231 44521', otp: '123456', exp: Date.now() - 1000, nonce: 'expired' },
+        OTP_CHALLENGE_SECRET
+      );
+
+      const res = await request(server)
+        .post('/api/auth/otp/verify')
+        .send({ phone: '+91 98231 44521', otp: '123456', otpChallenge: expiredToken });
+      expect(res.status).toBe(400);
+      expect(res.body.error).toMatch(/expired/i);
+    });
+
+    it('should reject OTP challenge for wrong phone', async () => {
+      const phone = '+91 98231 44521';
+      const sendRes = await request(server)
+        .post('/api/auth/otp/send')
+        .send({ phone });
+      expect(sendRes.status).toBe(200);
+
+      // Try to use the challenge for a different phone
+      const res = await request(server)
+        .post('/api/auth/otp/verify')
+        .send({ phone: '+91 99999 99999', otp: '123456', otpChallenge: sendRes.body.otpChallenge });
+      expect(res.status).toBe(400);
+      expect(res.body.error).toMatch(/does not match this phone/i);
     });
   });
 

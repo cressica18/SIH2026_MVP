@@ -1,10 +1,13 @@
 import { Response } from 'express';
 import { SEED_FARMERS, SEED_BUYERS, SEED_LOGISTICS } from '../data/seedData.js';
-import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../core/security.js';
+import {
+  generateAccessToken,
+  generateRefreshToken,
+  verifyRefreshToken,
+  generateOtpChallenge,
+  verifyOtpChallenge,
+} from '../core/security.js';
 import { AuthRequest } from '../middleware/auth.js';
-
-// OTP store: maps phone -> { otp, expiresAt }
-const otpStore: Map<string, { otp: string; expiresAt: number }> = new Map();
 
 function generateOtp(): string {
   return Math.floor(100000 + Math.random() * 900000).toString();
@@ -20,16 +23,21 @@ export function sendOtp(req: AuthRequest, res: Response): void {
     return;
   }
 
-  // In test/dev environment, allow 123456 as universal test OTP or return devOtp
+  // In test/dev environment, allow 123456 as universal test OTP
   const otp = process.env.NODE_ENV === 'test' ? '123456' : generateOtp();
-  const expiresAt = Date.now() + 5 * 60 * 1000; // 5 minutes
 
-  otpStore.set(phone, { otp, expiresAt });
+  // Create stateless challenge token containing phone, otp, expiry, and nonce
+  const otpChallenge = generateOtpChallenge({ phone, otp });
 
   // Dev mode: log OTP to console
-  console.log(`[OTP] Phone: ${phone} | OTP: ${otp} | Expires: ${new Date(expiresAt).toISOString()}`);
+  console.log(`[OTP] Phone: ${phone} | OTP: ${otp} | Expires: ${new Date(Date.now() + 5 * 60 * 1000).toISOString()}`);
 
-  res.json({ message: 'OTP sent successfully', phone, devOtp: process.env.NODE_ENV !== 'production' ? otp : undefined });
+  res.json({
+    message: 'OTP sent successfully',
+    phone,
+    otpChallenge,
+    devOtp: process.env.NODE_ENV !== 'production' ? otp : undefined,
+  });
 }
 
 export function verifyOtp(req: AuthRequest, res: Response): void {
@@ -37,27 +45,40 @@ export function verifyOtp(req: AuthRequest, res: Response): void {
   const body = req.body as any;
   const phone: string | undefined = body?.phone;
   const otp: string | undefined = body?.otp;
+  const otpChallenge: string | undefined = body?.otpChallenge;
 
   if (!phone || !otp) {
     res.status(400).json({ error: 'Phone and OTP are required' });
     return;
   }
 
-  const record = otpStore.get(phone);
-  if (!record) {
-    res.status(400).json({ error: 'No OTP found for this phone. Request OTP first.' });
+  if (!otpChallenge) {
+    res.status(400).json({ error: 'OTP challenge required. Request OTP first.' });
     return;
   }
 
-  if (Date.now() > record.expiresAt) {
-    otpStore.delete(phone);
+  // Verify the stateless challenge token
+  const challenge = verifyOtpChallenge(otpChallenge);
+  if (!challenge) {
+    res.status(400).json({ error: 'Invalid or expired OTP challenge. Request a new OTP.' });
+    return;
+  }
+
+  // Check phone binding
+  if (challenge.phone !== phone) {
+    res.status(400).json({ error: 'OTP challenge does not match this phone number.' });
+    return;
+  }
+
+  // Check expiry
+  if (Date.now() > challenge.exp) {
     res.status(400).json({ error: 'OTP has expired. Request a new one.' });
     return;
   }
 
+  // Check OTP (allow test OTP in non-production)
   const isTestOtp = process.env.NODE_ENV !== 'production' && otp === '123456';
-
-  if (record.otp !== otp && !isTestOtp) {
+  if (challenge.otp !== otp && !isTestOtp) {
     res.status(400).json({ error: 'Invalid OTP. Please try again.' });
     return;
   }
@@ -65,9 +86,6 @@ export function verifyOtp(req: AuthRequest, res: Response): void {
   // OTP verified — find user in seed data
   const allUsers = [...SEED_FARMERS, ...SEED_BUYERS, ...SEED_LOGISTICS];
   const foundUser = allUsers.find((u) => u.phone === phone);
-
-  // Clean up used OTP
-  otpStore.delete(phone);
 
   // Admin phone special case
   const ADMIN_PHONE = '+91 99999 99999';

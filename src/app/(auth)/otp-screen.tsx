@@ -170,17 +170,22 @@ export const OtpScreen: React.FC<OtpScreenProps> = ({
   const [error, setError] = useState<string>('');
   const [devOtpHint, setDevOtpHint] = useState<string>('');
 
-  const { loginWithOtp, verifyOtp, isAuthenticated, pendingPhone } = useAuth();
+  const { loginWithOtp, verifyOtp, isAuthenticated, pendingPhone, demoMode } = useAuth();
   const t = I18N_STRINGS[language];
 
   useEffect(() => {
     if (pendingPhone) {
       setPhone(pendingPhone);
       setShowOtpInput(true);
-      setOtp('123456');
-      setDevOtpHint('Auto-filled test OTP 123456');
+      if (demoMode) {
+        setOtp('123456');
+        setDevOtpHint('Auto-filled test OTP 123456');
+      } else {
+        setOtp('');
+        setDevOtpHint('');
+      }
     }
-  }, [pendingPhone]);
+  }, [pendingPhone, demoMode]);
 
   useEffect(() => {
     const phoneInput = document.getElementById('phone-input');
@@ -207,9 +212,15 @@ export const OtpScreen: React.FC<OtpScreenProps> = ({
     setError('');
     setIsSending(true);
     try {
-      await loginWithOtp(trimmedPhone);
+      const result = await loginWithOtp(trimmedPhone);
       setShowOtpInput(true);
-      setDevOtpHint('Use OTP 123456 or click Auto-fill below');
+      if (result.demoMode) {
+        setOtp('123456');
+        setDevOtpHint('Auto-filled test OTP 123456');
+      } else {
+        setOtp('');
+        setDevOtpHint('Enter the 6-digit OTP sent to your phone');
+      }
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Failed to send OTP. Check server.');
     } finally {
@@ -223,10 +234,15 @@ export const OtpScreen: React.FC<OtpScreenProps> = ({
     try {
       const demoPhone = DEMO_PHONES[targetRole];
       setPhone(demoPhone);
-      await loginWithOtp(demoPhone);
+      const result = await loginWithOtp(demoPhone);
       setShowOtpInput(true);
-      setOtp('123456');
-      setDevOtpHint('Auto-filled test OTP 123456');
+      if (result.demoMode) {
+        setOtp('123456');
+        setDevOtpHint('Auto-filled test OTP 123456');
+      } else {
+        setOtp('');
+        setDevOtpHint('Enter the 6-digit OTP sent to your phone');
+      }
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Quick login failed');
     } finally {
@@ -582,13 +598,15 @@ export const OtpScreen: React.FC<OtpScreenProps> = ({
                     >
                       Enter 6-Digit OTP
                     </label>
-                    <button
-                      type="button"
-                      onClick={() => setOtp('123456')}
-                      className="text-[11px] font-semibold text-forest-400 hover:text-forest-300 cursor-pointer transition-colors"
-                    >
-                      Auto-fill (123456)
-                    </button>
+                    {demoMode && (
+                      <button
+                        type="button"
+                        onClick={() => setOtp('123456')}
+                        className="text-[11px] font-semibold text-forest-400 hover:text-forest-300 cursor-pointer transition-colors"
+                      >
+                        Auto-fill (123456)
+                      </button>
+                    )}
                   </div>
                   <input
                     type="text"

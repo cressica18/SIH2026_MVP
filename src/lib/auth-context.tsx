@@ -24,7 +24,8 @@ export interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   pendingPhone: string | null;
-  loginWithOtp: (phone: string) => Promise<void>;
+  demoMode: boolean;
+  loginWithOtp: (phone: string) => Promise<{ demoMode: boolean }>;
   verifyOtp: (phone: string, otp: string) => Promise<{ success: boolean; role?: UserRole }>;
   logout: () => void;
   refreshToken: () => Promise<void>;
@@ -58,6 +59,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   // Stores phone between OTP send and OTP verify steps
   const [pendingPhone, setPendingPhone] = useState<string | null>(null);
+  const [pendingOtpChallenge, setPendingOtpChallenge] = useState<string | null>(null);
+  const [demoMode, setDemoMode] = useState<boolean>(false);
 
   // Check for existing token on mount
   useEffect(() => {
@@ -92,9 +95,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   // Step 1: Request OTP to be sent to phone
-  const loginWithOtp = async (phone: string): Promise<void> => {
+  const loginWithOtp = async (phone: string): Promise<{ demoMode: boolean }> => {
     // Reset pending phone from any previous attempt
     setPendingPhone(null);
+    setPendingOtpChallenge(null);
 
     const res = await fetch('/api/auth/otp/send', {
       method: 'POST',
@@ -107,8 +111,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       throw new Error(err.error || 'Failed to send OTP');
     }
 
-    // Store phone so verifyOtp can use it
+    const data = await res.json();
+
+    // Store phone and challenge so verifyOtp can use them
     setPendingPhone(phone);
+    setPendingOtpChallenge(data.otpChallenge);
+    setDemoMode(data.demoMode === true);
+
+    return { demoMode: data.demoMode === true };
   };
 
   // Step 2: Submit OTP for verification — returns success + role for redirect
@@ -116,10 +126,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     phone: string,
     otp: string
   ): Promise<{ success: boolean; role?: UserRole }> => {
+    const otpChallenge = pendingOtpChallenge;
+    if (!otpChallenge) {
+      return { success: false };
+    }
+
     const res = await fetch('/api/auth/otp/verify', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ phone, otp }),
+      body: JSON.stringify({ phone, otp, otpChallenge }),
     });
 
     if (!res.ok) {
@@ -150,6 +165,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     setUser(userObj);
     setPendingPhone(null);
+    setPendingOtpChallenge(null);
+    setDemoMode(false);
     return { success: true, role: userObj.role };
   };
 
@@ -203,9 +220,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     logout();
     // Initiate login with demo phone for the target role
     const phone = DEMO_PHONES[role];
-    await loginWithOtp(phone);
+    const result = await loginWithOtp(phone);
     // Auto-verify OTP for seamless role switching in demo mode
-    await verifyOtp(phone, '123456');
+    if (result.demoMode) {
+      await verifyOtp(phone, '123456');
+    }
   };
 
   if (isLoading) {
@@ -223,6 +242,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isAuthenticated: !!user,
         isLoading,
         pendingPhone,
+        demoMode,
         loginWithOtp,
         verifyOtp,
         logout,

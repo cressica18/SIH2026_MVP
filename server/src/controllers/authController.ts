@@ -13,6 +13,9 @@ function generateOtp(): string {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
+// Check if demo mode is explicitly enabled
+const isDemoMode = process.env.DEMO_MODE === 'true';
+
 export function sendOtp(req: AuthRequest, res: Response): void {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const body = req.body as any;
@@ -23,8 +26,8 @@ export function sendOtp(req: AuthRequest, res: Response): void {
     return;
   }
 
-  // In test/dev environment, allow 123456 as universal test OTP
-  const otp = process.env.NODE_ENV === 'test' ? '123456' : generateOtp();
+  // In test environment, use fixed OTP; in demo mode, use fixed demo OTP; otherwise generate random
+  const otp = process.env.NODE_ENV === 'test' ? '123456' : isDemoMode ? '123456' : generateOtp();
 
   // Create stateless challenge token containing phone, otp, expiry, and nonce
   const otpChallenge = generateOtpChallenge({ phone, otp });
@@ -36,7 +39,8 @@ export function sendOtp(req: AuthRequest, res: Response): void {
     message: 'OTP sent successfully',
     phone,
     otpChallenge,
-    devOtp: process.env.NODE_ENV !== 'production' ? otp : undefined,
+    demoMode: isDemoMode,
+    devOtp: isDemoMode || process.env.NODE_ENV !== 'production' ? otp : undefined,
   });
 }
 
@@ -76,9 +80,10 @@ export function verifyOtp(req: AuthRequest, res: Response): void {
     return;
   }
 
-  // Check OTP (allow test OTP in non-production)
-  const isTestOtp = process.env.NODE_ENV !== 'production' && otp === '123456';
-  if (challenge.otp !== otp && !isTestOtp) {
+  // Check OTP (allow test OTP in test env, demo OTP in demo mode)
+  const isTestOtp = process.env.NODE_ENV === 'test' && otp === '123456';
+  const isDemoOtp = isDemoMode && otp === '123456';
+  if (challenge.otp !== otp && !isTestOtp && !isDemoOtp) {
     res.status(400).json({ error: 'Invalid OTP. Please try again.' });
     return;
   }

@@ -303,6 +303,21 @@ npm run dev:server    # Terminal 1: Backend on :4000
 npm run dev           # Terminal 2: Frontend on :3000 (proxies /api to :4000)
 ```
 
+### Vercel Deployment
+```bash
+# 1. Push to GitHub
+# 2. Import project in Vercel
+# 3. Set Environment Variables in Vercel Dashboard:
+#    JWT_SECRET=your-production-secret
+#    JWT_REFRESH_SECRET=your-production-refresh-secret
+#    FRONTEND_URL=https://your-app.vercel.app
+# 4. Deploy — Vercel detects Vite + API routes automatically
+```
+- Frontend builds to `dist/`, served at `/`
+- Backend runs as serverless function at `/api/*` (same origin)
+- In-memory store resets per cold start (expected for MVP)
+- No database required
+
 ### Demo Credentials (OTP logged to backend console)
 | Role | Phone | Use Case |
 |---|---|---|

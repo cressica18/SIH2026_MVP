@@ -1,11 +1,11 @@
 // User profile controller: GET and PUT /api/users/profile
-// Handles farmer, buyer, and logistics profile creation and updates.
+// Handles farmer, buyer, logistics, and collector profile creation and updates.
 // Stores profiles in-memory (backed by seed data).
 
 import { Response } from 'express';
 import { AuthRequest } from '../middleware/auth.js';
-import { SEED_FARMERS, SEED_BUYERS, SEED_LOGISTICS } from '../data/seedData.js';
-import { FarmerProfile, BuyerProfile, LogisticsProfile } from '../types.js';
+import { SEED_FARMERS, SEED_BUYERS, SEED_LOGISTICS, SEED_COLLECTORS } from '../data/seedData.js';
+import { FarmerProfile, BuyerProfile, LogisticsProfile, CollectorProfile } from '../types.js';
 
 // --- In-memory profile extensions beyond the seed data ---
 const farmerProfiles = new Map<string, FarmerProfile>(
@@ -17,10 +17,16 @@ const buyerProfiles = new Map<string, BuyerProfile>(
 const logisticsProfiles = new Map<string, LogisticsProfile>(
   SEED_LOGISTICS.map((l) => [l.id, { ...l }])
 );
+const collectorProfiles = new Map<string, CollectorProfile>(
+  SEED_COLLECTORS.map((c) => [c.id, { ...c }])
+);
 
-// --- Anonymous identity store (farmerUserId -> anonSellerId) ---
+// --- Anonymous identity store (userId -> anonId) ---
 const anonIdentities = new Map<string, string>(
   SEED_FARMERS.map((f) => [f.id, f.anonSellerId])
+);
+const collectorAnonIdentities = new Map<string, string>(
+  SEED_COLLECTORS.map((c) => [c.id, c.anonCollectorId])
 );
 
 function generateAnonId(): string {
@@ -28,12 +34,22 @@ function generateAnonId(): string {
   return `FARM-${num}`;
 }
 
+function generateCollectorAnonId(): string {
+  const num = Math.floor(10000 + Math.random() * 90000);
+  return `KABAD-${num}`;
+}
+
 export function getAnonIdentity(userId: string): string | undefined {
-  return anonIdentities.get(userId);
+  // Check farmer first, then collector
+  return anonIdentities.get(userId) || collectorAnonIdentities.get(userId);
 }
 
 export function getFarmerProfile(userId: string): FarmerProfile | undefined {
   return farmerProfiles.get(userId);
+}
+
+export function getCollectorProfile(userId: string): CollectorProfile | undefined {
+  return collectorProfiles.get(userId);
 }
 
 // GET /api/users/profile — Return current user's profile
@@ -67,6 +83,13 @@ export function getProfile(req: AuthRequest, res: Response): void {
       return;
     }
     res.json({ profile });
+  } else if (role === 'collector') {
+    const profile = collectorProfiles.get(userId);
+    if (!profile) {
+      res.status(404).json({ error: 'Collector profile not found. Please complete onboarding.' });
+      return;
+    }
+    res.json({ profile, anonCollectorId: collectorAnonIdentities.get(userId) });
   } else if (role === 'admin') {
     res.json({
       profile: {
@@ -198,6 +221,50 @@ export function upsertProfile(req: AuthRequest, res: Response): void {
     res.status(isNew ? 201 : 200).json({
       message: isNew ? 'Logistics profile created' : 'Logistics profile updated',
       profile: updated,
+    });
+  } else if (role === 'collector') {
+    const { name, area, district, state, primaryMaterials, language, lat, lng, vehicleType, collectionRadiusKm } = body;
+
+    if (!name || !area || !district || !state) {
+      res.status(400).json({ error: 'name, area, district, state are required for collector profile' });
+      return;
+    }
+
+    const existing = collectorProfiles.get(userId);
+    const anonCollectorId = collectorAnonIdentities.get(userId) || generateCollectorAnonId();
+
+    const updated: CollectorProfile = {
+      id: userId,
+      phone,
+      name,
+      role: 'collector',
+      language: language || existing?.language || 'en',
+      createdAt: existing?.createdAt || new Date().toISOString(),
+      anonCollectorId,
+      area,
+      district,
+      state,
+      lat: lat ?? existing?.lat ?? 0,
+      lng: lng ?? existing?.lng ?? 0,
+      primaryMaterials: Array.isArray(primaryMaterials) ? primaryMaterials : existing?.primaryMaterials || [],
+      reputationScore: existing?.reputationScore ?? 0,
+      totalLotsSold: existing?.totalLotsSold ?? 0,
+      disputeCount: existing?.disputeCount ?? 0,
+      vehicleType: vehicleType || existing?.vehicleType || 'cycle',
+      collectionRadiusKm: Number(collectionRadiusKm) || existing?.collectionRadiusKm || 10,
+    };
+
+    collectorProfiles.set(userId, updated);
+    // Ensure anon identity is registered
+    if (!collectorAnonIdentities.has(userId)) {
+      collectorAnonIdentities.set(userId, anonCollectorId);
+    }
+
+    const isNew = !existing;
+    res.status(isNew ? 201 : 200).json({
+      message: isNew ? 'Collector profile created' : 'Collector profile updated',
+      profile: updated,
+      anonCollectorId,
     });
   } else {
     res.status(403).json({ error: 'Admin profiles are managed separately.' });

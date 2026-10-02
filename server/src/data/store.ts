@@ -1,12 +1,12 @@
 // In-memory data store backed by seed data.
 // This layer can be replaced with PostgreSQL/Prisma/Redis later.
 import {
-  Listing, Order, LogisticsPool, AppNotification, AdvanceRequest, ReputationEvent, SafetyReport, BuyerProfile
+  Listing, Order, LogisticsPool, AppNotification, AdvanceRequest, ReputationEvent, SafetyReport, BuyerProfile, ScrapLot
 } from '../types.js';
 import {
   SEED_LISTINGS, SEED_ORDERS, SEED_LOGISTICS_POOLS,
   SEED_NOTIFICATIONS, SEED_SAFETY_REPORTS,
-  SEED_BUYERS,
+  SEED_BUYERS, SEED_SCRAP_LOTS,
 } from './seedData.js';
 
 // Deep clone seed data to avoid mutation of source
@@ -23,6 +23,7 @@ export interface DataStore {
   reputationEvents: ReputationEvent[];
   reports: SafetyReport[];
   buyerProfiles: BuyerProfile[];
+  scrapLots: ScrapLot[];
 }
 
 export const createStore = (): DataStore => ({
@@ -34,6 +35,7 @@ export const createStore = (): DataStore => ({
   reputationEvents: [],
   reports: cloneSeed(SEED_SAFETY_REPORTS),
   buyerProfiles: cloneSeed(SEED_BUYERS),
+  scrapLots: cloneSeed(SEED_SCRAP_LOTS),
 });
 
 // Singleton store for in-memory usage

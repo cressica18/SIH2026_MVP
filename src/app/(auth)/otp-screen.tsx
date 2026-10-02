@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ShieldCheck, X, Loader2, Sparkles, ShoppingCart, Truck, Phone, Globe, Key, Mic, Leaf } from 'lucide-react';
+import { ShieldCheck, X, Loader2, Sparkles, ShoppingCart, Truck, Phone, Globe, Key, Mic, Leaf, Recycle } from 'lucide-react';
 import { I18N_STRINGS } from '../../data/i18n';
 import { useAuth, UserRole, DEMO_PHONES } from '../../lib/auth-context';
 import { Button } from '../../components/ui/Button';
@@ -303,6 +303,13 @@ export const OtpScreen: React.FC<OtpScreenProps> = ({
       iconColor: 'text-ochre-400',
     },
     {
+      role: 'collector',
+      label: 'Kabadiwala / Collector',
+      color: 'text-copper-300',
+      hoverBg: 'hover:bg-copper-900/40 hover:border-copper-700',
+      iconColor: 'text-copper-400',
+    },
+    {
       role: 'admin',
       label: 'Admin & Safety',
       color: 'text-sage-300',
@@ -315,6 +322,7 @@ export const OtpScreen: React.FC<OtpScreenProps> = ({
     farmer: <Leaf className="w-3.5 h-3.5" />,
     buyer: <ShoppingCart className="w-3.5 h-3.5" />,
     logistics: <Truck className="w-3.5 h-3.5" />,
+    collector: <Recycle className="w-3.5 h-3.5" />,
     admin: <ShieldCheck className="w-3.5 h-3.5" />,
   };
 

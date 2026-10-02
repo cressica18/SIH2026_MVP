@@ -15,6 +15,7 @@ import {
   ChevronDown,
   Menu,
   Check,
+  Recycle,
 } from 'lucide-react';
 import { Button } from './ui/Button';
 import { EmptyState } from './ui/EmptyState';
@@ -72,6 +73,13 @@ const ROLE_CONFIG: Record<Role, RoleConfig> = {
     icon: <ShieldCheck className="w-3.5 h-3.5" />,
     activeClass: 'bg-gradient-to-br from-sage-700 to-sage-500 text-cream-50 shadow-[0_2px_10px_-2px_rgb(109_196_143_/_0.45)] border-transparent',
     hoverClass: 'hover:bg-sage-900/30 hover:text-sage-300',
+    textClass: 'text-cream-400',
+  },
+  collector: {
+    label: 'Collector',
+    icon: <Recycle className="w-3.5 h-3.5" />,
+    activeClass: 'bg-gradient-to-br from-copper-700 to-copper-500 text-cream-50 shadow-[0_2px_10px_-2px_rgb(184_98_40_/_0.55)] border-transparent',
+    hoverClass: 'hover:bg-copper-900/30 hover:text-copper-300',
     textClass: 'text-cream-400',
   },
 };

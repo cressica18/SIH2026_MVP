@@ -1,4 +1,4 @@
-export type Role = 'farmer' | 'buyer' | 'logistics' | 'admin';
+export type Role = 'farmer' | 'buyer' | 'logistics' | 'admin' | 'collector' | 'recycler';
 
 export type Language = 'en' | 'hi' | 'mr' | 'te' | 'pa';
 
@@ -26,6 +26,22 @@ export interface FarmerProfile extends UserProfile {
   disputeCount: number;
 }
 
+export interface CollectorProfile extends UserProfile {
+  role: 'collector';
+  anonCollectorId: string;
+  area: string;
+  district: string;
+  state: string;
+  lat: number;
+  lng: number;
+  primaryMaterials: string[];
+  reputationScore: number;
+  totalLotsSold: number;
+  disputeCount: number;
+  vehicleType?: 'cycle' | 'rickshaw' | 'tempo' | 'truck';
+  collectionRadiusKm: number;
+}
+
 export interface BuyerProfile extends UserProfile {
   role: 'buyer';
   buyerType: 'consumer' | 'retailer' | 'processor' | 'fpo';
@@ -33,6 +49,20 @@ export interface BuyerProfile extends UserProfile {
   district: string;
   state: string;
   verified: boolean;
+}
+
+export interface RecyclerProfile extends UserProfile {
+  role: 'recycler';
+  businessName: string;
+  licenseNumber: string;
+  district: string;
+  state: string;
+  lat: number;
+  lng: number;
+  acceptedMaterials: string[];
+  capacityKgPerDay: number;
+  verified: boolean;
+  reputationScore: number;
 }
 
 export interface LogisticsProfile extends UserProfile {
@@ -71,10 +101,12 @@ export interface PriceBand {
 
 export type ListingStatus = 'active' | 'matched' | 'sold' | 'withdrawn';
 
+export type LotStatus = 'draft' | 'available' | 'pooled' | 'sold';
+
 export interface Listing {
   id: string;
   anonSellerId: string;
-  farmerRealName?: string; // Kept private, only in DB / revealed post-confirm
+  farmerRealName?: string;
   farmerPhone?: string;
   crop: string;
   variety: string;
@@ -92,6 +124,33 @@ export interface Listing {
   createdVia: 'voice' | 'text';
   createdAt: string;
   farmerReputation: number;
+  distanceKm?: number;
+  matchScore?: number;
+}
+
+export interface ScrapLot {
+  id: string;
+  anonCollectorId: string;
+  collectorRealName?: string;
+  collectorPhone?: string;
+  materialType: string;
+  materialCategory: 'metal' | 'plastic' | 'paper' | 'ewaste' | 'glass' | 'rubber' | 'mixed';
+  estimatedWeightKg: number;
+  priceExpectedPerKg: number;
+  priceAi: PriceBand;
+  quality: QualityAssessment;
+  imageUrl: string;
+  area: string;
+  district: string;
+  state: string;
+  lat: number;
+  lng: number;
+  collectionDate: string;
+  notes?: string;
+  status: LotStatus;
+  createdVia: 'voice' | 'text';
+  createdAt: string;
+  collectorReputation: number;
   distanceKm?: number;
   matchScore?: number;
 }
@@ -164,6 +223,49 @@ export interface LogisticsPool {
   status: 'unassigned' | 'assigned' | 'in_transit' | 'delivered';
   fuelSavingsPercent: number;
   carbonReducedKg: number;
+}
+
+export type SmartPoolStatus = 'forming' | 'open' | 'matched' | 'confirmed' | 'in_transit' | 'completed' | 'cancelled';
+
+export interface SmartPoolMember {
+  lotId: string;
+  anonCollectorId: string;
+  collectorName?: string;
+  materialType: string;
+  materialCategory: string;
+  estimatedWeightKg: number;
+  priceExpectedPerKg: number;
+  qualityGrade: QualityGrade;
+  area: string;
+  district: string;
+  lat: number;
+  lng: number;
+  collectionDate: string;
+  joinedAt: string;
+}
+
+export interface SmartPool {
+  id: string;
+  materialCategory: 'metal' | 'plastic' | 'paper' | 'ewaste' | 'glass' | 'rubber' | 'mixed';
+  materialType: string;
+  status: SmartPoolStatus;
+  members: SmartPoolMember[];
+  totalWeightKg: number;
+  avgPricePerKg: number;
+  priceRange: { min: number; max: number };
+  district: string;
+  state: string;
+  centerLat: number;
+  centerLng: number;
+  pickupWindowStart: string;
+  pickupWindowEnd: string;
+  createdAt: string;
+  matchedAt?: string;
+  recyclerId?: string;
+  recyclerName?: string;
+  agreedPricePerKg?: number;
+  totalValue?: number;
+  handoverRef?: string;
 }
 
 export interface GovScheme {
@@ -263,6 +365,53 @@ export interface VoiceExtractionResult {
 }
 
 export type ReputationEventType = 'fulfillment_success' | 'fulfillment_failed' | 'buyer_rating' | 'farmer_rating' | 'dispute_raised';
+
+export type OfferStatus = 'pending' | 'accepted' | 'rejected' | 'countered' | 'expired' | 'withdrawn';
+
+export interface PoolOffer {
+  id: string;
+  poolId: string;
+  recyclerId: string;
+  recyclerName: string;
+  offeredPricePerKg: number;
+  totalValue: number;
+  status: OfferStatus;
+  notes?: string;
+  createdAt: string;
+  respondedAt?: string;
+  counterPricePerKg?: number;
+  expiresAt: string;
+}
+
+export interface SettlementRecord {
+  id: string;
+  poolId: string;
+  offerId: string;
+  recyclerId: string;
+  recyclerName: string;
+  agreedPricePerKg: number;
+  totalWeightKg: number;
+  totalValue: number;
+  memberSettlements: MemberSettlement[];
+  status: 'pending' | 'processing' | 'completed' | 'disputed';
+  handoverRef: string;
+  qrCode?: string;
+  createdAt: string;
+  completedAt?: string;
+  paymentMethod: 'cash' | 'upi' | 'bank_transfer';
+  paymentRef?: string;
+}
+
+export interface MemberSettlement {
+  lotId: string;
+  anonCollectorId: string;
+  collectorName?: string;
+  weightKg: number;
+  pricePerKg: number;
+  amount: number;
+  status: 'pending' | 'paid' | 'disputed';
+  paidAt?: string;
+}
 
 export interface ReputationEvent {
   id: string;

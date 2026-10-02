@@ -8,6 +8,7 @@ export interface Translations {
     buyer: string;
     logistics: string;
     admin: string;
+    collector: string;
   };
   nav: {
     dashboard: string;
@@ -18,6 +19,7 @@ export interface Translations {
     insights: string;
     safetyReport: string;
     demoGuide: string;
+    lots: string;
   };
   farmer: {
     welcome: string;
@@ -35,6 +37,26 @@ export interface Translations {
     myListings: string;
     activeOrders: string;
     eligibleAdvance: string;
+    cashoutAeps: string;
+    reportConcern: string;
+  };
+  collector: {
+    welcome: string;
+    tapToSpeak: string;
+    listening: string;
+    speakPrompt: string;
+    createLot: string;
+    materialType: string;
+    materialCategory: string;
+    estimatedWeight: string;
+    expectedPrice: string;
+    aiPriceBand: string;
+    aiQualityScan: string;
+    publishAnon: string;
+    anonShieldNotice: string;
+    myLots: string;
+    activeLots: string;
+    poolLot: string;
     cashoutAeps: string;
     reportConcern: string;
   };
@@ -99,6 +121,7 @@ export const I18N_STRINGS: Record<Language, Translations> = {
       buyer: 'Buyer / Processor',
       logistics: 'Logistics Network',
       admin: 'Admin & Safety',
+      collector: 'Kabadiwala / Collector Portal',
     },
     nav: {
       dashboard: 'Dashboard',
@@ -109,6 +132,7 @@ export const I18N_STRINGS: Record<Language, Translations> = {
       insights: 'Mandi Insights',
       safetyReport: 'Report Concern',
       demoGuide: 'Judge Demo Flow',
+      lots: 'My Scrap Lots',
     },
     farmer: {
       welcome: 'Welcome, Farmer Partner',
@@ -126,6 +150,26 @@ export const I18N_STRINGS: Record<Language, Translations> = {
       myListings: 'My Harvest Listings',
       activeOrders: 'Active Transactions',
       eligibleAdvance: 'AI Pre-Harvest Cash Advance',
+      cashoutAeps: 'Simulate AEPS Biometric Cash-Out',
+      reportConcern: 'Report Exploitation / Harassment (Safe & Anonymous)',
+    },
+    collector: {
+      welcome: 'Welcome, Kabadiwala Partner',
+      tapToSpeak: 'Tap Mic & Speak in Your Language',
+      listening: 'Listening to your scrap lot details...',
+      speakPrompt: 'e.g., "500 kg copper wire, expecting 450 rupees per kg"',
+      createLot: 'Create New Scrap Lot',
+      materialType: 'Material Type & Category',
+      materialCategory: 'Category (Metal / Plastic / E-waste / Paper)',
+      estimatedWeight: 'Estimated Weight (kg)',
+      expectedPrice: 'Expected Price (₹/kg)',
+      aiPriceBand: 'AI Market Price Band (Recycler Rates)',
+      aiQualityScan: 'AI Material Quality Scan (CNN Classifier)',
+      publishAnon: 'Publish Anonymously to Marketplace',
+      anonShieldNotice: 'Your name, area, and phone remain 100% confidential until a recycler confirms the lot.',
+      myLots: 'My Scrap Lots',
+      activeLots: 'Active Lots',
+      poolLot: 'Join Verified Smart Lot Pool',
       cashoutAeps: 'Simulate AEPS Biometric Cash-Out',
       reportConcern: 'Report Exploitation / Harassment (Safe & Anonymous)',
     },
@@ -188,6 +232,7 @@ export const I18N_STRINGS: Record<Language, Translations> = {
       buyer: 'खरीदार / व्यापारी',
       logistics: 'वाहन व परिवहन',
       admin: 'प्रशासन व सुरक्षा',
+      collector: 'कबाड़ीवाला / कलेक्टर पोर्टल',
     },
     nav: {
       dashboard: 'डैशबोर्ड',
@@ -198,6 +243,7 @@ export const I18N_STRINGS: Record<Language, Translations> = {
       insights: 'मंडी भाव व रुझान',
       safetyReport: 'शिकायत दर्ज करें',
       demoGuide: 'डेमो गाइड',
+      lots: 'मेरे स्क्रैप लॉट',
     },
     farmer: {
       welcome: 'नमस्ते किसान भाई-बहन',
@@ -217,6 +263,26 @@ export const I18N_STRINGS: Record<Language, Translations> = {
       eligibleAdvance: 'एआई अग्रिम राशि पात्रता',
       cashoutAeps: 'AEPS बायोमेट्रिक नकद निकासी',
       reportConcern: 'बिचौलियों की मनमानी / शोषण की शिकायत',
+    },
+    collector: {
+      welcome: 'नमस्ते कबाड़ीवाला साथी',
+      tapToSpeak: 'माइक दबाएं और अपनी भाषा में बोलें',
+      listening: 'आपके स्क्रैप लॉट की जानकारी सुनी जा रही है...',
+      speakPrompt: 'उदा. "५०० किलो तांबे का तार, ४५० रुपये किलो"',
+      createLot: 'नया स्क्रैप लॉट बनाएं',
+      materialType: 'सामग्री प्रकार और श्रेणी',
+      materialCategory: 'श्रेणी (धातु / प्लास्टिक / ई-कचरा / कागज)',
+      estimatedWeight: 'अनुमानित वजन (किलो)',
+      expectedPrice: 'अपेक्षित मूल्य (₹/किलो)',
+      aiPriceBand: 'एआई बाजार भाव बैंड (रीसाइक्लर दरें)',
+      aiQualityScan: 'एआई सामग्री गुणवत्ता जांच (CNN क्लासिफायर)',
+      publishAnon: 'गुमनाम रूप से बाजार में पोस्ट करें',
+      anonShieldNotice: 'रीसाइक्लर द्वारा लॉट पक्का करने तक आपका नाम, इलाका और फोन नंबर पूरी तरह सुरक्षित रहता है।',
+      myLots: 'मेरे स्क्रैप लॉट',
+      activeLots: 'सक्रिय लॉट',
+      poolLot: 'सत्यापित स्मार्ट लॉट पूल में शामिल हों',
+      cashoutAeps: 'AEPS बायोमेट्रिक नकद निकासी',
+      reportConcern: 'शोषण / उत्पीड़न की शिकायत (सुरक्षित और गुमनाम)',
     },
     buyer: {
       marketplace: 'सीधी किसान मंडी',
@@ -277,6 +343,7 @@ export const I18N_STRINGS: Record<Language, Translations> = {
       buyer: 'खरेदीदार / व्यापारी',
       logistics: 'वाहतूक व लॉजिस्टिक',
       admin: 'प्रशासन व सुरक्षा',
+      collector: 'कबाडीवाला / कलेक्टर पोर्टल',
     },
     nav: {
       dashboard: 'डॅशबोर्ड',
@@ -287,6 +354,7 @@ export const I18N_STRINGS: Record<Language, Translations> = {
       insights: 'बाजारभाव अंदाज',
       safetyReport: 'तक्रार नोंदवा',
       demoGuide: 'डेमो मार्गदर्शन',
+      lots: 'माझे स्क्रॅप लॉट',
     },
     farmer: {
       welcome: 'स्वागत आहे शेतकरी मित्र',
@@ -306,6 +374,26 @@ export const I18N_STRINGS: Record<Language, Translations> = {
       eligibleAdvance: 'पूर्व-हंगामी अग्रिम रक्कम',
       cashoutAeps: 'AEPS द्वारे रोख रक्कम काढा',
       reportConcern: 'दलालांच्या पिळवणुकीविरोधात तक्रार',
+    },
+    collector: {
+      welcome: 'स्वागत आहे कबाडीवाला मित्र',
+      tapToSpeak: 'माइक दाबा आणि मराठीत बोला',
+      listening: 'तुमच्या स्क्रॅप लॉटाचा तपशील ऐकत आहे...',
+      speakPrompt: 'उदा. "५०० किलो तांबाचा तार, ४५० रुपये किलो"',
+      createLot: 'नवीन स्क्रॅप लॉट तयार करा',
+      materialType: 'साहित्य प्रकार व श्रेणी',
+      materialCategory: 'श्रेणी (धातू / प्लास्टिक / ई-वेस्ट / कागद)',
+      estimatedWeight: 'अंदाजे वजन (किलो)',
+      expectedPrice: 'अपेक्षित दर (₹/किलो)',
+      aiPriceBand: 'एआय बाजारभाव श्रेणी (रीसायकलर दर)',
+      aiQualityScan: 'एआय साहित्य गुणवत्ता तपासणी (CNN क्लासिफायर)',
+      publishAnon: 'गुप्त ओळखीसह बाजारात प्रसिद्ध करा',
+      anonShieldNotice: 'रीसायकलर लॉट पक्का करताचपर्यंत तुमचे नाव, परिसर आणि फोन नंबर पूर्णतः सुरक्षित राहील.',
+      myLots: 'माझे स्क्रॅप लॉट',
+      activeLots: 'सक्रिय लॉट',
+      poolLot: 'सत्यापित स्मार्ट लॉट पूलमध्ये सामील व्हा',
+      cashoutAeps: 'AEPS द्वारे रोख रक्कम काढा',
+      reportConcern: 'पिळवणूक / गैरव्यवहार विरोधात तक्रार (सुरक्षित आणि गुप्त)',
     },
     buyer: {
       marketplace: 'थेट शेतकरी बाजार',
@@ -366,6 +454,7 @@ export const I18N_STRINGS: Record<Language, Translations> = {
       buyer: 'కొనుగోలుదారు',
       logistics: 'రవాణా సేవలు',
       admin: 'పరిపాలన & భద్రత',
+      collector: 'కవడివాల / కలెక్టర్ పోర్టల్',
     },
     nav: {
       dashboard: 'డ్యాష్‌బోర్డ్',
@@ -376,6 +465,7 @@ export const I18N_STRINGS: Record<Language, Translations> = {
       insights: 'మార్కెట్ ధరలు',
       safetyReport: 'సమస్యను నివేదించండి',
       demoGuide: 'డెమో గైడ్',
+      lots: 'నా స్క్రాప్ లాట్లు',
     },
     farmer: {
       welcome: 'రైతు సోదరులకు స్వాగతం',
@@ -406,6 +496,26 @@ export const I18N_STRINGS: Record<Language, Translations> = {
       placeOrder: 'ఆర్డర్ చేయండి',
       anonymizedSeller: 'ధృవీకరించబడిన రైతు',
       identityLockNotice: 'ఆర్డర్ నిర్ధారించబడిన వెంటనే రైతు పూర్తి వివరాలు కనిపిస్తాయి.',
+    },
+    collector: {
+      welcome: 'స్వాగతం, కవడివాల భాగస్వామి',
+      tapToSpeak: 'మైక్ నొక్కి మీ భాషలో మాట్లాడండి',
+      listening: 'మీ స్క్రాప్ లాట్ వివరాలు వినబడతున్నాయి...',
+      speakPrompt: 'ఉదా. "500 కికల్ కోప్పర్ వయిర్, 450 రూపాయలు Privatize"',
+      createLot: 'కొత్త స్క్రాప్ లాట్ సృష్టించండి',
+      materialType: 'మెటీరియల్ రకం & వర్గం',
+      materialCategory: 'వర్గం (లోహము / ప్లాస్టిక్ / ఈ-వేస్ట్ / కాగితం)',
+      estimatedWeight: 'అంచనా బర (కిలో)',
+      expectedPrice: 'ఆశించిన ధర (₹/కిలో)',
+      aiPriceBand: 'AI मार्केट ధర శ్రేణి (రీసైక్లర్ రేట్స్)',
+      aiQualityScan: 'AI మెటీరియల్ నాణ్యత స్కాన్ (CNN క్లాసిఫైర్)',
+      publishAnon: 'గోప్యంగా మార్కెట్‌లో ప్రచురించండి',
+      anonShieldNotice: 'రీసైక్లర్ లాట్ నిర్ధారిస్తే వరకు మీ పేరు, వెల్లడిక, మరియు فون నంబర్ పూర్తిగా సురక్షితంగా ఉంటాయి.',
+      myLots: 'నా స్క్రాప్ లాట్లు',
+      activeLots: 'సక్రియ లాట్లు',
+      poolLot: 'వెరిఫైడ్ स्मార్ట్ లాట్ పుల్‌లో చేరుకోండి',
+      cashoutAeps: 'AEPS బయోమెట్రిక్ నగదు వనిడ్రా',
+      reportConcern: 'దోపిడీ / హరాస్మెంట్ రిపోర్టు (సురక్షితం & గోప్యం)',
     },
     logistics: {
       pooledPickups: 'సమిష్టి రవాణా సేవలు',
@@ -455,6 +565,7 @@ export const I18N_STRINGS: Record<Language, Translations> = {
       buyer: 'ਖਰੀਦਦਾਰ / ਵਪਾਰੀ',
       logistics: 'ਟਰਾਂਸਪੋਰਟ ਨੈੱਟਵਰਕ',
       admin: 'ਪ੍ਰਬੰਧਕ ਤੇ ਸੁਰੱਖਿਆ',
+      collector: 'ਕਬਾਡੀਵਾਲਾ / ਕਲੈਕਟਰ ਪੋਰਟਲ',
     },
     nav: {
       dashboard: 'ਡੈਸ਼ਬੋਰਡ',
@@ -465,6 +576,7 @@ export const I18N_STRINGS: Record<Language, Translations> = {
       insights: 'ਮੰਡੀ ਭਾਅ',
       safetyReport: 'ਸ਼ਿਕਾਇਤ ਦਰਜ ਕਰੋ',
       demoGuide: 'ਡੈਮੋ ਗਾਈਡ',
+      lots: 'ਮੇਰੇ ਸਕਰੈਪ ਲਾਟ',
     },
     farmer: {
       welcome: 'ਜੀ ਆਇਆਂ ਨੂੰ ਕਿਸਾਨ ਵੀਰੋ',
@@ -495,6 +607,26 @@ export const I18N_STRINGS: Record<Language, Translations> = {
       placeOrder: 'ਆਰਡਰ ਬੁੱਕ ਕਰੋ',
       anonymizedSeller: 'ਤਸਦੀਕਸ਼ੁਦਾ ਗੁਪਤ ਕਿਸਾਨ',
       identityLockNotice: 'ਆਰਡਰ ਕਨਫਰਮ ਹੁੰਦੇ ਹੀ ਦੋਵਾਂ ਧਿਰਾਂ ਨੂੰ ਨਾਮ ਅਤੇ ਫੋਨ ਨੰਬਰ ਦਿਸ ਜਾਵੇਗਾ।',
+    },
+    collector: {
+      welcome: 'ਸਵਾਗਤ ਹੈ, ਕਬਾਡੀਵਾਲਾ ਸਾਥੀ',
+      tapToSpeak: 'ਮਾਈਕ ਦਬਾਓ ਅਤੇ ਆਪਣੀ ਭਾਸ਼ਾ ਵਿੱਚ ਬੋਲੋ',
+      listening: 'ਤੁਹਾਡੇ ਸਕਰੈਪ ਲਾਟ ਦੇ ਵੇਰਵੇ ਸੁਣੇ ਜਾ ਰਹੇ ਹਨ...',
+      speakPrompt: 'ਜਿਵੇਂ "500 ਕਿਲੋ ਕੌਪਰ ਵਾਇਰ, 450 ਰੁਪਏ ਕਿਲੋ"',
+      createLot: 'ਨਵਾਂ ਸਕਰੈਪ ਲਾਟ ਬਣਾਓ',
+      materialType: 'ਮੈਟीरੀਅਲ ਕਿਸਮ ਅਤੇ ਸ਼੍ਰੇਣੀ',
+      materialCategory: 'ਸ਼੍ਰੇਣੀ (ਧਾਤੁ / ਪਲਾਸਟਿਕ / ਈ-ਵੇਸਟ / ਕਾਗਜ਼)',
+      estimatedWeight: 'ਅੰਦਾਜ਼ਾ ਵਜ਼ਨ (ਕਿਲੋ)',
+      expectedPrice: 'ਉਮੀਦ ਕੀਤਾ ਭਾਅ (₹/ਕਿਲੋ)',
+      aiPriceBand: 'AI ਮਾਰਕੀਟ ਭਾਅ ਬੈਂਡ (ਰੀਸਾਇਕਲਰ ਦਰਾਂ)',
+      aiQualityScan: 'AI ਮੈਟਿਰੀਅਲ ਕੁਆਲਿਟੀ ਸਕੈਨ (CNN ਕਲਾਸੀਫਾਇਰ)',
+      publishAnon: 'ਗੁਪਤ ਪਛਾਣ ਨਾਲ ਬਾਜ਼ਾਰ ਵਿੱਚ ਪ੍ਰਕਾਸ਼ਿਤ ਕਰੋ',
+      anonShieldNotice: 'ਰੀਸਾਇਕਲਰ ਲਾਟ ਨੂੰ ਠੀਕ ਕਰਨ ਤੱਕ ਤੁਹਾਡਾ ਨਾਮ, ਇਲਾਕਾ, ਅਤੇ ਫੋਨ ਨੰਬਰ ਪੂਰੀ ਤਰ੍ਹਾਂ ਸੁਰੱਖਿਅਤ ਰਹੇਗਾ।',
+      myLots: 'ਮੇਰੇ ਸਕਰੈਪ ਲਾਟ',
+      activeLots: 'ਸਰਗਰਮ ਲਾਟ',
+      poolLot: 'ਵੈਰੀਫਾਇਡ ਸਮਾਰਟ ਲਾਟ ਪੂਲ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਵੋ',
+      cashoutAeps: 'AEPS ਬਾਇਓਮੈਟ੍ਰਿਕ ਨਕਦ ਨਿਕਾਸੀ',
+      reportConcern: 'ਸ਼ੋਸ਼ਣ / ਹਰਾਸਮੈਂਟ ਦੀ ਸ਼ਿਕਾਇਤ (ਸੁਰੱਖਿਅਤ ਅਤੇ ਗੁਪਤ)',
     },
     logistics: {
       pooledPickups: 'ਇਕੱਠੀ ਮਾਲ ਢੋਆ-ਢੁਆਈ',

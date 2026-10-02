@@ -1,5 +1,5 @@
 import { Response } from 'express';
-import { SEED_FARMERS, SEED_BUYERS, SEED_LOGISTICS } from '../data/seedData.js';
+import { SEED_FARMERS, SEED_BUYERS, SEED_LOGISTICS, SEED_COLLECTORS } from '../data/seedData.js';
 import {
   generateAccessToken,
   generateRefreshToken,
@@ -89,7 +89,7 @@ export function verifyOtp(req: AuthRequest, res: Response): void {
   }
 
   // OTP verified — find user in seed data
-  const allUsers = [...SEED_FARMERS, ...SEED_BUYERS, ...SEED_LOGISTICS];
+  const allUsers = [...SEED_FARMERS, ...SEED_BUYERS, ...SEED_LOGISTICS, ...SEED_COLLECTORS];
   const foundUser = allUsers.find((u) => u.phone === phone);
 
   // Admin phone special case
@@ -137,7 +137,7 @@ export function getMe(req: AuthRequest, res: Response): void {
   }
 
   // Find full profile from seed data
-  const allUsers = [...SEED_FARMERS, ...SEED_BUYERS, ...SEED_LOGISTICS];
+  const allUsers = [...SEED_FARMERS, ...SEED_BUYERS, ...SEED_LOGISTICS, ...SEED_COLLECTORS];
   const profile = allUsers.find((u) => u.id === user.userId || u.phone === user.phone);
 
   if (profile) {

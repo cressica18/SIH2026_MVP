@@ -10,6 +10,8 @@ import {
   FarmerProfile,
   BuyerProfile,
   LogisticsProfile,
+  CollectorProfile,
+  ScrapLot,
   GovScheme,
   AdvanceRequest,
   RiskAssessment,
@@ -18,18 +20,21 @@ import {
   SEED_FARMERS,
   SEED_BUYERS,
   SEED_LOGISTICS,
+  SEED_COLLECTORS,
   SEED_LISTINGS,
   SEED_ORDERS,
   SEED_LOGISTICS_POOLS,
   SEED_GOV_SCHEMES,
   SEED_NOTIFICATIONS,
   SEED_RISK_ASSESSMENTS,
+  SEED_SCRAP_LOTS,
 } from './data/seedData';
 import { Navbar } from './components/Navbar';
 import { FarmerView } from './components/FarmerView';
 import { BuyerView } from './components/BuyerView';
 import { LogisticsView } from './components/LogisticsView';
 import { AdminView } from './components/AdminView';
+import { CollectorView } from './components/CollectorView';
 import { DemoWalkthroughModal } from './components/DemoWalkthroughModal';
 import { AepsModal } from './components/AepsModal';
 import { MarketInsightsModal } from './components/MarketInsightsModal';
@@ -48,6 +53,7 @@ export default function App() {
   const [buyerSubTab, setBuyerSubTab] = useState<string>('marketplace');
   const [logisticsSubTab, setLogisticsSubTab] = useState<string>('pools');
   const [adminSubTab, setAdminSubTab] = useState<string>('reports');
+  const [collectorSubTab, setCollectorSubTab] = useState<string>('lots');
 
   // Modals
   const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
@@ -64,11 +70,13 @@ export default function App() {
   const [notifications, setNotifications] = useState<AppNotification[]>(SEED_NOTIFICATIONS);
   const [schemes, setSchemes] = useState<GovScheme[]>([]);
   const [advances, setAdvances] = useState<AdvanceRequest[]>([]);
+  const [scrapLots, setScrapLots] = useState<ScrapLot[]>([]);
 
-  // Dynamic Farmer / Risk / Buyer State
+  // Dynamic Farmer / Risk / Buyer / Collector State
   const [farmer, setFarmer] = useState<FarmerProfile | null>(null);
   const [buyer, setBuyer] = useState<BuyerProfile | null>(null);
   const [logistics, setLogistics] = useState<LogisticsProfile | null>(null);
+  const [collector, setCollector] = useState<CollectorProfile | null>(null);
   const [riskAssessment, setRiskAssessment] = useState<RiskAssessment | null>(null);
 
   // Fetch profile on auth
@@ -94,6 +102,7 @@ export default function App() {
     setFarmer(null);
     setBuyer(null);
     setLogistics(null);
+    setCollector(null);
     setRiskAssessment(null);
     setNotifications([]);
 
@@ -110,11 +119,13 @@ export default function App() {
           if (user?.role === 'farmer') setFarmer(data.profile);
           else if (user?.role === 'buyer') setBuyer(data.profile);
           else if (user?.role === 'logistics') setLogistics(data.profile);
+          else if (user?.role === 'collector') setCollector(data.profile);
         } else if (res.status === 404) {
           // Profile needs to be created
           if (user?.role === 'farmer') setFarmer(null);
           else if (user?.role === 'buyer') setBuyer(null);
           else if (user?.role === 'logistics') setLogistics(null);
+          else if (user?.role === 'collector') setCollector(null);
         }
 
         // Fetch Listings
@@ -143,6 +154,15 @@ export default function App() {
             const listingsData = await listingsRes.json();
             setListings(listingsData.listings);
           }
+        }
+
+        // Fetch Scrap Lots (for collector and public viewing)
+        const scrapLotsRes = await fetch('/api/scrap-lots', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (scrapLotsRes.ok) {
+          const scrapLotsData = await scrapLotsRes.json();
+          setScrapLots(scrapLotsData.lots);
         }
 
         // Fetch role-scoped orders
@@ -320,6 +340,66 @@ export default function App() {
       }
     } catch (err) {
       console.error('Failed to update listing status', err);
+    }
+  };
+
+  // Add a new scrap lot from collector voice or manual input
+  const handleAddScrapLot = async (newLot: ScrapLot): Promise<boolean> => {
+    try {
+      const token = localStorage.getItem('vasundhara_token');
+      const res = await fetch('/api/scrap-lots', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(newLot)
+      });
+      
+      if (res.ok) {
+        const createdLot = await res.json();
+        setScrapLots((prev) => [createdLot, ...prev]);
+
+        // Push system notification
+        const notif: AppNotification = {
+          id: `notif_${Date.now()}`,
+          title: 'New Scrap Lot Listed',
+          message: `Lot ${createdLot.materialType} (${createdLot.estimatedWeightKg} kg) is active under ${createdLot.anonCollectorId}.`,
+          timestamp: 'Just now',
+          read: false,
+          roleTarget: 'buyer',
+          type: 'order',
+        };
+        setNotifications((prev) => [notif, ...prev]);
+        return true;
+      } else {
+        console.error('Failed to create scrap lot', await res.text());
+        return false;
+      }
+    } catch (err) {
+      console.error('Failed to create scrap lot', err);
+      return false;
+    }
+  };
+
+  // Update scrap lot status
+  const handleUpdateScrapLotStatus = async (id: string, status: string) => {
+    try {
+      const token = localStorage.getItem('vasundhara_token');
+      const res = await fetch(`/api/scrap-lots/${id}/status`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ status })
+      });
+      if (res.ok) {
+        const updated = await res.json();
+        setScrapLots((prev) => prev.map((l) => (l.id === id ? updated : l)));
+      }
+    } catch (err) {
+      console.error('Failed to update scrap lot status', err);
     }
   };
 
@@ -746,7 +826,8 @@ export default function App() {
   const needsOnboarding =
       (currentRole === 'farmer' && !farmer) ||
       (currentRole === 'buyer' && !buyer) ||
-      (currentRole === 'logistics' && !logistics);
+      (currentRole === 'logistics' && !logistics) ||
+      (currentRole === 'collector' && !collector);
 
     if (needsOnboarding) {
       return (
@@ -755,6 +836,7 @@ export default function App() {
             if (currentRole === 'farmer') setFarmer(profile);
             else if (currentRole === 'buyer') setBuyer(profile);
             else if (currentRole === 'logistics') setLogistics(profile);
+            else if (currentRole === 'collector') setCollector(profile);
           }}
         />
       );
@@ -817,6 +899,17 @@ return (
             onUpdatePoolStatus={handleUpdatePoolStatus}
             onCompleteStop={handleCompleteStop}
             onCreatePool={handleCreatePool}
+          />
+        )}
+
+        {currentRole === 'collector' && collector && (
+          <CollectorView
+            collector={collector}
+            lots={scrapLots}
+            currentLanguage={currentLanguage}
+            onAddLot={handleAddScrapLot}
+            onUpdateLotStatus={handleUpdateScrapLotStatus}
+            initialTab={collectorSubTab}
           />
         )}
 

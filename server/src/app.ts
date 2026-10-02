@@ -18,6 +18,7 @@ import matchingRoutes from './routes/matchingRoutes.js';
 import insightsRoutes from './routes/insightsRoutes.js';
 import reportRoutes from './routes/reportRoutes.js';
 import scrapLotRoutes from './routes/scrapLotRoutes.js';
+import smartPoolRoutes from './routes/smartPoolRoutes.js';
 
 dotenv.config();
 
@@ -64,6 +65,7 @@ app.use('/api/matching', matchingRoutes);
 app.use('/api/insights', insightsRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/scrap-lots', scrapLotRoutes);
+app.use('/api/smart-pools', smartPoolRoutes);
 
 // 404 handler
 app.use((_req: Request, res: Response) => {

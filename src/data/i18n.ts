@@ -9,6 +9,7 @@ export interface Translations {
     logistics: string;
     admin: string;
     collector: string;
+    recycler: string;
   };
   nav: {
     dashboard: string;
@@ -20,6 +21,7 @@ export interface Translations {
     safetyReport: string;
     demoGuide: string;
     lots: string;
+    pools: string;
   };
   farmer: {
     welcome: string;
@@ -122,6 +124,7 @@ export const I18N_STRINGS: Record<Language, Translations> = {
       logistics: 'Logistics Network',
       admin: 'Admin & Safety',
       collector: 'Kabadiwala / Collector Portal',
+      recycler: 'Authorized Recycler Portal',
     },
     nav: {
       dashboard: 'Dashboard',
@@ -133,6 +136,7 @@ export const I18N_STRINGS: Record<Language, Translations> = {
       safetyReport: 'Report Concern',
       demoGuide: 'Judge Demo Flow',
       lots: 'My Scrap Lots',
+      pools: 'Smart Pools',
     },
     farmer: {
       welcome: 'Welcome, Farmer Partner',
@@ -233,6 +237,7 @@ export const I18N_STRINGS: Record<Language, Translations> = {
       logistics: 'वाहन व परिवहन',
       admin: 'प्रशासन व सुरक्षा',
       collector: 'कबाड़ीवाला / कलेक्टर पोर्टल',
+      recycler: 'अधिकृत रीसाइक्लर पोर्टल',
     },
     nav: {
       dashboard: 'डैशबोर्ड',
@@ -244,6 +249,7 @@ export const I18N_STRINGS: Record<Language, Translations> = {
       safetyReport: 'शिकायत दर्ज करें',
       demoGuide: 'डेमो गाइड',
       lots: 'मेरे स्क्रैप लॉट',
+      pools: 'स्मार्ट पूल',
     },
     farmer: {
       welcome: 'नमस्ते किसान भाई-बहन',
@@ -344,6 +350,7 @@ export const I18N_STRINGS: Record<Language, Translations> = {
       logistics: 'वाहतूक व लॉजिस्टिक',
       admin: 'प्रशासन व सुरक्षा',
       collector: 'कबाडीवाला / कलेक्टर पोर्टल',
+      recycler: 'अधिकृत रीसायकलर पोर्टल',
     },
     nav: {
       dashboard: 'डॅशबोर्ड',
@@ -355,6 +362,7 @@ export const I18N_STRINGS: Record<Language, Translations> = {
       safetyReport: 'तक्रार नोंदवा',
       demoGuide: 'डेमो मार्गदर्शन',
       lots: 'माझे स्क्रॅप लॉट',
+      pools: 'स्मार्ट पूल',
     },
     farmer: {
       welcome: 'स्वागत आहे शेतकरी मित्र',
@@ -452,20 +460,22 @@ export const I18N_STRINGS: Record<Language, Translations> = {
     roles: {
       farmer: 'రైతు విభాగం',
       buyer: 'కొనుగోలుదారు',
-      logistics: 'రవాణా సేవలు',
+      logistics: 'ట్రాన్స్పోర్ట్ సేవలు',
       admin: 'పరిపాలన & భద్రత',
       collector: 'కవడివాల / కలెక్టర్ పోర్టల్',
+      recycler: 'అధికారవంతు రీసైక్లర్ పోర్టల్',
     },
     nav: {
       dashboard: 'డ్యాష్‌బోర్డ్',
       listings: 'నా పంటలు',
       orders: 'ఆర్డర్లు',
-      schemes: 'ప్రభుత్వ పథకాలు',
+      schemes: 'ప్రభుత్వ^.marques',
       finance: 'ఆర్థికం & AEPS',
       insights: 'మార్కెట్ ధరలు',
       safetyReport: 'సమస్యను నివేదించండి',
       demoGuide: 'డెమో గైడ్',
       lots: 'నా స్క్రాప్ లాట్లు',
+      pools: 'స్మార్ట్ పూల్స్',
     },
     farmer: {
       welcome: 'రైతు సోదరులకు స్వాగతం',
@@ -566,6 +576,7 @@ export const I18N_STRINGS: Record<Language, Translations> = {
       logistics: 'ਟਰਾਂਸਪੋਰਟ ਨੈੱਟਵਰਕ',
       admin: 'ਪ੍ਰਬੰਧਕ ਤੇ ਸੁਰੱਖਿਆ',
       collector: 'ਕਬਾਡੀਵਾਲਾ / ਕਲੈਕਟਰ ਪੋਰਟਲ',
+      recycler: 'ਅਧਿਕਾਰ ਪ੍ਰਾਪਤ ਰੀਸਾਇਕਲਰ ਪੋਰਟਲ',
     },
     nav: {
       dashboard: 'ਡੈਸ਼ਬੋਰਡ',
@@ -577,6 +588,7 @@ export const I18N_STRINGS: Record<Language, Translations> = {
       safetyReport: 'ਸ਼ਿਕਾਇਤ ਦਰਜ ਕਰੋ',
       demoGuide: 'ਡੈਮੋ ਗਾਈਡ',
       lots: 'ਮੇਰੇ ਸਕਰੈਪ ਲਾਟ',
+      pools: 'ਸਮਾਰਟ ਪੂਲ',
     },
     farmer: {
       welcome: 'ਜੀ ਆਇਆਂ ਨੂੰ ਕਿਸਾਨ ਵੀਰੋ',
@@ -669,3 +681,4 @@ export const I18N_STRINGS: Record<Language, Translations> = {
     },
   },
 };
+

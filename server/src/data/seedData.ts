@@ -5,6 +5,7 @@ import {
   BuyerProfile,
   LogisticsProfile,
   CollectorProfile,
+  RecyclerProfile,
   Listing,
   Order,
   LogisticsPool,
@@ -15,6 +16,9 @@ import {
   MarketInsight,
   AppNotification,
   ScrapLot,
+  SmartPool,
+  PoolOffer,
+  SettlementRecord,
 } from '@shared/types.ts';
 
 export const SEED_FARMERS: FarmerProfile[] = [
@@ -574,4 +578,99 @@ export const SEED_SAFETY_REPORTS: SafetyReport[] = [
     resolutionNotes: 'Transport agent blacklisted from Vasundhara carrier network. Verified carrier assigned.',
     createdAt: '2026-09-14 04:15 PM',
   },
+];
+
+export const SEED_RECYCLERS: RecyclerProfile[] = [
+  { id: 'recycler_1', phone: '+91 98123 45678', name: 'Rajesh Kumar', role: 'recycler',
+    language: 'en', createdAt: '2026-07-01', businessName: 'EcoRecycle India Pvt Ltd',
+    licenseNumber: 'MPCB/RO/2024/001234', district: 'Pune', state: 'Maharashtra',
+    lat: 18.5204, lng: 73.8567,
+    acceptedMaterials: ['ewaste', 'metal', 'plastic'], capacityKgPerDay: 5000, verified: true, reputationScore: 4.9 },
+  { id: 'recycler_2', phone: '+91 98765 43210', name: 'Amit Shah', role: 'recycler',
+    language: 'en', createdAt: '2026-07-15', businessName: 'Metalloys Recycling Co.',
+    licenseNumber: 'MPCB/RO/2024/001567', district: 'Mumbai', state: 'Maharashtra',
+    lat: 19.0760, lng: 72.8777,
+    acceptedMaterials: ['metal', 'ewaste'], capacityKgPerDay: 3000, verified: true, reputationScore: 4.7 },
+  { id: 'recycler_3', phone: '+91 99887 76655', name: 'Priya Menon', role: 'recycler',
+    language: 'en', createdAt: '2026-08-01', businessName: 'GreenCircle Polymers',
+    licenseNumber: 'KSPCB/RO/2024/002345', district: 'Bengaluru Urban', state: 'Karnataka',
+    lat: 12.9716, lng: 77.5946,
+    acceptedMaterials: ['plastic', 'paper', 'rubber'], capacityKgPerDay: 2000, verified: true, reputationScore: 4.8 },
+];
+
+export const SEED_SMART_POOLS: SmartPool[] = [
+  {
+    id: 'pool_1',
+    materialCategory: 'metal',
+    materialType: 'Copper Wire',
+    status: 'open',
+    members: [
+      { lotId: 'lot_1', anonCollectorId: 'KABAD-55219', collectorName: 'Rajesh Kabadi', materialType: 'Copper Wire (Bright & Shiny)', materialCategory: 'metal', estimatedWeightKg: 500, priceExpectedPerKg: 620, qualityGrade: 'A', area: 'Satpur Industrial Area', district: 'Nashik', lat: 20.0159, lng: 73.7812, collectionDate: '2026-09-20', joinedAt: '2026-09-18 11:00 AM' },
+      { lotId: 'lot_4', anonCollectorId: 'KABAD-77431', collectorName: 'Mohammed Rafiq', materialType: 'Mixed Copper Cables (Insulated)', materialCategory: 'metal', estimatedWeightKg: 300, priceExpectedPerKg: 280, qualityGrade: 'B', area: 'Koramangala', district: 'Bengaluru Urban', lat: 12.9352, lng: 77.6245, collectionDate: '2026-09-18', joinedAt: '2026-09-18 05:00 PM' },
+    ],
+    totalWeightKg: 800,
+    avgPricePerKg: 492,
+    priceRange: { min: 280, max: 620 },
+    district: 'Nashik',
+    state: 'Maharashtra',
+    centerLat: 16.4755,
+    centerLng: 75.7028,
+    pickupWindowStart: '2026-09-18',
+    pickupWindowEnd: '2026-09-20',
+    createdAt: '2026-09-18 05:30 PM',
+    matchedAt: '2026-09-18 05:30 PM',
+  },
+  {
+    id: 'pool_2',
+    materialCategory: 'ewaste',
+    materialType: 'PCB Boards',
+    status: 'confirmed',
+    members: [
+      { lotId: 'lot_3', anonCollectorId: 'KABAD-77431', collectorName: 'Mohammed Rafiq', materialType: 'PCB Boards (High Grade - Gold Fingers)', materialCategory: 'ewaste', estimatedWeightKg: 150, priceExpectedPerKg: 1200, qualityGrade: 'A', area: 'Koramangala', district: 'Bengaluru Urban', lat: 12.9352, lng: 77.6245, collectionDate: '2026-09-21', joinedAt: '2026-09-18 11:45 AM' },
+    ],
+    totalWeightKg: 150,
+    avgPricePerKg: 1200,
+    priceRange: { min: 1200, max: 1200 },
+    district: 'Bengaluru Urban',
+    state: 'Karnataka',
+    centerLat: 12.9352,
+    centerLng: 77.6245,
+    pickupWindowStart: '2026-09-21',
+    pickupWindowEnd: '2026-09-21',
+    createdAt: '2026-09-18 11:45 AM',
+    matchedAt: '2026-09-19 10:00 AM',
+    recyclerId: 'recycler_1',
+    recyclerName: 'EcoRecycle India Pvt Ltd',
+    agreedPricePerKg: 1250,
+    totalValue: 187500,
+  },
+  {
+    id: 'pool_3',
+    materialCategory: 'plastic',
+    materialType: 'HDPE Plastic',
+    status: 'forming',
+    members: [
+      { lotId: 'lot_5', anonCollectorId: 'KABAD-91827', collectorName: 'Suresh Bhangar', materialType: 'HDPE Plastic Scrap (Blue Drums)', materialCategory: 'plastic', estimatedWeightKg: 1200, priceExpectedPerKg: 32, qualityGrade: 'B', area: 'Bhosari MIDC', district: 'Pune', lat: 18.6314, lng: 73.8491, collectionDate: '2026-09-22', joinedAt: '2026-09-18 09:00 AM' },
+    ],
+    totalWeightKg: 1200,
+    avgPricePerKg: 32,
+    priceRange: { min: 32, max: 32 },
+    district: 'Pune',
+    state: 'Maharashtra',
+    centerLat: 18.6314,
+    centerLng: 73.8491,
+    pickupWindowStart: '2026-09-22',
+    pickupWindowEnd: '2026-09-22',
+    createdAt: '2026-09-18 09:00 AM',
+  },
+];
+
+export const SEED_POOL_OFFERS: PoolOffer[] = [
+  { id: 'offer_1', poolId: 'pool_1', recyclerId: 'recycler_1', recyclerName: 'EcoRecycle India Pvt Ltd', offeredPricePerKg: 520, totalValue: 416000, status: 'pending', notes: 'Competitive rate for consolidated copper wire lot. Pickup within 2 days.', createdAt: '2026-09-19 09:00 AM', expiresAt: '2026-09-21 09:00 AM' },
+  { id: 'offer_2', poolId: 'pool_1', recyclerId: 'recycler_2', recyclerName: 'Metalloys Recycling Co.', offeredPricePerKg: 505, totalValue: 404000, status: 'pending', notes: 'Can arrange immediate pickup with own logistics.', createdAt: '2026-09-19 11:30 AM', expiresAt: '2026-09-21 11:30 AM' },
+  { id: 'offer_3', poolId: 'pool_2', recyclerId: 'recycler_1', recyclerName: 'EcoRecycle India Pvt Ltd', offeredPricePerKg: 1250, totalValue: 187500, status: 'accepted', notes: 'Accepted by all members. Premium for gold-finger PCBs.', createdAt: '2026-09-19 10:00 AM', respondedAt: '2026-09-19 11:00 AM', expiresAt: '2026-09-21 10:00 AM' },
+];
+
+export const SEED_SETTLEMENTS: SettlementRecord[] = [
+  { id: 'settlement_1', poolId: 'pool_2', offerId: 'offer_3', recyclerId: 'recycler_1', recyclerName: 'EcoRecycle India Pvt Ltd', agreedPricePerKg: 1250, totalWeightKg: 150, totalValue: 187500, memberSettlements: [ { lotId: 'lot_3', anonCollectorId: 'KABAD-77431', collectorName: 'Mohammed Rafiq', weightKg: 150, pricePerKg: 1250, amount: 187500, status: 'paid', paidAt: '2026-09-20 02:00 PM' } ], status: 'completed', handoverRef: 'KCP-1-AB3F-XYZ7', qrCode: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0id2hpdGUiLz48dGV4dCB4PSI1MCIgeT0iNTAiIGZvbnQtZmFtaWx5PSJtb25vc3BhY2UiIGZvbnQtc2l6ZT0iMTIiIGZpbGw9ImJsYWNrIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIj5RUiBDb2RlPC90ZXh0Pjwvc3ZnPg==', createdAt: '2026-09-19 11:00 AM', completedAt: '2026-09-20 02:00 PM', paymentMethod: 'upi', paymentRef: 'UPI-REF-20260920-187500' },
 ];

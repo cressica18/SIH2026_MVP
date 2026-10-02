@@ -16,6 +16,7 @@ import {
   Menu,
   Check,
   Recycle,
+  Factory,
 } from 'lucide-react';
 import { Button } from './ui/Button';
 import { EmptyState } from './ui/EmptyState';
@@ -80,6 +81,13 @@ const ROLE_CONFIG: Record<Role, RoleConfig> = {
     icon: <Recycle className="w-3.5 h-3.5" />,
     activeClass: 'bg-gradient-to-br from-copper-700 to-copper-500 text-cream-50 shadow-[0_2px_10px_-2px_rgb(184_98_40_/_0.55)] border-transparent',
     hoverClass: 'hover:bg-copper-900/30 hover:text-copper-300',
+    textClass: 'text-cream-400',
+  },
+  recycler: {
+    label: 'Recycler',
+    icon: <Factory className="w-3.5 h-3.5" />,
+    activeClass: 'bg-gradient-to-br from-emerald-700 to-emerald-500 text-cream-50 shadow-[0_2px_10px_-2px_rgb(16_185_129_/_0.55)] border-transparent',
+    hoverClass: 'hover:bg-emerald-900/30 hover:text-emerald-300',
     textClass: 'text-cream-400',
   },
 };

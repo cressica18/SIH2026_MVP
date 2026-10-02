@@ -6,6 +6,8 @@ import {
   QualityAssessment,
   PriceBand,
   LotStatus,
+  SmartPool,
+  PoolOffer,
 } from '../types';
 import { I18N_STRINGS } from '../data/i18n';
 import { extractVoiceListing, getAiPriceRecommendation, assessProduceQuality } from '../lib/api-client';
@@ -82,6 +84,10 @@ import {
   Wallet,
   Flag,
   Recycle,
+  Users,
+  Link,
+  Gavel,
+  QrCode,
 } from 'lucide-react';
 import { Button } from './ui/Button';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from './ui/Card';
@@ -124,6 +130,7 @@ interface CollectorViewProps {
 
 const COLLECTOR_TABS = [
   { id: 'lots', label: 'My Lots', icon: Package },
+  { id: 'pools', label: 'Smart Pools', icon: Users },
   { id: 'orders', label: 'Transactions', icon: ClipboardList },
   { id: 'finance', label: 'Finance', icon: Wallet },
   { id: 'safetyReport', label: 'Report', icon: Flag },
@@ -205,6 +212,111 @@ export const CollectorView: React.FC<CollectorViewProps> = ({
   const [safetyDescription, setSafetyDescription] = useState<string>('');
   const [safetyAnonymous, setSafetyAnonymous] = useState<boolean>(true);
   const [safetySubmitted, setSafetySubmitted] = useState<boolean>(false);
+
+  // Smart Pool state
+  const [smartPools, setSmartPools] = useState<SmartPool[]>([]);
+  const [poolOffers, setPoolOffers] = useState<PoolOffer[]>([]);
+  const [selectedPool, setSelectedPool] = useState<SmartPool | null>(null);
+  const [isLoadingPools, setIsLoadingPools] = useState(false);
+  const [showPoolDetail, setShowPoolDetail] = useState(false);
+
+  // Fetch smart pools on mount and when lots change
+  useEffect(() => {
+    fetchSmartPools();
+  }, [collector.anonCollectorId]);
+
+  const fetchSmartPools = async () => {
+    setIsLoadingPools(true);
+    try {
+      const token = localStorage.getItem('vasundhara_token');
+      const res = await fetch('/api/smart-pools/collector/my-pools', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setSmartPools(data.pools || []);
+      }
+    } catch (err) {
+      console.error('Failed to fetch smart pools', err);
+    } finally {
+      setIsLoadingPools(false);
+    }
+  };
+
+  const fetchPoolOffers = async (poolId: string) => {
+    try {
+      const token = localStorage.getItem('vasundhara_token');
+      const res = await fetch(`/api/smart-pools/${poolId}/offers`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setPoolOffers(data.offers || []);
+      }
+    } catch (err) {
+      console.error('Failed to fetch pool offers', err);
+    }
+  };
+
+  const handleJoinPool = async (lot: ScrapLot) => {
+    try {
+      const token = localStorage.getItem('vasundhara_token');
+      const res = await fetch('/api/smart-pools/join', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ poolId: lot.id, lotId: lot.id }), // This will be fixed to find compatible pool
+      });
+      if (res.ok) {
+        await fetchSmartPools();
+        setActiveTab('pools');
+      }
+    } catch (err) {
+      console.error('Failed to join pool', err);
+    }
+  };
+
+  const handleCreatePool = async (lot: ScrapLot) => {
+    try {
+      const token = localStorage.getItem('vasundhara_token');
+      const res = await fetch('/api/smart-pools/create-from-lot', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ lotId: lot.id }),
+      });
+      if (res.ok) {
+        const pool = await res.json();
+        setSmartPools(prev => [pool, ...prev]);
+        setActiveTab('pools');
+      }
+    } catch (err) {
+      console.error('Failed to create pool', err);
+    }
+  };
+
+  const handleLeavePool = async (poolId: string, lotId: string) => {
+    try {
+      const token = localStorage.getItem('vasundhara_token');
+      const res = await fetch('/api/smart-pools/leave', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ poolId, lotId }),
+      });
+      if (res.ok) {
+        await fetchSmartPools();
+      }
+    } catch (err) {
+      console.error('Failed to leave pool', err);
+    }
+  };
 
   useEffect(() => {
     const band = getAiPriceRecommendation(materialTypeInput, collector.district);
@@ -499,7 +611,9 @@ export const CollectorView: React.FC<CollectorViewProps> = ({
         role="tablist" aria-label="Collector portal sections"
       >
         {COLLECTOR_TABS.map((tab) => {
-          const count = tab.id === 'lots' ? myLots.length : 0;
+          let count = 0;
+          if (tab.id === 'lots') count = myLots.length;
+          else if (tab.id === 'pools') count = smartPools.length;
           const isActive = activeTab === tab.id;
           return (
             <button
@@ -835,6 +949,23 @@ export const CollectorView: React.FC<CollectorViewProps> = ({
             </p>
           </Card>
         </div>
+      )}
+
+      {/* TAB: SMART POOLS */}
+      {activeTab === 'pools' && (
+        <SmartPoolsTab
+          smartPools={smartPools}
+          collector={collector}
+          myLots={myLots}
+          isLoading={isLoadingPools}
+          t={t}
+          onCreatePool={handleCreatePool}
+          onJoinPool={handleJoinPool}
+          onLeavePool={handleLeavePool}
+          onViewPoolDetail={(pool) => { setSelectedPool(pool); setShowPoolDetail(true); }}
+          onRefresh={fetchSmartPools}
+          setActiveTab={setActiveTab}
+        />
       )}
 
       {/* TAB: FINANCE (placeholder) */}
@@ -1251,5 +1382,324 @@ function CreateLotModal({
         </div>
       </div>
     </Modal>
+  );
+}
+
+function SmartPoolsTab({
+  smartPools,
+  collector,
+  myLots,
+  isLoading,
+  t,
+  onCreatePool,
+  onJoinPool,
+  onLeavePool,
+  onViewPoolDetail,
+  onRefresh,
+  setActiveTab,
+}: {
+  smartPools: SmartPool[];
+  collector: CollectorProfile;
+  myLots: ScrapLot[];
+  isLoading: boolean;
+  t: any;
+  onCreatePool: (lot: ScrapLot) => void;
+  onJoinPool: (lot: ScrapLot) => void;
+  onLeavePool: (poolId: string, lotId: string) => void;
+  onViewPoolDetail: (pool: SmartPool) => void;
+  onRefresh: () => void;
+  setActiveTab: (tab: CollectorTabId) => void;
+}) {
+  const availableLots = myLots.filter(l => l.status === 'available');
+  const pooledLots = myLots.filter(l => l.status === 'pooled');
+
+  const getStatusColor = (status: SmartPool['status']) => {
+    switch (status) {
+      case 'forming': return 'default';
+      case 'open': return 'info';
+      case 'matched': return 'warning';
+      case 'confirmed': return 'success';
+      case 'in_transit': return 'info';
+      case 'completed': return 'botanical';
+      case 'cancelled': return 'danger';
+      default: return 'default';
+    }
+  };
+
+  const getStatusLabel = (status: SmartPool['status']) => {
+    switch (status) {
+      case 'forming': return 'Forming';
+      case 'open': return 'Open for Bids';
+      case 'matched': return 'Matched';
+      case 'confirmed': return 'Confirmed';
+      case 'in_transit': return 'In Transit';
+      case 'completed': return 'Completed';
+      case 'cancelled': return 'Cancelled';
+      default: return status;
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="space-y-5">
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="w-8 h-8 text-copper-400 animate-spin" />
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-5">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-lg bg-copper-900/30 border border-copper-700 flex items-center justify-center">
+            <Users className="w-5 h-5 text-copper-400" />
+          </div>
+          <div>
+            <h2 className="font-display text-xl font-semibold text-cream-50">Verified Smart Lot Pools</h2>
+            <p className="text-sm text-cream-400">Pool compatible lots for better prices and consolidated pickup</p>
+          </div>
+        </div>
+        <Button variant="outline" size="sm" onClick={onRefresh} className="sm:ml-auto gap-1">
+          <RotateCcw className="w-4 h-4" />
+          <span>Refresh</span>
+        </Button>
+      </div>
+
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <Card variant="subtle-copper" padding="md" className="text-center border-copper-700">
+          <p className="text-xs text-cream-500 uppercase tracking-wider">My Pools</p>
+          <p className="font-display text-2xl font-bold text-harvest-300">{smartPools.length}</p>
+        </Card>
+        <Card variant="subtle-copper" padding="md" className="text-center border-harvest-700">
+          <p className="text-xs text-cream-500 uppercase tracking-wider">Total Weight</p>
+          <p className="font-display text-2xl font-bold text-harvest-300">
+            {smartPools.reduce((sum, p) => sum + p.totalWeightKg, 0).toLocaleString()} kg
+          </p>
+        </Card>
+        <Card variant="subtle-copper" padding="md" className="text-center border-copper-700">
+          <p className="text-xs text-cream-500 uppercase tracking-wider">Available to Pool</p>
+          <p className="font-display text-2xl font-bold text-harvest-300">{availableLots.length}</p>
+        </Card>
+      </div>
+
+      {/* Available Lots that can join pools */}
+      {availableLots.length > 0 && (
+        <Card variant="panel" padding="lg" className="border-bg-700">
+          <div className="flex items-center gap-2 mb-4">
+            <Sparkles className="w-5 h-5 text-harvest-400" />
+            <h3 className="font-display text-lg font-semibold text-cream-50">Lots Ready to Pool</h3>
+          </div>
+          <p className="text-sm text-cream-400 mb-4">
+            These available lots can be pooled with compatible nearby lots for better prices.
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {availableLots.map(lot => (
+              <div key={lot.id} className="p-3 bg-bg-750 rounded-lg border border-bg-700">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium text-cream-100 truncate">{lot.materialType}</span>
+                  <Badge variant={getGradeVariant(lot.quality.grade)} size="xs">Grade {lot.quality.grade}</Badge>
+                </div>
+                <div className="grid grid-cols-2 gap-2 text-xs text-cream-400 mb-3">
+                  <div><span className="font-medium">Weight:</span> {lot.estimatedWeightKg} kg</div>
+                  <div><span className="font-medium">Price:</span> ₹{lot.priceExpectedPerKg}/kg</div>
+                  <div><span className="font-medium">Area:</span> {lot.area}</div>
+                  <div><span className="font-medium">Collect by:</span> {lot.collectionDate}</div>
+                </div>
+                <Button
+                  variant="copper"
+                  size="sm"
+                  className="w-full gap-1"
+                  onClick={() => onCreatePool(lot)}
+                >
+                  <Link className="w-4 h-4" />
+                  <span>Create / Join Pool</span>
+                </Button>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
+
+      {/* Smart Pools List */}
+      {smartPools.length === 0 && availableLots.length === 0 ? (
+        <Card variant="panel" padding="lg" className="text-center border-bg-700">
+          <div className="mx-auto mb-4 w-16 h-16 rounded-xl bg-bg-800 border border-bg-700 flex items-center justify-center">
+            <Users className="w-8 h-8 text-copper-400" />
+          </div>
+          <h3 className="font-display text-lg font-semibold text-cream-50 mb-2">No smart pools yet</h3>
+          <p className="text-cream-400 mb-6 max-w-xs mx-auto">
+            Create a smart pool by selecting an available lot, or wait for compatible lots to appear.
+          </p>
+          <Button variant="copper" onClick={() => setActiveTab('lots')} className="gap-2">
+            <Plus className="w-4 h-4" />
+            <span>Create New Lot</span>
+          </Button>
+        </Card>
+      ) : smartPools.length > 0 && (
+        <div className="space-y-3" role="feed" aria-label="Smart pools">
+          {smartPools.map(pool => (
+            <article key={pool.id} className="group relative">
+              <Card variant="panel" padding="none" className="overflow-hidden transition-all duration-200 hover:shadow-xl hover:border-copper-600 border-bg-700">
+                <CardContent className="p-4 sm:p-5 space-y-4">
+                  {/* Pool Header */}
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-xl bg-copper-900/30 border border-copper-700 flex items-center justify-center">
+                        <Recycle className="w-6 h-6 text-copper-400" />
+                      </div>
+                      <div>
+                        <h3 className="font-display text-base font-semibold text-cream-50 truncate">
+                          {pool.materialType} Pool
+                        </h3>
+                        <p className="text-xs text-cream-500 font-mono">{pool.id}</p>
+                      </div>
+                    </div>
+                    <Badge variant={getStatusColor(pool.status)} size="sm" dot className="shrink-0">
+                      {getStatusLabel(pool.status)}
+                    </Badge>
+                  </div>
+
+                  {/* Pool Metrics */}
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div className="p-3 bg-bg-750 rounded-lg border border-bg-700 text-center">
+                      <p className="text-[10px] text-cream-500 uppercase tracking-wider">Members</p>
+                      <p className="font-display text-xl font-bold text-cream-100">{pool.members.length}</p>
+                    </div>
+                    <div className="p-3 bg-bg-750 rounded-lg border border-bg-700 text-center">
+                      <p className="text-[10px] text-cream-500 uppercase tracking-wider">Total Weight</p>
+                      <p className="font-display text-xl font-bold text-cream-100">{pool.totalWeightKg.toLocaleString()} kg</p>
+                    </div>
+                    <div className="p-3 bg-bg-750 rounded-lg border border-bg-700 text-center">
+                      <p className="text-[10px] text-cream-500 uppercase tracking-wider">Avg Price</p>
+                      <p className="font-display text-xl font-bold text-harvest-300">₹{pool.avgPricePerKg}/kg</p>
+                    </div>
+                    <div className="p-3 bg-bg-750 rounded-lg border border-bg-700 text-center">
+                      <p className="text-[10px] text-cream-500 uppercase tracking-wider">Est. Value</p>
+                      <p className="font-display text-xl font-bold text-harvest-300">₹{pool.totalValue?.toLocaleString() || (pool.totalWeightKg * pool.avgPricePerKg).toLocaleString()}</p>
+                    </div>
+                  </div>
+
+                  {/* Members */}
+                  <div className="p-3 bg-copper-900/20 rounded-lg border border-copper-700/30">
+                    <p className="text-xs font-semibold text-copper-300 uppercase tracking-wider mb-2 flex items-center gap-1">
+                      <Users className="w-3.5 h-3.5" />
+                      Pool Members ({pool.members.length})
+                    </p>
+                    <div className="space-y-1">
+                      {pool.members.map((member, idx) => (
+                        <div key={member.lotId} className="flex items-center justify-between text-xs p-2 bg-bg-800 rounded border border-bg-700">
+                          <div className="flex items-center gap-2">
+                            <span className="w-5 h-5 rounded-full bg-copper-700 flex items-center justify-center text-[10px] font-bold text-cream-50">
+                              {idx + 1}
+                            </span>
+                            <div>
+                              <p className="font-medium text-cream-100">{member.collectorName || `Collector ${member.anonCollectorId.slice(-4)}`}</p>
+                              <p className="text-cream-500">{member.materialType} · {member.estimatedWeightKg} kg</p>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <p className="font-medium text-harvest-300">₹{member.priceExpectedPerKg}/kg</p>
+                            <p className="text-cream-500">{member.area}, {member.district}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Pool Details */}
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs text-cream-400">
+                    <div className="p-2 bg-bg-750 rounded-lg">
+                      <p className="font-medium text-cream-500">District</p>
+                      <p>{pool.district}, {pool.state}</p>
+                    </div>
+                    <div className="p-2 bg-bg-750 rounded-lg">
+                      <p className="font-medium text-cream-500">Pickup Window</p>
+                      <p>{pool.pickupWindowStart} to {pool.pickupWindowEnd}</p>
+                    </div>
+                    <div className="p-2 bg-bg-750 rounded-lg">
+                      <p className="font-medium text-cream-500">Price Range</p>
+                      <p>₹{pool.priceRange.min} – ₹{pool.priceRange.max}/kg</p>
+                    </div>
+                    {pool.recyclerName && (
+                      <div className="p-2 bg-bg-750 rounded-lg">
+                        <p className="font-medium text-cream-500">Recycler</p>
+                        <p className="text-harvest-300">{pool.recyclerName}</p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex flex-col sm:flex-row gap-2 pt-2 border-t border-bg-700">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex-1 gap-1"
+                      onClick={() => onViewPoolDetail(pool)}
+                    >
+                      <Eye className="w-4 h-4" />
+                      <span>View Details</span>
+                    </Button>
+                    {pool.status === 'open' && pool.members.some(m => m.anonCollectorId === collector.anonCollectorId) && (
+                      <>
+                        <Button
+                          variant="copper"
+                          size="sm"
+                          className="flex-1 gap-1"
+                          onClick={() => {
+                            const myMember = pool.members.find(m => m.anonCollectorId === collector.anonCollectorId);
+                            if (myMember) {
+                              fetch(`/api/smart-pools/${pool.id}/offers`, {
+                                headers: { Authorization: `Bearer ${localStorage.getItem('vasundhara_token')}` },
+                              }).then(r => r.json()).then(data => {
+                                if (data.offers && data.offers.length > 0) {
+                                  alert(`${data.offers.length} offer(s) received. Check backend for details.`);
+                                } else {
+                                  alert('No offers yet. Waiting for recyclers...');
+                                }
+                              });
+                            }
+                          }}
+                        >
+                          <Gavel className="w-4 h-4" />
+                          <span>View Offers</span>
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="flex-1 gap-1"
+                          onClick={() => {
+                            const myMember = pool.members.find(m => m.anonCollectorId === collector.anonCollectorId);
+                            onLeavePool(pool.id, myMember?.lotId || '');
+                          }}
+                        >
+                          <X className="w-4 h-4" />
+                          <span>Leave Pool</span>
+                        </Button>
+                      </>
+                    )}
+                    {pool.status === 'confirmed' && pool.members.some(m => m.anonCollectorId === collector.anonCollectorId) && (
+                      <Button
+                        variant="olive"
+                        size="sm"
+                        className="flex-1 gap-1"
+                        onClick={() => {
+                          alert(`Handover reference: ${pool.handoverRef || 'Pending'}`);
+                        }}
+                      >
+                        <QrCode className="w-4 h-4" />
+                        <span>Handover / Settlement</span>
+                      </Button>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </article>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ShieldCheck, X, Loader2, Sparkles, ShoppingCart, Truck, Phone, Globe, Key, Mic, Leaf, Recycle } from 'lucide-react';
+import { ShieldCheck, X, Loader2, Sparkles, ShoppingCart, Truck, Phone, Globe, Key, Mic, Leaf, Recycle, Factory } from 'lucide-react';
 import { I18N_STRINGS } from '../../data/i18n';
 import { useAuth, UserRole, DEMO_PHONES } from '../../lib/auth-context';
 import { Button } from '../../components/ui/Button';
@@ -323,6 +323,7 @@ export const OtpScreen: React.FC<OtpScreenProps> = ({
     buyer: <ShoppingCart className="w-3.5 h-3.5" />,
     logistics: <Truck className="w-3.5 h-3.5" />,
     collector: <Recycle className="w-3.5 h-3.5" />,
+    recycler: <Factory className="w-3.5 h-3.5" />,
     admin: <ShieldCheck className="w-3.5 h-3.5" />,
   };
 

@@ -212,6 +212,37 @@ export const CollectorView: React.FC<CollectorViewProps> = ({
   const [safetyDescription, setSafetyDescription] = useState<string>('');
   const [safetyAnonymous, setSafetyAnonymous] = useState<boolean>(true);
   const [safetySubmitted, setSafetySubmitted] = useState<boolean>(false);
+  const [isSubmittingSafety, setIsSubmittingSafety] = useState<boolean>(false);
+
+  const handleCollectorSubmitSafetyReport = async () => {
+    if (!safetyDescription.trim()) return;
+    setIsSubmittingSafety(true);
+    try {
+      const token = localStorage.getItem('kabadiwala_token');
+      const res = await fetch('/api/reports', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          category: safetyCategory,
+          description: safetyDescription,
+          isAnonymous: safetyAnonymous,
+          reportedEntityName: safetyEntity || 'Local Recycler / Intermediary',
+        }),
+      });
+      if (res.ok) {
+        setSafetySubmitted(true);
+        setSafetyDescription('');
+        setSafetyEntity('');
+      }
+    } catch (err) {
+      console.error('Failed to submit report', err);
+    } finally {
+      setIsSubmittingSafety(false);
+    }
+  };
 
   // Smart Pool state
   const [smartPools, setSmartPools] = useState<SmartPool[]>([]);
@@ -1057,7 +1088,7 @@ export const CollectorView: React.FC<CollectorViewProps> = ({
         </div>
       )}
 
-      {/* TAB: SAFETY (placeholder) */}
+      {/* TAB: SAFETY */}
       {activeTab === 'safetyReport' && (
         <div className="space-y-5">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -1067,18 +1098,92 @@ export const CollectorView: React.FC<CollectorViewProps> = ({
               </div>
               <div>
                 <h2 className="font-display text-xl font-semibold text-cream-50">Report a Concern</h2>
-                <p className="text-sm text-cream-400">Anonymous reporting for exploitation or harassment</p>
+                <p className="text-sm text-cream-400">100% Anonymous reporting for exploitation, cartel pricing, or harassment</p>
               </div>
             </div>
           </div>
-          <Card variant="panel" padding="lg" className="text-center border-bg-700">
-            <div className="mx-auto mb-4 w-16 h-16 rounded-xl bg-bg-800 border border-bg-700 flex items-center justify-center">
-              <ShieldCheck className="w-8 h-8 text-forest-400" />
-            </div>
-            <h3 className="font-display text-lg font-semibold text-cream-50 mb-2">Safety reporting coming soon</h3>
-            <p className="text-cream-400 mb-6 max-w-xs mx-auto">
-              Report exploitation, harassment, or payment defaults anonymously.
-            </p>
+
+          <Card variant="panel" padding="lg" className="border-bg-700 space-y-4 max-w-2xl">
+            {safetySubmitted ? (
+              <div className="p-6 bg-forest-950/30 border border-forest-700 rounded-xl text-center space-y-3">
+                <ShieldCheck className="w-12 h-12 text-forest-400 mx-auto" />
+                <h3 className="font-display text-lg font-semibold text-cream-50">Report Submitted Anonymously</h3>
+                <p className="text-sm text-cream-300">
+                  Thank you for keeping Kabadiwala Connect safe. Your report has been routed to the Admin moderation queue without logging your phone number or identity.
+                </p>
+                <Button variant="outline" size="sm" onClick={() => setSafetySubmitted(false)}>
+                  Submit Another Report
+                </Button>
+              </div>
+            ) : (
+              <form onSubmit={(e) => { e.preventDefault(); handleCollectorSubmitSafetyReport(); }} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-bold text-cream-300 uppercase tracking-wider mb-1">
+                    Issue Category
+                  </label>
+                  <Select
+                    value={safetyCategory}
+                    onChange={(e) => setSafetyCategory(e.target.value)}
+                    options={SAFETY_CATEGORIES}
+                    className="w-full"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-cream-300 uppercase tracking-wider mb-1">
+                    Recycler / Yard / Entity Name (Optional)
+                  </label>
+                  <Input
+                    value={safetyEntity}
+                    onChange={(e) => setSafetyEntity(e.target.value)}
+                    placeholder="e.g. Local Scrap Yard Intermediary"
+                    className="w-full"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-cream-300 uppercase tracking-wider mb-1">
+                    Describe the Issue <span className="text-copper-400">*</span>
+                  </label>
+                  <Textarea
+                    required
+                    value={safetyDescription}
+                    onChange={(e) => setSafetyDescription(e.target.value)}
+                    placeholder="Provide details about forced underpricing, cartel collusion, or harassment..."
+                    rows={4}
+                    className="w-full"
+                  />
+                </div>
+
+                <div className="p-3 bg-forest-950/30 border border-forest-800 rounded-lg flex items-center justify-between text-xs text-forest-300">
+                  <div className="flex items-center gap-2">
+                    <ShieldCheck className="w-4 h-4 text-forest-400 shrink-0" />
+                    <span>Your phone number and name are 100% hidden.</span>
+                  </div>
+                  <label className="flex items-center gap-2 font-semibold cursor-pointer text-cream-200">
+                    <input
+                      type="checkbox"
+                      checked={safetyAnonymous}
+                      onChange={(e) => setSafetyAnonymous(e.target.checked)}
+                      className="rounded bg-bg-800 border-bg-600 text-copper-500"
+                    />
+                    Submit Anonymously
+                  </label>
+                </div>
+
+                <Button
+                  type="submit"
+                  variant="copper"
+                  size="lg"
+                  loading={isSubmittingSafety}
+                  disabled={!safetyDescription.trim()}
+                  className="w-full gap-2"
+                >
+                  <Send className="w-4 h-4" />
+                  <span>Submit Safety Report</span>
+                </Button>
+              </form>
+            )}
           </Card>
         </div>
       )}

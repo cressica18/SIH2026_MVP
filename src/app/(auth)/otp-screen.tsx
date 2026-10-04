@@ -298,27 +298,6 @@ export const OtpScreen: React.FC<OtpScreenProps> = ({
       iconColor: 'text-emerald-400',
     },
     {
-      role: 'farmer',
-      label: 'Farmer (Legacy)',
-      color: 'text-botanical-300',
-      hoverBg: 'hover:bg-botanical-900/40 hover:border-botanical-700',
-      iconColor: 'text-botanical-400',
-    },
-    {
-      role: 'buyer',
-      label: 'Buyer / Processor (Legacy)',
-      color: 'text-deepteal-300',
-      hoverBg: 'hover:bg-deepteal-900/40 hover:border-deepteal-700',
-      iconColor: 'text-deepteal-400',
-    },
-    {
-      role: 'logistics',
-      label: 'Logistics (Legacy)',
-      color: 'text-ochre-300',
-      hoverBg: 'hover:bg-ochre-900/40 hover:border-ochre-700',
-      iconColor: 'text-ochre-400',
-    },
-    {
       role: 'admin',
       label: 'Admin & Safety',
       color: 'text-sage-300',

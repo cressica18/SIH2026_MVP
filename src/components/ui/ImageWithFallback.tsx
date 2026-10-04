@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sprout, ImageOff } from 'lucide-react';
+import { Recycle, ImageOff } from 'lucide-react';
 
 export interface ImageWithFallbackProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   fallbackTitle?: string;
@@ -8,7 +8,7 @@ export interface ImageWithFallbackProps extends React.ImgHTMLAttributes<HTMLImag
 
 export const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
   src,
-  alt = 'Produce lot image',
+  alt = 'Scrap lot image',
   fallbackTitle,
   className = '',
   ...props
@@ -22,7 +22,7 @@ export const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
         aria-label={alt}
       >
         <div className="w-10 h-10 rounded-full bg-neutral-200 flex items-center justify-center text-neutral-600 mb-1.5 shadow-xs">
-          <Sprout className="w-5 h-5 text-primary-600" />
+          <Recycle className="w-5 h-5 text-primary-600" />
         </div>
         <span className="text-xs font-semibold text-neutral-800 text-center line-clamp-1">
           {fallbackTitle || alt}

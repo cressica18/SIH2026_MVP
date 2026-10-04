@@ -148,6 +148,21 @@ describe('Collector & Recycler Auth, Profile, and Smart Pool Flow Tests', () => 
   });
 
   describe('Permissions & Role Enforcement on Smart Pool & Scrap Lot Endpoints', () => {
+    it('should allow collector to create a smart pool from an available lot', async () => {
+      const collectorToken = generateAccessToken({ userId: 'collector_1', phone: '+91 97654 33210', role: 'collector' });
+
+      const res = await request(server)
+        .post('/api/smart-pools/create-from-lot')
+        .set('Authorization', `Bearer ${collectorToken}`)
+        .send({ lotId: 'lot_1' });
+
+      expect(res.status).toBe(201);
+      expect(res.body).toHaveProperty('id');
+      expect(res.body.materialCategory).toBe('metal');
+      expect(res.body.status).toBe('open');
+      expect(res.body.members.length).toBeGreaterThanOrEqual(2);
+    });
+
     it('should prevent non-collectors (e.g., recycler) from creating a scrap lot', async () => {
       const recyclerToken = generateAccessToken({ userId: 'recycler_1', phone: '+91 98123 45678', role: 'recycler' });
 

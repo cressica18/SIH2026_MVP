@@ -201,7 +201,7 @@ export const CollectorView: React.FC<CollectorViewProps> = ({
   const [aiPriceBand, setAiPriceBand] = useState<PriceBand | null>(null);
   const [qualityGrade, setQualityGrade] = useState<QualityAssessment | null>(null);
   const [selectedPhotoUrl, setSelectedPhotoUrl] = useState<string>(
-    'https://images.unsplash.com/photo-1618512496248-a07fe83aa8cb?w=600&auto=format&fit=crop&q=80'
+    'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=600&auto=format&fit=crop&q=80'
   );
   const [photoBase64, setPhotoBase64] = useState<string>('');
   const [isPublishing, setIsPublishing] = useState(false);
@@ -309,7 +309,10 @@ export const CollectorView: React.FC<CollectorViewProps> = ({
     }
   };
 
+  const [poolActionError, setPoolActionError] = useState<string | null>(null);
+
   const handleCreatePool = async (lot: ScrapLot) => {
+    setPoolActionError(null);
     try {
       const token = localStorage.getItem('kabadiwala_token');
       const res = await fetch('/api/smart-pools/create-from-lot', {
@@ -326,10 +329,11 @@ export const CollectorView: React.FC<CollectorViewProps> = ({
         setActiveTab('pools');
       } else {
         const err = await res.json();
-        alert(err.error || 'Could not create pool');
+        setPoolActionError(err.error || 'Could not create pool');
       }
     } catch (err) {
       console.error('Failed to create pool', err);
+      setPoolActionError('An unexpected error occurred while creating the pool.');
     }
   };
 
@@ -499,7 +503,7 @@ export const CollectorView: React.FC<CollectorViewProps> = ({
         setCollectionDateInput('');
         setNotesInput('');
         setPhotoBase64('');
-        setSelectedPhotoUrl('https://images.unsplash.com/photo-1618512496248-a07fe83aa8cb?w=600&auto=format&fit=crop&q=80');
+        setSelectedPhotoUrl('https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=600&auto=format&fit=crop&q=80');
         setPublishError(null);
         setActiveTab('lots');
       } else {
@@ -979,18 +983,18 @@ export const CollectorView: React.FC<CollectorViewProps> = ({
                           <div className="flex items-center gap-3 text-xs text-copper-300">
                             <span className="flex items-center gap-1 font-medium">
                               <span className="w-1.5 h-1.5 rounded-full bg-copper-400" />
-                              Color: {item.quality.colorUniformity}%
+                              Purity: {item.quality.colorUniformity}%
                             </span>
                             <span className="flex items-center gap-1 font-medium">
                               <span className="w-1.5 h-1.5 rounded-full bg-copper-400" />
-                              Firm: {item.quality.firmnessScore}%
+                              Consistency: {item.quality.firmnessScore}%
                             </span>
                             <span className="flex items-center gap-1 font-medium">
                               <span className={`w-1.5 h-1.5 rounded-full ${
                                 item.quality.surfaceDefects <= 8 ? 'bg-success-500' : 
                                 item.quality.surfaceDefects <= 18 ? 'bg-warning-500' : 'bg-copper-500'
                               }`} />
-                              Defects: {item.quality.surfaceDefects}%
+                              Contamination: {item.quality.surfaceDefects}%
                             </span>
                           </div>
                         </div>
@@ -1049,6 +1053,7 @@ export const CollectorView: React.FC<CollectorViewProps> = ({
           myLots={myLots}
           isLoading={isLoadingPools}
           t={t}
+          poolActionError={poolActionError}
           onCreatePool={handleCreatePool}
           onJoinPool={handleJoinPool}
           onLeavePool={handleLeavePool}
@@ -1627,9 +1632,9 @@ function CreateLotModal({
               </div>
             </div>
             <div className="grid grid-cols-3 gap-2 mt-3 text-xs text-cream-400">
-              <div>Color: {qualityGrade.colorUniformity}%</div>
-              <div>Firmness: {qualityGrade.firmnessScore}%</div>
-              <div>Defects: {qualityGrade.surfaceDefects}%</div>
+              <div>Purity: {qualityGrade.colorUniformity}%</div>
+              <div>Consistency: {qualityGrade.firmnessScore}%</div>
+              <div>Contamination: {qualityGrade.surfaceDefects}%</div>
             </div>
           </Card>
         )}
@@ -1690,6 +1695,7 @@ function SmartPoolsTab({
   myLots,
   isLoading,
   t,
+  poolActionError,
   onCreatePool,
   onJoinPool,
   onLeavePool,
@@ -1702,6 +1708,7 @@ function SmartPoolsTab({
   myLots: ScrapLot[];
   isLoading: boolean;
   t: any;
+  poolActionError?: string | null;
   onCreatePool: (lot: ScrapLot) => void;
   onJoinPool: (lot: ScrapLot) => void;
   onLeavePool: (poolId: string, lotId: string) => void;
@@ -1765,6 +1772,13 @@ function SmartPoolsTab({
           <span>Refresh</span>
         </Button>
       </div>
+
+      {poolActionError && (
+        <div className="p-3 bg-copper-900/40 border border-copper-700 rounded-lg text-copper-300 text-sm flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 shrink-0 text-copper-400" />
+          <span>{poolActionError}</span>
+        </div>
+      )}
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -1947,20 +1961,7 @@ function SmartPoolsTab({
                           variant="copper"
                           size="sm"
                           className="flex-1 gap-1"
-                          onClick={() => {
-                            const myMember = pool.members.find(m => m.anonCollectorId === collector.anonCollectorId);
-                            if (myMember) {
-                              fetch(`/api/smart-pools/${pool.id}/offers`, {
-                                headers: { Authorization: `Bearer ${localStorage.getItem('kabadiwala_token')}` },
-                              }).then(r => r.json()).then(data => {
-                                if (data.offers && data.offers.length > 0) {
-                                  alert(`${data.offers.length} offer(s) received. Check backend for details.`);
-                                } else {
-                                  alert('No offers yet. Waiting for recyclers...');
-                                }
-                              });
-                            }
-                          }}
+                          onClick={() => onViewPoolDetail(pool)}
                         >
                           <Gavel className="w-4 h-4" />
                           <span>View Offers</span>
@@ -1984,9 +1985,7 @@ function SmartPoolsTab({
                         variant="olive"
                         size="sm"
                         className="flex-1 gap-1"
-                        onClick={() => {
-                          alert(`Handover reference: ${pool.handoverRef || 'Pending'}`);
-                        }}
+                        onClick={() => onViewPoolDetail(pool)}
                       >
                         <QrCode className="w-4 h-4" />
                         <span>Handover / Settlement</span>

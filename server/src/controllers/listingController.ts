@@ -107,7 +107,7 @@ export function createListing(req: AuthRequest, res: Response): void {
       trend: 'stable',
       benchmarkMarket: `${farmerProfile.district} APMC`,
     },
-    imageUrl: body.imageUrl || 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=600&auto=format&fit=crop&q=80',
+    imageUrl: body.imageUrl || 'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=600&auto=format&fit=crop&q=80',
     status: 'active',
     createdVia: body.createdVia || 'text',
     createdAt: new Date().toISOString(),

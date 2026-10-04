@@ -194,10 +194,12 @@ export const OtpScreen: React.FC<OtpScreenProps> = ({
 
   const rolePath = (role: UserRole) => {
     switch (role) {
+      case 'collector': return '/collector';
+      case 'recycler': return '/recycler';
       case 'buyer': return '/buyer';
       case 'logistics': return '/logistics';
       case 'admin': return '/admin';
-      default: return '/farmer';
+      default: return '/collector';
     }
   };
 

@@ -54,12 +54,12 @@ const steps: DemoStep[] = [
       tabName: 'lots',
       icon: <Mic className="w-6 h-6 text-copper-400" />,
       narrative:
-        'Collector taps the microphone and speaks naturally in their regional language (e.g., "500 kg copper wire, 620 rupees per kg"). The platform transcribes speech, extracts structured scrap entities (material, weight, category), computes an AI Price Band grounded in Scrap Market data, and runs a Material CNN quality classifier on scrap photos.',
+        'Collector taps the microphone and speaks naturally in their regional language (e.g., "500 kg copper wire, 620 rupees per kg"). The platform transcribes speech, extracts structured scrap entities (material, weight, category), computes an AI Price Band grounded in Scrap Market data, and runs an AI Vision Quality classifier on scrap photos.',
       keyInnovations: [
         'Web Speech API STT with 5 regional languages (Hindi, Marathi, Telugu, Punjabi, English)',
         'Rule-based & AI slot-filling entity extractor for material, weight, category, and expected price',
         'AI Price Band [Min – Fair – Max] benchmarked against Scrap Market historical trends',
-        'Material CNN Quality Classifier (Grade A/B/C + confidence + purity/firmness check)',
+        'AI Vision Quality Classifier (Grade A/B/C + confidence + purity/consistency check)',
       ],
       actionLabel: 'Launch Collector Voice Lot Screen',
     },

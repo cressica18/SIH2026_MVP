@@ -5,7 +5,7 @@ import { requireRole } from '../middleware/auth.js';
 const router = Router();
 
 // Protect routes
-router.use(requireRole('buyer', 'farmer', 'admin', 'logistics'));
+router.use(requireRole('buyer', 'farmer', 'collector', 'recycler', 'admin', 'logistics'));
 
 router.get('/buyer/:id', getRankedListingsForBuyer);
 router.get('/listing/:id', getRankedBuyersForListing);

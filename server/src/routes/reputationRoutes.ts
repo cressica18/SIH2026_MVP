@@ -5,9 +5,9 @@ import { getReputation, postReputationEvent } from '../controllers/reputationCon
 const router = Router();
 
 // GET /api/reputation/:userId — Public (any authenticated user)
-router.get('/:userId', requireRole('farmer', 'buyer', 'logistics', 'admin'), getReputation);
+router.get('/:userId', requireRole('farmer', 'buyer', 'logistics', 'collector', 'recycler', 'admin'), getReputation);
 
-// POST /api/reputation/events — Buyer rates farmer post-settlement (or farmer rates buyer)
-router.post('/events', requireRole('buyer', 'farmer', 'admin'), postReputationEvent);
+// POST /api/reputation/events — Buyer rates farmer post-settlement (or collector/recycler ratings)
+router.post('/events', requireRole('buyer', 'farmer', 'collector', 'recycler', 'admin'), postReputationEvent);
 
 export default router;

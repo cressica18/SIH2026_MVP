@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../lib/auth-context';
-import { Sprout, ShoppingCart, Truck, ShieldCheck, User, MapPin, Building2, CheckCircle2 } from 'lucide-react';
+import { Sprout, ShoppingCart, Truck, ShieldCheck, Recycle, Factory, User, MapPin, Building2, CheckCircle2 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from './ui/Card';
 import { Button } from './ui/Button';
 import { Input } from './ui/Input';
@@ -30,6 +30,18 @@ export function OnboardingScreen({ onComplete }: { onComplete: (profile: any) =>
   const [capacityKg, setCapacityKg] = useState('1000');
   const [serviceRadiusKm, setServiceRadiusKm] = useState('50');
 
+  // Collector specific
+  const [area, setArea] = useState('');
+  const [collectorVehicleType, setCollectorVehicleType] = useState('cycle');
+  const [collectionRadiusKm, setCollectionRadiusKm] = useState('10');
+  const [primaryMaterials, setPrimaryMaterials] = useState('copper, plastic, ewaste');
+
+  // Recycler specific
+  const [recyclerBusinessName, setRecyclerBusinessName] = useState('');
+  const [licenseNumber, setLicenseNumber] = useState('MPCB/RO/2024/00100');
+  const [acceptedMaterials, setAcceptedMaterials] = useState('metal, ewaste, plastic');
+  const [capacityKgPerDay, setCapacityKgPerDay] = useState('5000');
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -56,6 +68,22 @@ export function OnboardingScreen({ onComplete }: { onComplete: (profile: any) =>
         vehicleType,
         capacityKg: Number(capacityKg),
         serviceRadiusKm: Number(serviceRadiusKm),
+      };
+    } else if (user?.role === 'collector') {
+      payload = {
+        ...payload,
+        area,
+        vehicleType: collectorVehicleType,
+        collectionRadiusKm: Number(collectionRadiusKm),
+        primaryMaterials: primaryMaterials.split(',').map((m) => m.trim()),
+      };
+    } else if (user?.role === 'recycler') {
+      payload = {
+        ...payload,
+        businessName: recyclerBusinessName,
+        licenseNumber,
+        acceptedMaterials: acceptedMaterials.split(',').map((m) => m.trim()),
+        capacityKgPerDay: Number(capacityKgPerDay),
       };
     }
 
@@ -87,6 +115,8 @@ export function OnboardingScreen({ onComplete }: { onComplete: (profile: any) =>
   const roleIcon = user?.role === 'farmer' ? <Sprout className="w-6 h-6 text-emerald-600" /> :
                    user?.role === 'buyer' ? <ShoppingCart className="w-6 h-6 text-blue-600" /> :
                    user?.role === 'logistics' ? <Truck className="w-6 h-6 text-amber-600" /> :
+                   user?.role === 'collector' ? <Recycle className="w-6 h-6 text-copper-500" /> :
+                   user?.role === 'recycler' ? <Factory className="w-6 h-6 text-teal-500" /> :
                    <ShieldCheck className="w-6 h-6 text-purple-600" />;
 
   return (
@@ -171,6 +201,95 @@ export function OnboardingScreen({ onComplete }: { onComplete: (profile: any) =>
                     value={primaryCrops}
                     onChange={(e) => setPrimaryCrops(e.target.value)}
                     placeholder="Tomato, Onion"
+                  />
+                </div>
+              </div>
+            </>
+          )}
+
+          {user?.role === 'collector' && (
+            <>
+              <div>
+                <label className="block text-xs font-bold text-stone-800 mb-1">Area / Locality</label>
+                <Input
+                  required
+                  value={area}
+                  onChange={(e) => setArea(e.target.value)}
+                  placeholder="e.g. Dharavi, Sector 5"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-stone-800 mb-1">Vehicle Type</label>
+                  <Select
+                    options={[
+                      { value: 'cycle', label: 'Cycle / Handcart' },
+                      { value: 'auto', label: 'Three-Wheeler Auto' },
+                      { value: 'tempo', label: 'Small Tempo (1 Ton)' },
+                    ]}
+                    value={collectorVehicleType}
+                    onChange={(e) => setCollectorVehicleType(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-stone-800 mb-1">Collection Radius (Km)</label>
+                  <Input
+                    required
+                    type="number"
+                    value={collectionRadiusKm}
+                    onChange={(e) => setCollectionRadiusKm(e.target.value)}
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-stone-800 mb-1">Primary Scrap Materials</label>
+                <Input
+                  required
+                  value={primaryMaterials}
+                  onChange={(e) => setPrimaryMaterials(e.target.value)}
+                  placeholder="copper, plastic, ewaste"
+                />
+              </div>
+            </>
+          )}
+
+          {user?.role === 'recycler' && (
+            <>
+              <div>
+                <label className="block text-xs font-bold text-stone-800 mb-1">Recycling Plant / Business Name</label>
+                <Input
+                  required
+                  value={recyclerBusinessName}
+                  onChange={(e) => setRecyclerBusinessName(e.target.value)}
+                  placeholder="e.g. EcoRecycle India Pvt Ltd"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-stone-800 mb-1">License / Registration No.</label>
+                <Input
+                  required
+                  value={licenseNumber}
+                  onChange={(e) => setLicenseNumber(e.target.value)}
+                  placeholder="e.g. MPCB/RO/2024/00100"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-stone-800 mb-1">Accepted Materials</label>
+                  <Input
+                    required
+                    value={acceptedMaterials}
+                    onChange={(e) => setAcceptedMaterials(e.target.value)}
+                    placeholder="metal, ewaste, plastic"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-stone-800 mb-1">Capacity (Kg/Day)</label>
+                  <Input
+                    required
+                    type="number"
+                    value={capacityKgPerDay}
+                    onChange={(e) => setCapacityKgPerDay(e.target.value)}
                   />
                 </div>
               </div>

@@ -11,7 +11,7 @@ router.get('/', getSchemes as unknown as RequestHandler);
 // Farmers can only view their own; admin can view any
 router.get(
   '/match/:farmerId',
-  requireRole('farmer', 'admin') as unknown as RequestHandler,
+  requireRole('farmer', 'collector', 'admin') as unknown as RequestHandler,
   getMatchedSchemesForFarmer as unknown as RequestHandler
 );
 

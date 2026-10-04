@@ -12,7 +12,7 @@ const router = Router();
 // Cast to RequestHandler to satisfy Express overload when using AuthRequest-typed controllers
 router.post('/otp/send', sendOtp as unknown as RequestHandler);
 router.post('/otp/verify', verifyOtp as unknown as RequestHandler);
-router.get('/me', requireAnyRole('farmer', 'buyer', 'logistics', 'admin'), getMe as unknown as RequestHandler);
+router.get('/me', requireAnyRole('farmer', 'buyer', 'logistics', 'collector', 'recycler', 'admin'), getMe as unknown as RequestHandler);
 router.post('/refresh', refreshToken as unknown as RequestHandler);
 
 export default router;

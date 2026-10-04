@@ -134,12 +134,14 @@ export default function App() {
           else if (user?.role === 'buyer') setBuyer(data.profile);
           else if (user?.role === 'logistics') setLogistics(data.profile);
           else if (user?.role === 'collector') setCollector(data.profile);
+          else if (user?.role === 'recycler') setRecycler(data.profile);
         } else if (res.status === 404) {
           // Profile needs to be created
           if (user?.role === 'farmer') setFarmer(null);
           else if (user?.role === 'buyer') setBuyer(null);
           else if (user?.role === 'logistics') setLogistics(null);
           else if (user?.role === 'collector') setCollector(null);
+          else if (user?.role === 'recycler') setRecycler(null);
         }
 
         // Fetch Listings
@@ -668,7 +670,6 @@ export default function App() {
   const handleCreatePoolOffer = async (offer: {
     poolId: string;
     offeredPricePerKg: number;
-    totalValue: number;
     notes?: string;
   }): Promise<boolean> => {
     try {
@@ -1005,14 +1006,27 @@ return (
           />
         )}
 
-        {currentRole === 'collector' && collector && (
+        {currentRole === 'recycler' && recycler && (
           <RecyclerView
-            collector={collector}
-            lots={scrapLots.filter(l => l.anonCollectorId === collector.anonCollectorId)}
+            recycler={recycler}
+            pools={smartPools}
+            offers={poolOffers}
+            settlements={settlements}
             currentLanguage={currentLanguage}
-            onAddLot={handleAddScrapLot}
-            onUpdateLotStatus={handleUpdateScrapLotStatus}
-            initialTab={collectorSubTab}
+            onCreateOffer={handleCreatePoolOffer}
+            onCompleteHandover={handleCompleteHandover}
+            onRefresh={async () => {
+              const token = localStorage.getItem('vasundhara_token');
+              const [spRes, poRes, setRes] = await Promise.all([
+                fetch('/api/smart-pools', { headers: { Authorization: `Bearer ${token}` } }),
+                fetch('/api/smart-pools/offers', { headers: { Authorization: `Bearer ${token}` } }),
+                fetch('/api/smart-pools/settlements', { headers: { Authorization: `Bearer ${token}` } }),
+              ]);
+              if (spRes.ok) setSmartPools((await spRes.json()).pools || []);
+              if (poRes.ok) setPoolOffers((await poRes.json()).offers || []);
+              if (setRes.ok) setSettlements((await setRes.json()).settlements || []);
+            }}
+            initialTab={recyclerSubTab}
           />
         )}
 

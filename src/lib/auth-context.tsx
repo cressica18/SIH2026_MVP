@@ -66,7 +66,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Check for existing token on mount
   useEffect(() => {
-    const token = localStorage.getItem('vasundhara_token');
+    const token = localStorage.getItem('kabadiwala_token');
     if (token) {
       const payload = decodeJwt(token);
       if (payload && payload.exp && (payload.exp as number) * 1000 > Date.now()) {
@@ -82,14 +82,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           });
         } else {
           // Invalid role in token, clear stale auth state
-          localStorage.removeItem('vasundhara_token');
-          localStorage.removeItem('vasundhara_refresh_token');
+          localStorage.removeItem('kabadiwala_token');
+          localStorage.removeItem('kabadiwala_refresh_token');
           setUser(null);
         }
       } else {
         // Token expired, clear it
-        localStorage.removeItem('vasundhara_token');
-        localStorage.removeItem('vasundhara_refresh_token');
+        localStorage.removeItem('kabadiwala_token');
+        localStorage.removeItem('kabadiwala_refresh_token');
         setUser(null);
       }
     }
@@ -149,9 +149,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     if (!accessToken) return { success: false };
 
-    localStorage.setItem('vasundhara_token', accessToken);
+    localStorage.setItem('kabadiwala_token', accessToken);
     if (refreshTokenStr) {
-      localStorage.setItem('vasundhara_refresh_token', refreshTokenStr);
+      localStorage.setItem('kabadiwala_refresh_token', refreshTokenStr);
     }
 
     const payload = decodeJwt(accessToken);
@@ -175,12 +175,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = () => {
     setUser(null);
     setPendingPhone(null);
-    localStorage.removeItem('vasundhara_token');
-    localStorage.removeItem('vasundhara_refresh_token');
+    localStorage.removeItem('kabadiwala_token');
+    localStorage.removeItem('kabadiwala_refresh_token');
   };
 
   const refreshToken = async () => {
-    const token = localStorage.getItem('vasundhara_refresh_token');
+    const token = localStorage.getItem('kabadiwala_refresh_token');
     if (!token) return;
 
     try {
@@ -199,8 +199,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const newAccess = data.accessToken;
       const newRefresh = data.refreshToken;
 
-      if (newAccess) localStorage.setItem('vasundhara_token', newAccess);
-      if (newRefresh) localStorage.setItem('vasundhara_refresh_token', newRefresh);
+      if (newAccess) localStorage.setItem('kabadiwala_token', newAccess);
+      if (newRefresh) localStorage.setItem('kabadiwala_refresh_token', newRefresh);
 
       const payload = decodeJwt(newAccess);
       if (payload) {

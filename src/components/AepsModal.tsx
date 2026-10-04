@@ -61,7 +61,7 @@ export const AepsModal: React.FC<AepsModalProps> = ({
     setSimError(null);
     setAuthStep('scanning');
     try {
-      const token = localStorage.getItem('vasundhara_token');
+      const token = localStorage.getItem('kabadiwala_token');
       const res = await fetch('/api/finance/aeps/simulate-cashout', {
         method: 'POST',
         headers: {
@@ -138,7 +138,7 @@ export const AepsModal: React.FC<AepsModalProps> = ({
               <div className="p-3 bg-teal-900/30 border border-teal-700 rounded-xl text-xs text-teal-100 flex items-start gap-2 font-medium">
                 <ShieldCheck className="w-4 h-4 text-teal-400 mt-0.5 shrink-0" />
                 <p>
-                  No smartphone or bank branch visit required. Farmers withdraw liquidity directly via village Banking Correspondent (Bank Mitra) using Aadhaar fingerprint.
+                  No smartphone or bank branch visit required. Collectors withdraw liquidity directly via village Banking Correspondent (Bank Mitra) using Aadhaar fingerprint.
                 </p>
               </div>
 

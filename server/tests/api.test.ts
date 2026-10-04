@@ -13,7 +13,7 @@ beforeEach(() => {
   Object.assign(store, createStore());
 });
 
-describe('Vasundhara API', () => {
+describe('Kabadiwala Connect API', () => {
   // ---- HEALTH CHECK ----
   describe('GET /api/health', () => {
     it('should return health status ok', async () => {
@@ -21,7 +21,7 @@ describe('Vasundhara API', () => {
       expect(res.status).toBe(200);
       expect(res.body.status).toBe('ok');
       expect(res.body).toHaveProperty('timestamp');
-      expect(res.body.service).toBe('Vasundhara API');
+      expect(res.body.service).toBe('Kabadiwala Connect API');
     });
   });
 
@@ -116,7 +116,7 @@ describe('Vasundhara API', () => {
       expect(res.body).toHaveProperty('fair');
       expect(res.body).toHaveProperty('max');
       expect(res.body).toHaveProperty('confidence');
-      expect(res.body).toHaveProperty('benchmarkMandi');
+      expect(res.body).toHaveProperty('benchmarkMarket');
       expect(res.body).toHaveProperty('trend');
     });
 
@@ -934,7 +934,7 @@ describe('POST /api/logistics/pools', () => {
       // Manually create an expired token by signing with past expiry
       // This tests the expiry validation
       const jwt = await import('jsonwebtoken');
-      const OTP_CHALLENGE_SECRET = process.env.OTP_CHALLENGE_SECRET || process.env.JWT_SECRET || 'vasundhara-otp-challenge-secret';
+      const OTP_CHALLENGE_SECRET = process.env.OTP_CHALLENGE_SECRET || process.env.JWT_SECRET || 'kabadiwala-otp-challenge-secret';
       const expiredToken = jwt.default.sign(
         { phone: '+91 98231 44521', otp: '123456', exp: Date.now() - 1000, nonce: 'expired' },
         OTP_CHALLENGE_SECRET

@@ -267,9 +267,9 @@ export function getAiPriceRecommendation(materialType: string, _region: string =
     fair: Math.round(base.fair * 10) / 10,
     max: Math.round(base.max * 10) / 10,
     confidence: 93,
-    historicalMandiAvg: Math.round((base.fair - 0.5) * 10) / 10,
+    historicalMarketAvg: Math.round((base.fair - 0.5) * 10) / 10,
     trend: 'stable',
-    benchmarkMandi: 'Local Scrap Market',
+    benchmarkMarket: 'Local Scrap Market',
   };
 }
 

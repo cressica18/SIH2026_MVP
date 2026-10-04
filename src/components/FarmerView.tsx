@@ -297,9 +297,9 @@ export const FarmerView: React.FC<FarmerViewProps> = ({
           fair: price,
           max: price * 1.15,
           confidence: 92,
-          historicalMandiAvg: price,
+          historicalMarketAvg: price,
           trend: 'rising',
-          benchmarkMandi: `${farmer.district} APMC`,
+          benchmarkMarket: `${farmer.district} APMC`,
         },
         quality: qualityGrade || {
           grade: 'A',
@@ -307,7 +307,7 @@ export const FarmerView: React.FC<FarmerViewProps> = ({
           colorUniformity: 92,
           surfaceDefects: 4,
           firmnessScore: 89,
-          freshnessLabel: 'Grade A Farmgate Batch',
+          freshnessLabel: 'Grade A Direct Batch',
           notes: 'Harvest verified by AI image scan.',
         },
         imageUrl: selectedPhotoUrl,
@@ -1160,7 +1160,7 @@ function OrderCard({
             </p>
             <p className="text-xs text-cream-400 leading-relaxed">
               Buyer delivery address: <span className="font-semibold text-cream-100">{order.deliveryAddress}</span>. 
-              Logistics carrier handles farmgate dispatch.
+              Logistics carrier handles collector dispatch.
             </p>
             {order.poolId && (
               <p className="text-xs text-teal-300 flex items-center gap-1.5">
@@ -1817,7 +1817,7 @@ function CreateListingModal({
             <div className="flex items-center justify-between text-xs">
               <span className="font-bold text-harvest-100 flex items-center gap-1.5">
                 <Sparkles className="w-4 h-4 text-harvest-400" />
-                AI Price Band (Agmarknet Mandi Model)
+                AI Price Band (Scrap Market Model)
               </span>
               <span className="font-bold text-harvest-300">{aiPriceBand.confidence}% Confidence</span>
             </div>
@@ -1828,7 +1828,7 @@ function CreateListingModal({
               <span className="text-cream-500">Max: ₹{aiPriceBand.max}/kg</span>
             </div>
 
-            <p className="text-[11px] text-harvest-100 font-medium">Benchmark: {aiPriceBand.benchmarkMandi}. Wholesale prices are currently trending {aiPriceBand.trend}.</p>
+            <p className="text-[11px] text-harvest-100 font-medium">Benchmark: {aiPriceBand.benchmarkMarket}. Wholesale prices are currently trending {aiPriceBand.trend}.</p>
           </div>
         )}
 

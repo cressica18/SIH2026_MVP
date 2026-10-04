@@ -3,9 +3,9 @@
 
 import jwt from 'jsonwebtoken';
 
-const ACCESS_TOKEN_SECRET = process.env.JWT_SECRET || 'vasundhara-dev-secret-change-me';
-const REFRESH_TOKEN_SECRET = process.env.JWT_REFRESH_SECRET || 'vasundhara-refresh-secret-change-me';
-const OTP_CHALLENGE_SECRET = process.env.OTP_CHALLENGE_SECRET || process.env.JWT_SECRET || 'vasundhara-otp-challenge-secret';
+const ACCESS_TOKEN_SECRET = process.env.JWT_SECRET || 'kabadiwala-dev-secret-change-me';
+const REFRESH_TOKEN_SECRET = process.env.JWT_REFRESH_SECRET || 'kabadiwala-refresh-secret-change-me';
+const OTP_CHALLENGE_SECRET = process.env.OTP_CHALLENGE_SECRET || process.env.JWT_SECRET || 'kabadiwala-otp-challenge-secret';
 const ACCESS_TOKEN_EXPIRY = '15m';
 const REFRESH_TOKEN_EXPIRY = '7d';
 const OTP_EXPIRY_MS = 5 * 60 * 1000; // 5 minutes

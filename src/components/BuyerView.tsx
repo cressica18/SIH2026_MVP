@@ -205,7 +205,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
               </Badge>
               <Badge variant="deepteal" size="sm" className="gap-1.5">
                 <Sparkles className="w-3.5 h-3.5" />
-                Direct Farmgate Access
+                Direct Marketplace Access
               </Badge>
             </div>
             <CardTitle className="text-xl sm:text-2xl font-black text-cream-50 tracking-tight">
@@ -522,7 +522,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                         ₹{ord.totalAmount.toLocaleString('en-IN')}
                       </span>
                       <span className="text-cream-400 block text-xs font-medium">
-                        Settlement at Farmgate
+                        Settlement at Delivery Destination
                       </span>
                     </div>
 

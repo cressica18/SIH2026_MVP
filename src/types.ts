@@ -94,9 +94,9 @@ export interface PriceBand {
   fair: number;
   max: number;
   confidence: number;
-  historicalMandiAvg: number;
+  historicalMarketAvg: number;
   trend: 'rising' | 'stable' | 'falling';
-  benchmarkMandi: string;
+  benchmarkMarket: string;
 }
 
 export type ListingStatus = 'active' | 'matched' | 'sold' | 'withdrawn';

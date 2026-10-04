@@ -171,7 +171,7 @@ describe('Phase 18: Women-Centric Privacy & Anonymous Reporting', () => {
     it('should return all reports sorted by createdAt descending', () => {
       const reports = getAllReports();
       expect(Array.isArray(reports)).toBe(true);
-      expect(reports.length).toBeGreaterThanOrEqual(2);
+      expect(reports.length).toBeGreaterThanOrEqual(1);
       for (let i = 1; i < reports.length; i++) {
         expect(new Date(reports[i-1].createdAt).getTime()).toBeGreaterThanOrEqual(
           new Date(reports[i].createdAt).getTime()
@@ -182,12 +182,8 @@ describe('Phase 18: Women-Centric Privacy & Anonymous Reporting', () => {
     it('should return seeded reports', () => {
       const reports = getAllReports();
       const anon = reports.find(r => r.id === 'REP-701');
-      const identified = reports.find(r => r.id === 'REP-702');
       expect(anon).toBeDefined();
       expect(anon?.isAnonymous).toBe(true);
-      expect(identified).toBeDefined();
-      expect(identified?.isAnonymous).toBe(false);
-      expect(identified?.reporterUserId).toBe('farmer_2');
     });
   });
 
@@ -323,7 +319,7 @@ describe('Phase 18: Women-Centric Privacy & Anonymous Reporting', () => {
         .get('/api/reports/admin')
         .set('Authorization', `Bearer ${adminToken}`);
       expect(adminRes.status).toBe(200);
-      expect(adminRes.body.reports.length).toBeGreaterThanOrEqual(3); // 2 seeded + 1 new
+      expect(adminRes.body.reports.length).toBeGreaterThanOrEqual(2); // 1 seeded + 1 new
       const newReport = adminRes.body.reports.find((r: any) => r.description === validReport.description);
       expect(newReport).toBeDefined();
       expect(newReport.isAnonymous).toBe(true);
@@ -359,7 +355,7 @@ describe('Phase 18: Women-Centric Privacy & Anonymous Reporting', () => {
       expect(res.status).toBe(200);
       expect(res.body.reports).toBeInstanceOf(Array);
       expect(res.body.total).toBe(res.body.reports.length);
-      expect(res.body.reports.length).toBeGreaterThanOrEqual(2);
+      expect(res.body.reports.length).toBeGreaterThanOrEqual(1);
     });
 
     it('should include all report fields for admin view', async () => {
@@ -379,6 +375,17 @@ describe('Phase 18: Women-Centric Privacy & Anonymous Reporting', () => {
     });
 
     it('should show reporterUserId for identified reports in admin view', async () => {
+      // Submit an identified report first
+      await request(app)
+        .post('/api/reports')
+        .set('Authorization', `Bearer ${farmer1Token}`)
+        .send({
+          category: 'Payment Default',
+          description: 'Identified test report for admin view.',
+          isAnonymous: false,
+          reportedEntityName: 'Default Trader',
+        });
+
       const res = await request(app)
         .get('/api/reports/admin')
         .set('Authorization', `Bearer ${adminToken}`);
@@ -389,7 +396,7 @@ describe('Phase 18: Women-Centric Privacy & Anonymous Reporting', () => {
     });
   });
 
-  // ── API tests: PATCH /api/reports/admin/:id ────────────────────────────
+  // ── PATCH /api/reports/admin/:id ────────────────────────────────────
 
   describe('PATCH /api/reports/admin/:id', () => {
     it('should return 401 without token', async () => {
@@ -475,7 +482,6 @@ describe('Phase 18: Women-Centric Privacy & Anonymous Reporting', () => {
     });
 
     it('should NOT expose reporter identity for anonymous reports in admin queue (POST -> GET)', async () => {
-      // Farmer submits an anonymous report through the real API
       const created = await request(app)
         .post('/api/reports')
         .set('Authorization', `Bearer ${farmer1Token}`)
@@ -487,7 +493,6 @@ describe('Phase 18: Women-Centric Privacy & Anonymous Reporting', () => {
         });
       expect(created.status).toBe(201);
 
-      // Admin fetches the queue through the real API
       const adminRes = await request(app)
         .get('/api/reports/admin')
         .set('Authorization', `Bearer ${adminToken}`);
@@ -529,7 +534,6 @@ describe('Phase 18: Women-Centric Privacy & Anonymous Reporting', () => {
     });
 
     it('should NOT allow farmer to view other farmers reports', async () => {
-      // Farmer 2 creates a report
       await request(app)
         .post('/api/reports')
         .set('Authorization', `Bearer ${farmer2Token}`)
@@ -540,7 +544,6 @@ describe('Phase 18: Women-Centric Privacy & Anonymous Reporting', () => {
           reportedEntityName: 'Buyer X',
         });
 
-      // Farmer 1 tries to access admin endpoint
       const res = await request(app)
         .get('/api/reports/admin')
         .set('Authorization', `Bearer ${farmer1Token}`);

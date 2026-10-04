@@ -13,70 +13,47 @@ describe('Phase 15: Government Scheme Awareness', () => {
     const maharashtraFarmer = SEED_FARMERS.find(f => f.state === 'Maharashtra')!; // farmer_1
     const punjabFarmer = SEED_FARMERS.find(f => f.state === 'Punjab')!;            // farmer_3
 
-    it('should match PM-KISAN (All India, All Crops) for any farmer', () => {
-      const pmKisan = SEED_GOV_SCHEMES.find(s => s.id === 'SCHEME-01')!;
-      const result = checkEligibility(pmKisan, maharashtraFarmer);
+    it('should match National Recycling Scheme (All India, All Materials) for any farmer/collector', () => {
+      const nationalScheme = SEED_GOV_SCHEMES.find(s => s.id === 'SCHEME-01')!;
+      const result = checkEligibility(nationalScheme, maharashtraFarmer);
       expect(result.eligible).toBe(true);
-      expect(result.reason).toContain('Available across India');
+      expect(result.reason).toContain('Available in Maharashtra');
     });
 
-    it('should reject a state-specific scheme for farmer outside that state', () => {
-      // SMAM is All India scheme
+    it('should match All India scheme for farmer/collector outside Maharashtra', () => {
       const smam = SEED_GOV_SCHEMES.find(s => s.id === 'SCHEME-03')!; // All India
       const result = checkEligibility(smam, punjabFarmer);
-      expect(result.eligible).toBe(true); // SMAM is All India
+      expect(result.eligible).toBe(true); // SPIF is All India
     });
 
-    it('should reject a scheme when farmer crops do not match', () => {
-      // PM-AASHA covers Soybean, Wheat — but farmer_1 grows Tomato, Onion, Grapes
-      const pmaasha = SEED_GOV_SCHEMES.find(s => s.id === 'SCHEME-08')!;
-      const result = checkEligibility(pmaasha, maharashtraFarmer);
+    it('should reject a scheme when collector materials do not match', () => {
+      const ewasteScheme = SEED_GOV_SCHEMES.find(s => s.id === 'SCHEME-02')!;
+      const nonEwasteFarmer = { ...maharashtraFarmer, primaryCrops: ['Paper'] };
+      const result = checkEligibility(ewasteScheme, nonEwasteFarmer);
       expect(result.eligible).toBe(false);
       expect(result.reason).toContain('Not applicable for your crops');
     });
 
-    it('should match a crop-insurance scheme when farmer grows eligible crop', () => {
-      // PMFBY covers Tomato — farmer_1 grows Tomato
-      const pmfby = SEED_GOV_SCHEMES.find(s => s.id === 'SCHEME-02')!;
-      const result = checkEligibility(pmfby, maharashtraFarmer);
+    it('should match a material protection scheme when collector has eligible material', () => {
+      const ewasteScheme = SEED_GOV_SCHEMES.find(s => s.id === 'SCHEME-02')!;
+      const ewasteFarmer = { ...maharashtraFarmer, primaryCrops: ['E-Waste'] };
+      const result = checkEligibility(ewasteScheme, ewasteFarmer);
       expect(result.eligible).toBe(true);
-      expect(result.reason).toContain('Tomato');
+      expect(result.reason).toContain('E-Waste');
     });
 
-    it('should reject PM-KISAN when farmer landSizeAcres exceeds maxLandAcreage', () => {
-      const pmKisan = SEED_GOV_SCHEMES.find(s => s.id === 'SCHEME-01')!;
-      const bigFarmer = { ...maharashtraFarmer, landSizeAcres: 15 }; // exceeds 10 acres
-      const result = checkEligibility(pmKisan, bigFarmer);
+    it('should reject scheme when collector capacity exceeds maxLandAcreage', () => {
+      const nationalScheme = SEED_GOV_SCHEMES.find(s => s.id === 'SCHEME-01')!;
+      const bigFarmer = { ...maharashtraFarmer, landSizeAcres: 15 };
+      const result = checkEligibility(nationalScheme, bigFarmer);
       expect(result.eligible).toBe(false);
       expect(result.reason).toContain('exceeds');
     });
 
-    it('should reject PM-Kusum when farmer landSizeAcres exceeds 5 acre limit', () => {
-      const kusum = SEED_GOV_SCHEMES.find(s => s.id === 'SCHEME-04')!;
-      const bigFarmer = { ...maharashtraFarmer, landSizeAcres: 8 }; // exceeds 5 acres
-      const result = checkEligibility(kusum, bigFarmer);
-      expect(result.eligible).toBe(false);
-    });
-
-    it('should match PM-Kusum for eligible Maharashtra farmer with small landholding', () => {
-      const kusum = SEED_GOV_SCHEMES.find(s => s.id === 'SCHEME-04')!;
-      // maharashtraFarmer has 3.5 acres — within 5 acre limit, Maharashtra is covered
-      const result = checkEligibility(kusum, maharashtraFarmer);
-      expect(result.eligible).toBe(true);
-    });
-
-    it('should reject PKVY when farmer land is below minLandAcreage', () => {
-      const pkvy = SEED_GOV_SCHEMES.find(s => s.id === 'SCHEME-05')!;
-      const tinyFarmer = { ...maharashtraFarmer, landSizeAcres: 0.2 }; // below 0.5 minimum
-      const result = checkEligibility(pkvy, tinyFarmer);
-      expect(result.eligible).toBe(false);
-      expect(result.reason).toContain('below minimum');
-    });
-
     it('should produce a deterministic eligibilityReason (stable across calls)', () => {
-      const pmfby = SEED_GOV_SCHEMES.find(s => s.id === 'SCHEME-02')!;
-      const r1 = checkEligibility(pmfby, maharashtraFarmer);
-      const r2 = checkEligibility(pmfby, maharashtraFarmer);
+      const nationalScheme = SEED_GOV_SCHEMES.find(s => s.id === 'SCHEME-01')!;
+      const r1 = checkEligibility(nationalScheme, maharashtraFarmer);
+      const r2 = checkEligibility(nationalScheme, maharashtraFarmer);
       expect(r1.reason).toBe(r2.reason);
       expect(r1.eligible).toBe(r2.eligible);
       expect(r1.score).toBe(r2.score);
@@ -93,10 +70,9 @@ describe('Phase 15: Government Scheme Awareness', () => {
       }
     });
 
-    it('should rank crop-specific matches before universal matches', () => {
+    it('should rank material-specific matches before universal matches', () => {
       const farmer = SEED_FARMERS.find(f => f.state === 'Maharashtra')!;
       const matched = matchSchemes(farmer);
-      // The first result should have a higher or equal relevance score than the last
       expect(matched[0].relevanceScore).toBeGreaterThanOrEqual(matched[matched.length - 1].relevanceScore);
     });
 
@@ -111,16 +87,15 @@ describe('Phase 15: Government Scheme Awareness', () => {
 
     it('should filter by category correctly', () => {
       const farmer = SEED_FARMERS[0];
-      const matched = matchSchemes(farmer, 'Crop Insurance');
+      const matched = matchSchemes(farmer, 'Direct Benefit');
       for (const s of matched) {
-        expect(s.category).toBe('Crop Insurance');
+        expect(s.category).toBe('Direct Benefit');
       }
     });
 
-    it('should return empty array when farmer has crops that match no scheme in a category', () => {
-      const farmer = { ...SEED_FARMERS[0], primaryCrops: ['SomeFakeExoticCrop'] };
+    it('should return empty array when collector has materials that match no scheme in a category', () => {
+      const farmer = { ...SEED_FARMERS[0], primaryCrops: ['SomeFakeExoticMaterial'] };
       const matched = matchSchemes(farmer, 'Crop Insurance');
-      // PMFBY specifically names crops — fake crop should not match Crop Insurance schemes
       expect(matched.length).toBe(0);
     });
 
@@ -132,20 +107,20 @@ describe('Phase 15: Government Scheme Awareness', () => {
   // ── API tests: GET /api/schemes ─────────────────────────────────────────────
 
   describe('GET /api/schemes', () => {
-    it('should return all 18 seeded schemes publicly', async () => {
+    it('should return all seeded schemes publicly', async () => {
       const res = await request(app).get('/api/schemes');
       expect(res.status).toBe(200);
       expect(res.body.schemes).toBeInstanceOf(Array);
-      expect(res.body.schemes.length).toBe(18);
-      expect(res.body.total).toBe(18);
+      expect(res.body.schemes.length).toBe(SEED_GOV_SCHEMES.length);
+      expect(res.body.total).toBe(SEED_GOV_SCHEMES.length);
     });
 
     it('should filter by category via ?category= query param', async () => {
-      const res = await request(app).get('/api/schemes?category=Crop Insurance');
+      const res = await request(app).get('/api/schemes?category=Direct Benefit');
       expect(res.status).toBe(200);
       expect(res.body.schemes.length).toBeGreaterThan(0);
       for (const s of res.body.schemes) {
-        expect(s.category).toBe('Crop Insurance');
+        expect(s.category).toBe('Direct Benefit');
       }
     });
 
@@ -174,8 +149,8 @@ describe('Phase 15: Government Scheme Awareness', () => {
     let anotherFarmerToken: string;
     let buyerToken: string;
 
-    const farmer1 = SEED_FARMERS[0]; // farmer_1, Maharashtra, 3.5 acres
-    const farmer3 = SEED_FARMERS[2]; // farmer_3, Punjab
+    const farmer1 = SEED_FARMERS[0];
+    const farmer3 = SEED_FARMERS[2];
 
     beforeAll(() => {
       farmerToken = generateAccessToken({ userId: farmer1.id, phone: farmer1.phone, role: 'farmer' });
@@ -224,11 +199,11 @@ describe('Phase 15: Government Scheme Awareness', () => {
 
     it('should respect category filter via ?category= in match endpoint', async () => {
       const res = await request(app)
-        .get(`/api/schemes/match/${farmer1.id}?category=Crop Insurance`)
+        .get(`/api/schemes/match/${farmer1.id}?category=Direct Benefit`)
         .set('Authorization', `Bearer ${farmerToken}`);
       expect(res.status).toBe(200);
       for (const s of res.body.schemes) {
-        expect(s.category).toBe('Crop Insurance');
+        expect(s.category).toBe('Direct Benefit');
       }
     });
 

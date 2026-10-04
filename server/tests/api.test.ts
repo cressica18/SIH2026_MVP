@@ -30,10 +30,10 @@ describe('Vasundhara API', () => {
     it('should extract crop, variety, quantity, and price from a transcript', async () => {
       const res = await request(server)
         .post('/api/voice/extract-listing')
-        .send({ transcript: 'do quintal tomato, expecting 18 rupees per kg', language: 'hi' });
+        .send({ transcript: '500 kg copper wire, expecting 620 rupees per kg', language: 'hi' });
       expect(res.status).toBe(200);
       expect(res.body).toHaveProperty('crop');
-      expect(res.body.crop).toBe('Tomato');
+      expect(res.body.crop).toBe('Copper Wire');
       expect(res.body).toHaveProperty('quantityKg');
       expect(res.body.quantityKg).toBeGreaterThan(0);
       expect(res.body).toHaveProperty('priceExpected');
@@ -55,7 +55,7 @@ describe('Vasundhara API', () => {
     it('should return quality assessment with all CNN sub-score fields', async () => {
       const res = await request(server)
         .post('/api/quality/assess')
-        .send({ crop: 'Tomato', image: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA' });
+        .send({ crop: 'Copper Wire', image: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA' });
       expect(res.status).toBe(200);
       expect(['A', 'B', 'C']).toContain(res.body.grade);
       expect(res.body.confidence).toBeGreaterThanOrEqual(70);
@@ -67,8 +67,8 @@ describe('Vasundhara API', () => {
       expect(res.body).toHaveProperty('notes');
     });
 
-    it('should assess quality for all supported demo crops', async () => {
-      const crops = ['Tomato', 'Onion', 'Potato', 'Green Chilli', 'Wheat', 'Soybean'];
+    it('should assess quality for all supported demo crops/materials', async () => {
+      const crops = ['Copper Wire', 'HDPE Plastic', 'Steel Scrap', 'Corrugated Paper', 'E-Waste', 'Aluminum Extrusion'];
       for (const crop of crops) {
         const res = await request(server)
           .post('/api/quality/assess')
@@ -83,8 +83,8 @@ describe('Vasundhara API', () => {
     it('should return stable grade for same image (deterministic CNN)', async () => {
       const imageData = 'data:image/png;base64,stableTestImage123';
       const [res1, res2] = await Promise.all([
-        request(server).post('/api/quality/assess').send({ crop: 'Onion', image: imageData }),
-        request(server).post('/api/quality/assess').send({ crop: 'Onion', image: imageData }),
+        request(server).post('/api/quality/assess').send({ crop: 'Copper Wire', image: imageData }),
+        request(server).post('/api/quality/assess').send({ crop: 'Copper Wire', image: imageData }),
       ]);
       expect(res1.body.grade).toBe(res2.body.grade);
       expect(res1.body.confidence).toBe(res2.body.confidence);
@@ -93,7 +93,7 @@ describe('Vasundhara API', () => {
     it('should work without image data (crop-only fallback)', async () => {
       const res = await request(server)
         .post('/api/quality/assess')
-        .send({ crop: 'Tomato' });
+        .send({ crop: 'Copper Wire' });
       expect(res.status).toBe(200);
       expect(['A', 'B', 'C']).toContain(res.body.grade);
     });
@@ -109,8 +109,8 @@ describe('Vasundhara API', () => {
 
   // ---- MARKET PRICE RECOMMENDATION ----
   describe('GET /api/market/price', () => {
-    it('should return price recommendation for a known crop', async () => {
-      const res = await request(server).get('/api/market/price?crop=Tomato');
+    it('should return price recommendation for a known crop/material', async () => {
+      const res = await request(server).get('/api/market/price?crop=Copper%20Wire');
       expect(res.status).toBe(200);
       expect(res.body).toHaveProperty('min');
       expect(res.body).toHaveProperty('fair');
@@ -120,10 +120,10 @@ describe('Vasundhara API', () => {
       expect(res.body).toHaveProperty('trend');
     });
 
-    it('should return default price band for unknown crop', async () => {
+    it('should return default price band for unknown crop/material', async () => {
       const res = await request(server).get('/api/market/price?crop=UnknownCrop');
       expect(res.status).toBe(200);
-      expect(res.body.fair).toBe(20.0);
+      expect(res.body.fair).toBe(100.0);
     });
 
     it('should reject requests without crop', async () => {
@@ -168,10 +168,10 @@ describe('Vasundhara API', () => {
       await request(server).get('/api/users/profile').set('Authorization', `Bearer ${token}`);
 
       const newListing = {
-        crop: 'Wheat',
-        variety: 'Test Variety',
+        crop: 'Steel Scrap',
+        variety: 'HMS 1 Heavy Melting',
         quantityKg: 500,
-        priceExpected: 25,
+        priceExpected: 38,
       };
       const res = await request(server)
         .post('/api/listings')
@@ -179,7 +179,7 @@ describe('Vasundhara API', () => {
         .send(newListing);
       expect(res.status).toBe(201);
       expect(res.body).toHaveProperty('id');
-      expect(res.body.crop).toBe('Wheat');
+      expect(res.body.crop).toBe('Steel Scrap');
       expect(res.body).toHaveProperty('anonSellerId');
     });
 
@@ -190,7 +190,7 @@ describe('Vasundhara API', () => {
       const res = await request(server)
         .post('/api/listings')
         .set('Authorization', `Bearer ${token}`)
-        .send({ crop: 'Wheat' });
+        .send({ crop: 'Steel Scrap' });
       expect(res.status).toBe(400);
     });
   });
@@ -258,19 +258,19 @@ describe('Vasundhara API', () => {
       const token = generateAccessToken({ userId: 'buyer_1', phone: '+91 99801 88301', role: 'buyer' });
       const newOrder = {
         listingId: 'list_1',
-        crop: 'Tomato',
-        variety: 'Abhinav Hybrid',
+        crop: 'Copper Wire',
+        variety: 'Bright & Shiny Heavy Grade',
         quantityKg: 200,
-        agreedPricePerKg: 18,
-        totalAmount: 3600,
-        buyerName: 'Sahyadri Agro Processing Ltd.',
+        agreedPricePerKg: 620,
+        totalAmount: 124000,
+        buyerName: 'Sahyadri Metal Recyclers Ltd.',
         buyerType: 'processor',
         buyerPhone: '+91 99801 88301',
         anonSellerId: 'FARM-88214',
         sellerRealName: 'Ramesh Patil',
         sellerPhone: '+91 98231 44521',
         sellerDistrict: 'Nashik',
-        deliveryAddress: 'Plot 44, Food Park MIDC, Pune',
+        deliveryAddress: 'Plot 44, Metal Zone MIDC, Pune',
       };
       const res = await request(server)
         .post('/api/orders')
@@ -300,7 +300,7 @@ describe('Vasundhara API', () => {
       const res = await request(server)
         .post('/api/orders')
         .set('Authorization', `Bearer ${token}`)
-        .send({ crop: 'Tomato' });
+        .send({ crop: 'Copper Wire' });
       expect(res.status).toBe(400);
     });
   });
@@ -395,9 +395,9 @@ describe('POST /api/logistics/pools', () => {
         .set('Authorization', `Bearer ${buyerToken}`)
         .send({
           listingId: 'list_2',
-          crop: 'Onion',
+          crop: 'HDPE Plastic',
           quantityKg: 500,
-          agreedPricePerKg: 24,
+          agreedPricePerKg: 35,
           buyerName: 'Test',
           deliveryAddress: 'Pune'
         });
@@ -469,9 +469,9 @@ describe('POST /api/logistics/pools', () => {
         .set('Authorization', `Bearer ${buyerToken}`)
         .send({
           listingId: 'list_2',
-          crop: 'Onion',
+          crop: 'HDPE Plastic',
           quantityKg: 100,
-          agreedPricePerKg: 24,
+          agreedPricePerKg: 35,
           buyerName: 'Test',
           deliveryAddress: 'Pune'
         });
@@ -524,7 +524,7 @@ describe('POST /api/logistics/pools', () => {
       const orderRes = await request(server)
         .post('/api/orders')
         .set('Authorization', `Bearer ${buyerToken}`)
-        .send({ listingId: 'list_1', crop: 'Tomato', quantityKg: 500, agreedPricePerKg: 18, buyerName: 'Test', deliveryAddress: 'Pune' });
+        .send({ listingId: 'list_1', crop: 'Copper Wire', quantityKg: 500, agreedPricePerKg: 620, buyerName: 'Test', deliveryAddress: 'Pune' });
       await request(server)
         .patch(`/api/orders/${orderRes.body.id}/status`)
         .set('Authorization', `Bearer ${farmerToken}`)
@@ -593,9 +593,9 @@ describe('POST /api/logistics/pools', () => {
         .set('Authorization', `Bearer ${buyerToken}`)
         .send({
           listingId: 'list_3',
-          crop: 'Tomato',
+          crop: 'Copper Wire',
           quantityKg: 300,
-          agreedPricePerKg: 17,
+          agreedPricePerKg: 280,
           buyerName: 'Test',
           deliveryAddress: 'Bengaluru'
         });
@@ -671,21 +671,21 @@ describe('POST /api/logistics/pools', () => {
       const buyerToken = generateAccessToken({ userId: 'buyer_1', phone: '+91 99801 88301', role: 'buyer' });
       const farmerToken = generateAccessToken({ userId: 'farmer_1', phone: '+91 98231 44521', role: 'farmer' });
       
-      // Order 1: Tomato from list_1 (Nashik)
+      // Order 1: Copper Wire from list_1 (Nashik)
       const order1Res = await request(server)
         .post('/api/orders')
         .set('Authorization', `Bearer ${buyerToken}`)
-        .send({ listingId: 'list_1', crop: 'Tomato', quantityKg: 400, agreedPricePerKg: 18, buyerName: 'Test', deliveryAddress: 'Pune' });
+        .send({ listingId: 'list_1', crop: 'Copper Wire', quantityKg: 400, agreedPricePerKg: 620, buyerName: 'Test', deliveryAddress: 'Pune' });
       await request(server)
         .patch(`/api/orders/${order1Res.body.id}/status`)
         .set('Authorization', `Bearer ${farmerToken}`)
         .send({ status: 'confirmed' });
 
-      // Order 2: Onion from list_2 (also Nashik - same farmer)
+      // Order 2: HDPE Plastic from list_2 (also Nashik - same farmer)
       const order2Res = await request(server)
         .post('/api/orders')
         .set('Authorization', `Bearer ${buyerToken}`)
-        .send({ listingId: 'list_2', crop: 'Onion', quantityKg: 600, agreedPricePerKg: 24, buyerName: 'Test', deliveryAddress: 'Pune' });
+        .send({ listingId: 'list_2', crop: 'HDPE Plastic', quantityKg: 600, agreedPricePerKg: 35, buyerName: 'Test', deliveryAddress: 'Pune' });
       await request(server)
         .patch(`/api/orders/${order2Res.body.id}/status`)
         .set('Authorization', `Bearer ${farmerToken}`)
@@ -741,7 +741,7 @@ describe('POST /api/logistics/pools', () => {
       const order1Res = await request(server)
         .post('/api/orders')
         .set('Authorization', `Bearer ${buyerToken}`)
-        .send({ listingId: 'list_1', crop: 'Tomato', quantityKg: 500, agreedPricePerKg: 18, buyerName: 'Test', deliveryAddress: 'Pune' });
+        .send({ listingId: 'list_1', crop: 'Copper Wire', quantityKg: 500, agreedPricePerKg: 620, buyerName: 'Test', deliveryAddress: 'Pune' });
       await request(server)
         .patch(`/api/orders/${order1Res.body.id}/status`)
         .set('Authorization', `Bearer ${farmer1Token}`)
@@ -751,7 +751,7 @@ describe('POST /api/logistics/pools', () => {
       const order2Res = await request(server)
         .post('/api/orders')
         .set('Authorization', `Bearer ${buyerToken}`)
-        .send({ listingId: 'list_3', crop: 'Tomato', quantityKg: 300, agreedPricePerKg: 17, buyerName: 'Test', deliveryAddress: 'Bengaluru' });
+        .send({ listingId: 'list_3', crop: 'Copper Wire', quantityKg: 300, agreedPricePerKg: 280, buyerName: 'Test', deliveryAddress: 'Bengaluru' });
       await request(server)
         .patch(`/api/orders/${order2Res.body.id}/status`)
         .set('Authorization', `Bearer ${farmer2Token}`)
@@ -778,11 +778,11 @@ describe('POST /api/logistics/pools', () => {
       const farmerToken = generateAccessToken({ userId: 'farmer_1', phone: '+91 98231 44521', role: 'farmer' });
       
       // Create large orders from same farmer (same pickup coords) that exceed capacity when combined
-      // list_1: Tomato, 2000kg available; list_2: Onion, 3500kg available
+      // list_1: Copper Wire, 2000kg available; list_2: HDPE Plastic, 3500kg available
       const order1Res = await request(server)
         .post('/api/orders')
         .set('Authorization', `Bearer ${buyerToken}`)
-        .send({ listingId: 'list_1', crop: 'Tomato', quantityKg: 2000, agreedPricePerKg: 18, buyerName: 'Test', deliveryAddress: 'Pune' });
+        .send({ listingId: 'list_1', crop: 'Copper Wire', quantityKg: 2000, agreedPricePerKg: 620, buyerName: 'Test', deliveryAddress: 'Pune' });
       await request(server)
         .patch(`/api/orders/${order1Res.body.id}/status`)
         .set('Authorization', `Bearer ${farmerToken}`)
@@ -791,7 +791,7 @@ describe('POST /api/logistics/pools', () => {
       const order2Res = await request(server)
         .post('/api/orders')
         .set('Authorization', `Bearer ${buyerToken}`)
-        .send({ listingId: 'list_2', crop: 'Onion', quantityKg: 2000, agreedPricePerKg: 24, buyerName: 'Test', deliveryAddress: 'Pune' });
+        .send({ listingId: 'list_2', crop: 'HDPE Plastic', quantityKg: 2000, agreedPricePerKg: 35, buyerName: 'Test', deliveryAddress: 'Pune' });
       await request(server)
         .patch(`/api/orders/${order2Res.body.id}/status`)
         .set('Authorization', `Bearer ${farmerToken}`)
@@ -1048,7 +1048,7 @@ describe('POST /api/logistics/pools', () => {
           district: 'New District',
           state: 'New State',
           landSizeAcres: 4,
-          primaryCrops: ['Tomato', 'Onion'],
+          primaryCrops: ['Copper Wire', 'HDPE Plastic'],
         });
       expect(res.status).toBe(200);
       expect(res.body).toHaveProperty('profile');
@@ -1319,4 +1319,3 @@ describe('POST /api/logistics/pools', () => {
     });
   });
 });
-

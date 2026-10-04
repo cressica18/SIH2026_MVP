@@ -4,12 +4,12 @@ export interface Translations {
   appName: string;
   tagline: string;
   roles: {
-    farmer: string;
-    buyer: string;
-    logistics: string;
-    admin: string;
     collector: string;
     recycler: string;
+    admin: string;
+    farmer?: string;
+    buyer?: string;
+    logistics?: string;
   };
   nav: {
     dashboard: string;
@@ -121,20 +121,17 @@ export const I18N_STRINGS: Record<Language, Translations> = {
     roles: {
       collector: 'Kabadiwala / Collector Portal',
       recycler: 'Authorized Recycler Portal',
-      farmer: 'Farmer Portal (Legacy)',
-      buyer: 'Buyer / Processor (Legacy)',
-      logistics: 'Logistics Network (Legacy)',
       admin: 'Admin & Safety',
     },
     nav: {
       dashboard: 'Dashboard',
       lots: 'My Scrap Lots',
       pools: 'Smart Pools',
-      listings: 'My Listings (Legacy)',
-      orders: 'Orders & Settlement (Legacy)',
-      schemes: 'Govt Schemes (Legacy)',
-      finance: 'Finance & AEPS (Legacy)',
-      insights: 'Market Insights (Legacy)',
+      listings: 'My Scrap Lots',
+      orders: 'Transactions & Handover',
+      schemes: 'Compliance & Safety',
+      finance: 'Finance & AEPS',
+      insights: 'Market Price Insights',
       safetyReport: 'Report Concern',
       demoGuide: 'Judge Demo Flow',
     },
@@ -234,20 +231,17 @@ export const I18N_STRINGS: Record<Language, Translations> = {
     roles: {
       collector: 'कबाड़ीवाला / कलेक्टर पोर्टल',
       recycler: 'अधिकृत रीसाइक्लर पोर्टल',
-      farmer: 'किसान सेवा केंद्र (विरासत)',
-      buyer: 'खरीदार / व्यापारी (विरासत)',
-      logistics: 'वाहन व परिवहन (विरासत)',
       admin: 'प्रशासन व सुरक्षा',
     },
     nav: {
       dashboard: 'डैशबोर्ड',
       lots: 'मेरे स्क्रैप लॉट',
       pools: 'स्मार्ट पूल',
-      listings: 'मेरी फसलें (विरासत)',
-      orders: 'ऑर्डर व भुगतान (विरासत)',
-      schemes: 'सरकारी योजनाएं (विरासत)',
-      finance: 'वित्त व AEPS निकासी (विरासत)',
-      insights: 'मंडी भाव व रुझान (विरासत)',
+      listings: 'मेरे स्क्रैप लॉट',
+      orders: 'लेनदेन व भुगतान',
+      schemes: 'सुरक्षा व अनुपालन',
+      finance: 'वित्त व AEPS निकासी',
+      insights: 'बाजार भाव व रुझान',
       safetyReport: 'शिकायत दर्ज करें',
       demoGuide: 'जज डेमो फ्लो',
     },
@@ -347,20 +341,17 @@ export const I18N_STRINGS: Record<Language, Translations> = {
     roles: {
       collector: 'कबाडीवाला / कलेक्टर पोर्टल',
       recycler: 'अधिकृत रीसायकलर पोर्टल',
-      farmer: 'शेतकरी कक्ष (विरासत)',
-      buyer: 'खरेदीदार / व्यापारी (विरासत)',
-      logistics: 'वाहतूक व लॉजिस्टिक (विरासत)',
       admin: 'प्रशासन व सुरक्षा',
     },
     nav: {
       dashboard: 'डॅशबोर्ड',
       lots: 'माझे स्क्रॅप लॉट',
       pools: 'स्मार्ट पूल',
-      listings: 'माझी पिके (विरासत)',
-      orders: 'ऑर्डर्स व व्यवहार (विरासत)',
-      schemes: 'शासकीय योजना (विरासत)',
-      finance: 'अर्थसहाय्य व AEPS (विरासत)',
-      insights: 'बाजारभाव अंदाज (विरासत)',
+      listings: 'माझे स्क्रॅप लॉट',
+      orders: 'व्यवहार व हस्तांतरण',
+      schemes: 'सुरक्षा व अनुपालन',
+      finance: 'अर्थसहाय्य व AEPS',
+      insights: 'बाजारभाव अंदाज',
       safetyReport: 'तक्रार नोंदवा',
       demoGuide: 'डेमो मार्गदर्शन',
     },
@@ -573,20 +564,17 @@ export const I18N_STRINGS: Record<Language, Translations> = {
     roles: {
       collector: 'ਕਬਾਡੀਵਾਲਾ / ਕਲੈਕਟਰ ਪੋਰਟਲ',
       recycler: 'ਅਧਿਕਾਰ ਪ੍ਰਾਪਤ ਰੀਸਾਇਕਲਰ ਪੋਰਟਲ',
-      farmer: 'ਕਿਸਾਨ ਪੋਰਟਲ (ਵਿਰਾਸਤ)',
-      buyer: 'ਖਰੀਦਦਾਰ / ਵਪਾਰੀ (ਵਿਰਾਸਤ)',
-      logistics: 'ਟਰਾਂਸਪੋਰਟ ਨੈੱਟਵਰਕ (ਵਿਰਾਸਤ)',
       admin: 'ਪ੍ਰਬੰਧਕ ਤੇ ਸੁਰੱਖਿਆ',
     },
     nav: {
       dashboard: 'ਡੈਸ਼ਬੋਰਡ',
       lots: 'ਮੇਰੇ ਸਕਰੈਪ ਲਾਟ',
       pools: 'ਸਮਾਰਟ ਪੂਲ',
-      listings: 'ਮੇਰੀਆਂ ਫਸਲਾਂ (ਵਿਰਾਸਤ)',
-      orders: 'ਆਰਡਰ ਤੇ ਭੁਗਤਾਨ (ਵਿਰਾਸਤ)',
-      schemes: 'ਸਰਕਾਰੀ ਸਕੀਮਾਂ (ਵਿਰਾਸਤ)',
-      finance: 'ਵਿੱਤੀ ਸਹਾਇਤਾ (AEPS) (ਵਿਰਾਸਤ)',
-      insights: 'ਮੰਡੀ ਭਾਅ (ਵਿਰਾਸਤ)',
+      listings: 'ਮੇਰੇ ਸਕਰੈਪ ਲਾਟ',
+      orders: 'ਲੈਣ-ਦੇਣ ਤੇ ਭੁਗਤਾਨ',
+      schemes: 'ਸੁਰੱਖਿਆ ਤੇ ਪਾਲਣਾ',
+      finance: 'ਵਿੱਤੀ ਸਹਾਇਤਾ (AEPS)',
+      insights: 'ਮਾਰਕੀਟ ਭਾਅ',
       safetyReport: 'ਸ਼ਿਕਾਇਤ ਦਰਜ ਕਰੋ',
       demoGuide: 'ਡੈਮੋ ਗਾਈਡ',
     },

@@ -75,7 +75,7 @@ export const MarketInsightsModal: React.FC<MarketInsightsModalProps> = ({
                 Scrap Market Price Intelligence
               </h3>
               <p className="text-xs text-forest-300 font-semibold">
-                Live Mandi trends, arrival volumes & AI price forecasting
+                Live market trends, material volumes & AI price forecasting
               </p>
             </div>
           </div>
@@ -162,7 +162,7 @@ export const MarketInsightsModal: React.FC<MarketInsightsModalProps> = ({
             <div className="flex items-center justify-between text-xs">
               <div className="flex items-center gap-1.5 text-forest-400 font-bold">
                 <Calendar className="w-3.5 h-3.5" />
-                <span>Historical 7-Week APMC Mandi Trajectory</span>
+                <span>Historical 7-Week Scrap Market Price Trajectory</span>
               </div>
               <span className="text-cream-500 text-[11px] font-semibold">
                 Arrivals vs Wholesale Rate

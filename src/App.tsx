@@ -56,7 +56,7 @@ export default function App() {
   const [isProfileLoading, setIsProfileLoading] = useState(false);
 
   // Global State
-  const [currentRole, setCurrentRole] = useState<Role>('farmer');
+  const [currentRole, setCurrentRole] = useState<Role>('collector');
   const [currentLanguage, setCurrentLanguage] = useState<Language>('en');
   const [farmerSubTab, setFarmerSubTab] = useState<string>('listings');
   const [buyerSubTab, setBuyerSubTab] = useState<string>('marketplace');
@@ -951,50 +951,6 @@ return (
 
        {/* Main Viewport */}
        <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
-        {currentRole === 'farmer' && farmer && (
-          <FarmerView
-            farmer={farmer}
-            listings={listings.filter((l) => l.anonSellerId === farmer.anonSellerId)}
-            orders={orders.filter((o) => o.anonSellerId === farmer.anonSellerId)}
-            schemes={schemes}
-            riskAssessment={riskAssessment!}
-            advances={advances}
-            currentLanguage={currentLanguage}
-            onAddListing={handleAddListing}
-            onUpdateListingStatus={handleUpdateListingStatus}
-            onUpdateOrderStatus={handleUpdateOrderStatus}
-            onOpenAepsModal={handleOpenAepsModalWithAmount}
-            onSubmitSafetyReport={handleSubmitSafetyReport}
-            onRequestAdvance={handleRequestAdvance}
-            initialTab={farmerSubTab}
-          />
-        )}
-
-        {currentRole === 'buyer' && buyer && (
-          <BuyerView
-            buyer={buyer}
-            listings={listings.filter((l) => l.status === 'active')}
-            orders={orders.filter((o) => o.buyerId === buyer.id)}
-            currentLanguage={currentLanguage}
-            onPlaceOrder={handlePlaceOrder}
-            onUpdateOrderStatus={handleUpdateOrderStatus}
-            onRateFarmer={handleRateFarmer}
-            initialTab={buyerSubTab}
-          />
-        )}
-
-        {currentRole === 'logistics' && logistics && (
-          <LogisticsView
-            logistics={logistics}
-            pools={pools}
-            orders={orders} // Pass orders to view unassigned ones
-            currentLanguage={currentLanguage}
-            onUpdatePoolStatus={handleUpdatePoolStatus}
-            onCompleteStop={handleCompleteStop}
-            onCreatePool={handleCreatePool}
-          />
-        )}
-
         {currentRole === 'collector' && collector && (
           <CollectorView
             collector={collector}

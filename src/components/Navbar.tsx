@@ -47,7 +47,7 @@ interface RoleConfig {
   textClass: string;
 }
 
-const ROLE_CONFIG: Record<Role, RoleConfig> = {
+const ROLE_CONFIG: Partial<Record<Role, RoleConfig>> = {
   collector: {
     label: 'Kabadiwala',
     icon: <Recycle className="w-3.5 h-3.5" />,
@@ -62,29 +62,8 @@ const ROLE_CONFIG: Record<Role, RoleConfig> = {
     hoverClass: 'hover:bg-emerald-900/30 hover:text-emerald-300',
     textClass: 'text-cream-400',
   },
-  farmer: {
-    label: 'Farmer (Legacy)',
-    icon: <Leaf className="w-3.5 h-3.5" />,
-    activeClass: 'bg-gradient-to-br from-forest-700 to-botanical-600 text-cream-50 shadow-[0_2px_10px_-2px_rgb(19_115_68_/_0.55)] border-transparent',
-    hoverClass: 'hover:bg-forest-900/30 hover:text-forest-300',
-    textClass: 'text-cream-400',
-  },
-  buyer: {
-    label: 'Buyer (Legacy)',
-    icon: <ShoppingCart className="w-3.5 h-3.5" />,
-    activeClass: 'bg-gradient-to-br from-deepteal-700 to-deepteal-500 text-cream-50 shadow-[0_2px_10px_-2px_rgb(18_137_117_/_0.55)] border-transparent',
-    hoverClass: 'hover:bg-deepteal-900/30 hover:text-deepteal-300',
-    textClass: 'text-cream-400',
-  },
-  logistics: {
-    label: 'Logistics (Legacy)',
-    icon: <Truck className="w-3.5 h-3.5" />,
-    activeClass: 'bg-gradient-to-br from-olive-800 to-ochre-700 text-cream-50 shadow-[0_2px_10px_-2px_rgb(173_152_18_/_0.5)] border-transparent',
-    hoverClass: 'hover:bg-olive-900/30 hover:text-olive-300',
-    textClass: 'text-cream-400',
-  },
   admin: {
-    label: 'Admin',
+    label: 'Admin & Safety',
     icon: <ShieldCheck className="w-3.5 h-3.5" />,
     activeClass: 'bg-gradient-to-br from-sage-700 to-sage-500 text-cream-50 shadow-[0_2px_10px_-2px_rgb(109_196_143_/_0.45)] border-transparent',
     hoverClass: 'hover:bg-sage-900/30 hover:text-sage-300',
@@ -204,8 +183,9 @@ export const Navbar: React.FC<NavbarProps> = ({
             }}
             aria-label="Switch role"
           >
-            {(Object.keys(ROLE_CONFIG) as Role[]).map((role) => {
+            {(Object.keys(ROLE_CONFIG) as (keyof typeof ROLE_CONFIG)[]).map((role) => {
               const cfg = ROLE_CONFIG[role];
+              if (!cfg) return null;
               const isActive = currentRole === role;
               return (
                 <button
@@ -425,8 +405,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                       Switch Role
                     </p>
                     <div className="space-y-0.5">
-                      {(Object.keys(ROLE_CONFIG) as Role[]).map((role) => {
+                      {(Object.keys(ROLE_CONFIG) as (keyof typeof ROLE_CONFIG)[]).map((role) => {
                         const cfg = ROLE_CONFIG[role];
+                        if (!cfg) return null;
                         const isActive = currentRole === role;
                         return (
                           <button
@@ -470,8 +451,9 @@ export const Navbar: React.FC<NavbarProps> = ({
           className="lg:hidden flex overflow-x-auto py-2 border-t gap-1.5 scrollbar-hidden -mx-4 px-4"
           style={{ borderColor: 'var(--color-bg-750)' }}
         >
-          {(Object.keys(ROLE_CONFIG) as Role[]).map((role) => {
+          {(Object.keys(ROLE_CONFIG) as (keyof typeof ROLE_CONFIG)[]).map((role) => {
             const cfg = ROLE_CONFIG[role];
+            if (!cfg) return null;
             const isActive = currentRole === role;
             return (
               <button

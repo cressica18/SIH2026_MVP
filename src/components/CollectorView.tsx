@@ -10,7 +10,7 @@ import {
   PoolOffer,
 } from '../types';
 import { I18N_STRINGS } from '../data/i18n';
-import { extractVoiceListing, getAiPriceRecommendation, assessProduceQuality } from '../lib/api-client';
+import { extractVoiceListing, getAiPriceRecommendation, assessMaterialQuality } from '../lib/api-client';
 import { useVoiceCapture } from '../hooks/useVoiceCapture';
 import {
   Mic,
@@ -129,8 +129,8 @@ interface CollectorViewProps {
 }
 
 const COLLECTOR_TABS = [
-  { id: 'lots', label: 'My Lots', icon: Package },
   { id: 'pools', label: 'Smart Pools', icon: Users },
+  { id: 'lots', label: 'My Lots', icon: Package },
   { id: 'orders', label: 'Transactions', icon: ClipboardList },
   { id: 'finance', label: 'Finance', icon: Wallet },
   { id: 'safetyReport', label: 'Report', icon: Flag },
@@ -183,7 +183,7 @@ export const CollectorView: React.FC<CollectorViewProps> = ({
   currentLanguage,
   onAddLot,
   onUpdateLotStatus,
-  initialTab = 'lots',
+  initialTab = 'pools',
 }) => {
   const [activeTab, setActiveTab] = useState<CollectorTabId>((initialTab as CollectorTabId) || 'lots');
   const t = I18N_STRINGS[currentLanguage];
@@ -326,7 +326,7 @@ export const CollectorView: React.FC<CollectorViewProps> = ({
   useEffect(() => {
     setIsAssessingQuality(true);
     setQualityGrade(null);
-    assessProduceQuality(photoBase64 || selectedPhotoUrl, materialTypeInput)
+    assessMaterialQuality(photoBase64 || selectedPhotoUrl, materialTypeInput)
       .then(setQualityGrade)
       .finally(() => setIsAssessingQuality(false));
   }, [selectedPhotoUrl, photoBase64, materialTypeInput]);
@@ -347,9 +347,9 @@ export const CollectorView: React.FC<CollectorViewProps> = ({
     setSpeechTranscript(transcript);
     setIsProcessingAI(true);
     const result = await extractVoiceListing(transcript, currentLanguage);
-    setMaterialTypeInput(result.crop);
+    setMaterialTypeInput(result.materialType);
     setEstimatedWeightInput(result.quantityKg);
-    setPriceInput(result.priceExpected);
+    setPriceInput(result.priceExpectedPerKg);
     setIsProcessingAI(false);
   };
 
@@ -519,19 +519,31 @@ export const CollectorView: React.FC<CollectorViewProps> = ({
               </div>
             </div>
 
-            <Button
-              onClick={() => setShowCreateModal(true)}
-              size="lg"
-              variant="copper"
-              className="w-full sm:w-auto mt-2 gap-2"
-            >
-              <Mic className="w-5 h-5" />
-              <span>Voice / Add Scrap Lot</span>
-            </Button>
+            {/* Primary Actions - Prominent CTA Group */}
+            <div className="flex flex-col sm:flex-row gap-3 mt-4">
+              <Button
+                onClick={() => setShowCreateModal(true)}
+                size="lg"
+                variant="copper"
+                className="flex-1 sm:flex-none gap-2"
+              >
+                <Plus className="w-5 h-5" />
+                <span>Create Scrap Lot</span>
+              </Button>
+              <Button
+                onClick={() => setActiveTab('pools')}
+                size="lg"
+                variant="outline"
+                className="flex-1 sm:flex-none gap-2 border-copper-500 text-copper-300 hover:bg-copper-900/30"
+              >
+                <Users className="w-5 h-5" />
+                <span>Join Smart Pool</span>
+              </Button>
+            </div>
           </div>
 
           <div className="hidden md:block">
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-3 gap-3">
               <Card variant="subtle-copper" padding="md" className="text-center hover:shadow-lg transition-shadow border-copper-700">
                 <div className="flex items-center justify-center gap-1.5 mb-2">
                   <Award className="w-5 h-5 text-harvest-400" />
@@ -553,6 +565,17 @@ export const CollectorView: React.FC<CollectorViewProps> = ({
                 <p className="text-2xl font-bold text-harvest-300">{availableLots.length}</p>
                 <p className="text-xs text-cream-500 mt-1">
                   {draftLots.length} draft · {pooledLots.length} pooled · {soldLots.length} sold
+                </p>
+              </Card>
+
+              <Card variant="subtle-copper" padding="md" className="text-center hover:shadow-lg transition-shadow border-copper-700">
+                <div className="flex items-center justify-center gap-1.5 mb-2">
+                  <Users className="w-5 h-5 text-harvest-400" />
+                  <span className="text-xs font-semibold text-cream-500 uppercase tracking-wider">Smart Pools</span>
+                </div>
+                <p className="text-2xl font-bold text-harvest-300">{smartPools.length}</p>
+                <p className="text-xs text-cream-500 mt-1">
+                  {smartPools.reduce((s, p) => s + p.totalWeightKg, 0).toLocaleString()} kg total
                 </p>
               </Card>
             </div>
@@ -597,6 +620,17 @@ export const CollectorView: React.FC<CollectorViewProps> = ({
                 <p className="text-xl font-bold text-harvest-300">{availableLots.length}</p>
                 <Badge variant="success" size="xs" className="mt-1.5">
                   {draftLots.length} draft · {pooledLots.length} pooled
+                </Badge>
+              </Card>
+
+              <Card variant="subtle-copper" padding="md" className="text-center border-copper-700">
+                <div className="flex items-center justify-center gap-1.5 mb-1">
+                  <Users className="w-4 h-4 text-harvest-400" />
+                  <span className="text-xs font-semibold text-cream-500 uppercase tracking-wider">Smart Pools</span>
+                </div>
+                <p className="text-xl font-bold text-harvest-300">{smartPools.length}</p>
+                <Badge variant="info" size="xs" className="mt-1.5">
+                  {smartPools.reduce((s, p) => s + p.totalWeightKg, 0).toLocaleString()} kg
                 </Badge>
               </Card>
             </div>
@@ -1377,7 +1411,7 @@ function CreateLotModal({
             className="flex-1 gap-2"
           >
             {isPublishing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-            <span>{isPublishing ? 'Publishing...' : 'Publish Lot'}</span>
+            <span>{isPublishing ? 'Creating...' : 'Create Lot & Sell Now'}</span>
           </Button>
         </div>
       </div>

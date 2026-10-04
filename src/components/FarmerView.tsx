@@ -13,7 +13,7 @@ import {
   SafetyReport,
 } from '../types';
 import { I18N_STRINGS } from '../data/i18n';
-import { extractVoiceListing, getAiPriceRecommendation, assessProduceQuality } from '../lib/api-client';
+import { extractVoiceListing, getAiPriceRecommendation, assessMaterialQuality } from '../lib/api-client';
 import { useVoiceCapture } from '../hooks/useVoiceCapture';
 import {
   Mic,
@@ -194,8 +194,8 @@ export const FarmerView: React.FC<FarmerViewProps> = ({
 
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [speechTranscript, setSpeechTranscript] = useState('');
-  const [cropInput, setCropInput] = useState('Tomato');
-  const [varietyInput, setVarietyInput] = useState('Abhinav Hybrid');
+  const [cropInput, setMaterialTypeInput] = useState('Tomato');
+  const [varietyInput, setMaterialCategoryInput] = useState('Abhinav Hybrid');
   const [quantityInput, setQuantityInput] = useState<number>(2000);
   const [priceInput, setPriceInput] = useState<number>(18);
   const [_isProcessingAI, setIsProcessingAI] = useState(false);
@@ -223,7 +223,7 @@ export const FarmerView: React.FC<FarmerViewProps> = ({
   useEffect(() => {
     setIsAssessingQuality(true);
     setQualityGrade(null);
-    assessProduceQuality(photoBase64 || selectedPhotoUrl, cropInput)
+    assessMaterialQuality(photoBase64 || selectedPhotoUrl, cropInput)
       .then(setQualityGrade)
       .finally(() => setIsAssessingQuality(false));
   }, [selectedPhotoUrl, photoBase64, cropInput]);
@@ -244,10 +244,10 @@ export const FarmerView: React.FC<FarmerViewProps> = ({
     setSpeechTranscript(transcript);
     setIsProcessingAI(true);
     const result = await extractVoiceListing(transcript, currentLanguage);
-    setCropInput(result.crop);
-    setVarietyInput(result.variety);
+    setMaterialTypeInput(result.materialType);
+    setMaterialCategoryInput(result.materialCategory);
     setQuantityInput(result.quantityKg);
-    setPriceInput(result.priceExpected);
+    setPriceInput(result.priceExpectedPerKg);
     setIsProcessingAI(false);
   };
 
@@ -328,8 +328,8 @@ export const FarmerView: React.FC<FarmerViewProps> = ({
       if (success) {
         setShowCreateModal(false);
         setSpeechTranscript('');
-        setCropInput('Tomato');
-        setVarietyInput('Abhinav Hybrid');
+        setMaterialTypeInput('Tomato');
+        setMaterialCategoryInput('Abhinav Hybrid');
         setQuantityInput(2000);
         setPriceInput(18);
         setPhotoBase64('');
@@ -880,9 +880,9 @@ export const FarmerView: React.FC<FarmerViewProps> = ({
         speechTranscript={speechTranscript}
         setSpeechTranscript={setSpeechTranscript}
         cropInput={cropInput}
-        setCropInput={setCropInput}
+        setMaterialTypeInput={setMaterialTypeInput}
         varietyInput={varietyInput}
-        setVarietyInput={setVarietyInput}
+        setMaterialCategoryInput={setMaterialCategoryInput}
         quantityInput={quantityInput}
         setQuantityInput={setQuantityInput}
         priceInput={priceInput}
@@ -1616,9 +1616,9 @@ function CreateListingModal({
   speechTranscript,
   setSpeechTranscript,
   cropInput,
-  setCropInput,
+  setMaterialTypeInput,
   varietyInput,
-  setVarietyInput,
+  setMaterialCategoryInput,
   quantityInput,
   setQuantityInput,
   priceInput,
@@ -1646,9 +1646,9 @@ function CreateListingModal({
   speechTranscript: string;
   setSpeechTranscript: (val: string) => void;
   cropInput: string;
-  setCropInput: (val: string) => void;
+  setMaterialTypeInput: (val: string) => void;
   varietyInput: string;
-  setVarietyInput: (val: string) => void;
+  setMaterialCategoryInput: (val: string) => void;
   quantityInput: number;
   setQuantityInput: (val: number) => void;
   priceInput: number;
@@ -1723,7 +1723,7 @@ function CreateListingModal({
                 { value: 'Wheat', label: 'Wheat (गेहूं)' },
               ]}
               value={cropInput}
-              onChange={(e) => setCropInput(e.target.value)}
+              onChange={(e) => setMaterialTypeInput(e.target.value)}
               className="w-full"
             />
           </div>
@@ -1732,7 +1732,7 @@ function CreateListingModal({
             <label className="block font-semibold text-cream-300 mb-1">Variety</label>
             <Input
               value={varietyInput}
-              onChange={(e) => setVarietyInput(e.target.value)}
+              onChange={(e) => setMaterialCategoryInput(e.target.value)}
               className="w-full"
             />
           </div>

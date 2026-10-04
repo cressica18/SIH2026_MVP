@@ -11,7 +11,11 @@ import {
   BuyerProfile,
   LogisticsProfile,
   CollectorProfile,
+  RecyclerProfile,
   ScrapLot,
+  SmartPool,
+  PoolOffer,
+  SettlementRecord,
   GovScheme,
   AdvanceRequest,
   RiskAssessment,
@@ -21,6 +25,7 @@ import {
   SEED_BUYERS,
   SEED_LOGISTICS,
   SEED_COLLECTORS,
+  SEED_RECYCLERS,
   SEED_LISTINGS,
   SEED_ORDERS,
   SEED_LOGISTICS_POOLS,
@@ -28,6 +33,9 @@ import {
   SEED_NOTIFICATIONS,
   SEED_RISK_ASSESSMENTS,
   SEED_SCRAP_LOTS,
+  SEED_SMART_POOLS,
+  SEED_POOL_OFFERS,
+  SEED_SETTLEMENTS,
 } from './data/seedData';
 import { Navbar } from './components/Navbar';
 import { FarmerView } from './components/FarmerView';
@@ -35,6 +43,7 @@ import { BuyerView } from './components/BuyerView';
 import { LogisticsView } from './components/LogisticsView';
 import { AdminView } from './components/AdminView';
 import { CollectorView } from './components/CollectorView';
+import { RecyclerView } from './components/RecyclerView';
 import { DemoWalkthroughModal } from './components/DemoWalkthroughModal';
 import { AepsModal } from './components/AepsModal';
 import { MarketInsightsModal } from './components/MarketInsightsModal';
@@ -53,7 +62,8 @@ export default function App() {
   const [buyerSubTab, setBuyerSubTab] = useState<string>('marketplace');
   const [logisticsSubTab, setLogisticsSubTab] = useState<string>('pools');
   const [adminSubTab, setAdminSubTab] = useState<string>('reports');
-  const [collectorSubTab, setCollectorSubTab] = useState<string>('lots');
+  const [collectorSubTab, setCollectorSubTab] = useState<string>('pools');
+  const [recyclerSubTab, setRecyclerSubTab] = useState<string>('pools');
 
   // Modals
   const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
@@ -71,12 +81,16 @@ export default function App() {
   const [schemes, setSchemes] = useState<GovScheme[]>([]);
   const [advances, setAdvances] = useState<AdvanceRequest[]>([]);
   const [scrapLots, setScrapLots] = useState<ScrapLot[]>([]);
+  const [smartPools, setSmartPools] = useState<SmartPool[]>([]);
+  const [poolOffers, setPoolOffers] = useState<PoolOffer[]>([]);
+  const [settlements, setSettlements] = useState<SettlementRecord[]>([]);
 
-  // Dynamic Farmer / Risk / Buyer / Collector State
+  // Dynamic Farmer / Risk / Buyer / Collector / Recycler State
   const [farmer, setFarmer] = useState<FarmerProfile | null>(null);
   const [buyer, setBuyer] = useState<BuyerProfile | null>(null);
   const [logistics, setLogistics] = useState<LogisticsProfile | null>(null);
   const [collector, setCollector] = useState<CollectorProfile | null>(null);
+  const [recycler, setRecycler] = useState<RecyclerProfile | null>(null);
   const [riskAssessment, setRiskAssessment] = useState<RiskAssessment | null>(null);
 
   // Fetch profile on auth
@@ -163,6 +177,33 @@ export default function App() {
         if (scrapLotsRes.ok) {
           const scrapLotsData = await scrapLotsRes.json();
           setScrapLots(scrapLotsData.lots);
+        }
+
+        // Fetch Smart Pools (for collector and recycler)
+        const smartPoolsRes = await fetch('/api/smart-pools', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (smartPoolsRes.ok) {
+          const smartPoolsData = await smartPoolsRes.json();
+          setSmartPools(smartPoolsData.pools || []);
+        }
+
+        // Fetch Pool Offers
+        const poolOffersRes = await fetch('/api/smart-pools/offers', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (poolOffersRes.ok) {
+          const poolOffersData = await poolOffersRes.json();
+          setPoolOffers(poolOffersData.offers || []);
+        }
+
+        // Fetch Settlements
+        const settlementsRes = await fetch('/api/smart-pools/settlements', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (settlementsRes.ok) {
+          const settlementsData = await settlementsRes.json();
+          setSettlements(settlementsData.settlements || []);
         }
 
         // Fetch role-scoped orders
@@ -623,6 +664,55 @@ export default function App() {
     }
   };
 
+  // Create a pool offer from a recycler
+  const handleCreatePoolOffer = async (offer: {
+    poolId: string;
+    offeredPricePerKg: number;
+    totalValue: number;
+    notes?: string;
+  }): Promise<boolean> => {
+    try {
+      const token = localStorage.getItem('vasundhara_token');
+      const res = await fetch('/api/smart-pools/offers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify(offer),
+      });
+      if (!res.ok) {
+        console.error('Failed to create pool offer', await res.text());
+        return false;
+      }
+      const createdOffer = await res.json();
+      setPoolOffers((prev) => [createdOffer, ...prev]);
+      return true;
+    } catch (err) {
+      console.error('Failed to create pool offer', err);
+      return false;
+    }
+  };
+
+  // Complete a settlement handover
+  const handleCompleteHandover = async (settlementId: string, qrCode?: string): Promise<boolean> => {
+    try {
+      const token = localStorage.getItem('vasundhara_token');
+      const res = await fetch('/api/smart-pools/settlements/complete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ settlementId, qrCode }),
+      });
+      if (!res.ok) {
+        console.error('Failed to complete handover', await res.text());
+        return false;
+      }
+      const updatedSettlement = await res.json();
+      setSettlements((prev) => prev.map((s) => (s.id === settlementId ? updatedSettlement : s)));
+      return true;
+    } catch (err) {
+      console.error('Failed to complete handover', err);
+      return false;
+    }
+  };
+
   // Whistleblower Safety Report submission — persists to backend via POST /api/reports
   const handleSubmitSafetyReport = async (rep: {
     category: string;
@@ -827,7 +917,8 @@ export default function App() {
       (currentRole === 'farmer' && !farmer) ||
       (currentRole === 'buyer' && !buyer) ||
       (currentRole === 'logistics' && !logistics) ||
-      (currentRole === 'collector' && !collector);
+      (currentRole === 'collector' && !collector) ||
+      (currentRole === 'recycler' && !recycler);
 
     if (needsOnboarding) {
       return (
@@ -837,6 +928,7 @@ export default function App() {
             else if (currentRole === 'buyer') setBuyer(profile);
             else if (currentRole === 'logistics') setLogistics(profile);
             else if (currentRole === 'collector') setCollector(profile);
+            else if (currentRole === 'recycler') setRecycler(profile);
           }}
         />
       );
@@ -906,6 +998,17 @@ return (
           <CollectorView
             collector={collector}
             lots={scrapLots}
+            currentLanguage={currentLanguage}
+            onAddLot={handleAddScrapLot}
+            onUpdateLotStatus={handleUpdateScrapLotStatus}
+            initialTab={collectorSubTab}
+          />
+        )}
+
+        {currentRole === 'collector' && collector && (
+          <RecyclerView
+            collector={collector}
+            lots={scrapLots.filter(l => l.anonCollectorId === collector.anonCollectorId)}
             currentLanguage={currentLanguage}
             onAddLot={handleAddScrapLot}
             onUpdateLotStatus={handleUpdateScrapLotStatus}

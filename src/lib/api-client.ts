@@ -1,48 +1,134 @@
-import { PriceBand, QualityAssessment, VoiceExtractionResult, Listing, LogisticsPool } from '../types';
+import { VoiceExtractionResult, PriceBand, QualityAssessment } from '../types';
 
-// Dictionary of crop terms across Hindi, Marathi, Telugu, Punjabi, and English
-const CROP_DICTIONARY: Record<string, { standardName: string; defaultVariety: string }> = {
-  tomato: { standardName: 'Tomato', defaultVariety: 'Abhinav Hybrid' },
-  tamatar: { standardName: 'Tomato', defaultVariety: 'Kashi Vishesh' },
-  tamato: { standardName: 'Tomato', defaultVariety: 'Table Grade Hybrid' },
-  onion: { standardName: 'Onion', defaultVariety: 'Nashik Red' },
-  pyaz: { standardName: 'Onion', defaultVariety: 'Nashik Red' },
-  kanda: { standardName: 'Onion', defaultVariety: 'Garwa / Phursungi' },
-  ulli: { standardName: 'Onion', defaultVariety: 'Bellary Medium' },
-  potato: { standardName: 'Potato', defaultVariety: 'Kufri Jyoti' },
-  aloo: { standardName: 'Potato', defaultVariety: 'Kufri Jyoti' },
-  batata: { standardName: 'Potato', defaultVariety: 'Table Grade' },
-  bangaladumpa: { standardName: 'Potato', defaultVariety: 'Kufri Pukhraj' },
-  chilli: { standardName: 'Green Chilli', defaultVariety: 'G4 Hot Pepper' },
-  mirchi: { standardName: 'Green Chilli', defaultVariety: 'G4 Hot Pepper' },
-  mirch: { standardName: 'Green Chilli', defaultVariety: 'Teja Hot' },
-  pachimirapa: { standardName: 'Green Chilli', defaultVariety: 'Byadgi Green' },
-  wheat: { standardName: 'Wheat', defaultVariety: 'Sharbati Gold' },
-  gehu: { standardName: 'Wheat', defaultVariety: 'Sharbati Gold' },
-  gahuk: { standardName: 'Wheat', defaultVariety: 'Lokwan' },
-  kanak: { standardName: 'Wheat', defaultVariety: 'PBW 550' },
-  soybean: { standardName: 'Soybean', defaultVariety: 'JS-9560' },
-  soya: { standardName: 'Soybean', defaultVariety: 'JS-9560' },
-  grapes: { standardName: 'Grapes', defaultVariety: 'Thomson Seedless' },
-  angoor: { standardName: 'Grapes', defaultVariety: 'Thomson Seedless' },
-  draksh: { standardName: 'Grapes', defaultVariety: 'Sharad Seedless' },
+// Scrap Material Dictionary for voice extraction
+const MATERIAL_DICTIONARY: Record<string, { standardName: string; category: string }> = {
+  // Metals
+  'copper': { standardName: 'Copper Wire', category: 'metal' },
+  'copper wire': { standardName: 'Copper Wire', category: 'metal' },
+  'copper cable': { standardName: 'Copper Cable', category: 'metal' },
+  'aluminum': { standardName: 'Aluminum', category: 'metal' },
+  'aluminium': { standardName: 'Aluminum', category: 'metal' },
+  'aluminum scrap': { standardName: 'Aluminum Scrap', category: 'metal' },
+  'aluminum extrusion': { standardName: 'Aluminum Extrusion', category: 'metal' },
+  'brass': { standardName: 'Brass', category: 'metal' },
+  'brass scrap': { standardName: 'Brass Scrap', category: 'metal' },
+  'steel': { standardName: 'Steel Scrap', category: 'metal' },
+  'steel scrap': { standardName: 'Steel Scrap', category: 'metal' },
+  'iron': { standardName: 'Iron Scrap', category: 'metal' },
+  'stainless steel': { standardName: 'Stainless Steel', category: 'metal' },
+  'stainless': { standardName: 'Stainless Steel', category: 'metal' },
+  'lead': { standardName: 'Lead', category: 'metal' },
+  'zinc': { standardName: 'Zinc', category: 'metal' },
+
+  // Plastics
+  'plastic': { standardName: 'Plastic Scrap', category: 'plastic' },
+  'hdpe': { standardName: 'HDPE', category: 'plastic' },
+  'pet': { standardName: 'PET', category: 'plastic' },
+  'pvc': { standardName: 'PVC', category: 'plastic' },
+  'pp': { standardName: 'PP', category: 'plastic' },
+  'ldpe': { standardName: 'LDPE', category: 'plastic' },
+  'ps': { standardName: 'PS', category: 'plastic' },
+  'abs': { standardName: 'ABS', category: 'plastic' },
+  'plastic bottle': { standardName: 'PET Bottles', category: 'plastic' },
+  'plastic drum': { standardName: 'HDPE Drums', category: 'plastic' },
+
+  // Paper
+  'paper': { standardName: 'Paper Scrap', category: 'paper' },
+  'cardboard': { standardName: 'Cardboard (OCC)', category: 'paper' },
+  'corrugated': { standardName: 'Corrugated Cardboard', category: 'paper' },
+  'newspaper': { standardName: 'Newspaper', category: 'paper' },
+  'office paper': { standardName: 'Office Paper', category: 'paper' },
+  'mixed paper': { standardName: 'Mixed Paper', category: 'paper' },
+
+  // E-Waste
+  'e-waste': { standardName: 'E-Waste', category: 'ewaste' },
+  'ewaste': { standardName: 'E-Waste', category: 'ewaste' },
+  'pcb': { standardName: 'PCB Boards', category: 'ewaste' },
+  'pcb board': { standardName: 'PCB Boards', category: 'ewaste' },
+  'motherboard': { standardName: 'PCB Boards', category: 'ewaste' },
+  'cable': { standardName: 'Cables', category: 'ewaste' },
+  'cables': { standardName: 'Mixed Cables', category: 'ewaste' },
+  'wire': { standardName: 'Copper Wire', category: 'metal' },
+  'battery': { standardName: 'Batteries', category: 'ewaste' },
+  'batteries': { standardName: 'Batteries', category: 'ewaste' },
+  'screen': { standardName: 'Screens/Monitors', category: 'ewaste' },
+  'phone': { standardName: 'Mobile Phones', category: 'ewaste' },
+  'laptop': { standardName: 'Laptops', category: 'ewaste' },
+  'computer': { standardName: 'Computers', category: 'ewaste' },
+
+  // Glass
+  'glass': { standardName: 'Glass Scrap', category: 'glass' },
+  'clear glass': { standardName: 'Clear Glass', category: 'glass' },
+  'green glass': { standardName: 'Green Glass', category: 'glass' },
+  'brown glass': { standardName: 'Brown Glass', category: 'glass' },
+
+  // Rubber
+  'rubber': { standardName: 'Rubber Scrap', category: 'rubber' },
+  'tyre': { standardName: 'Tyres', category: 'rubber' },
+  'tire': { standardName: 'Tyres', category: 'rubber' },
+  'tyres': { standardName: 'Tyres', category: 'rubber' },
+  'conveyor belt': { standardName: 'Conveyor Belts', category: 'rubber' },
+
+  // Mixed
+  'mixed': { standardName: 'Mixed Scrap', category: 'mixed' },
+  'mixed scrap': { standardName: 'Mixed Scrap', category: 'mixed' },
+  'general scrap': { standardName: 'General Scrap', category: 'mixed' },
 };
 
-// Historical baseline Mandi price data (Agmarknet 2026 ground truth)
-const MANDI_BASELINES: Record<string, { fair: number; min: number; max: number; mandi: string }> = {
-  Tomato: { fair: 18.5, min: 16.0, max: 21.0, mandi: 'Pimpalgaon / Kolar APMC' },
-  Onion: { fair: 24.5, min: 22.0, max: 27.0, mandi: 'Lasalgaon Mandi' },
-  Potato: { fair: 14.2, min: 12.5, max: 16.0, mandi: 'Khanna / Agra Mandi' },
-  'Green Chilli': { fair: 43.0, min: 38.0, max: 48.0, mandi: 'Kolar / Guntur APMC' },
-  Wheat: { fair: 28.5, min: 26.0, max: 31.0, mandi: 'Khanna / Indore Mandi' },
-  Soybean: { fair: 46.8, min: 43.5, max: 49.5, mandi: 'Indore Mandi' },
-  Grapes: { fair: 62.0, min: 55.0, max: 70.0, mandi: 'Nashik APMC' },
+const SCRAP_PRICE_BASELINES: Record<string, { fair: number; min: number; max: number; category: string }> = {
+  'Copper Wire': { fair: 620, min: 580, max: 680, category: 'metal' },
+  'Copper Cable': { fair: 550, min: 500, max: 600, category: 'metal' },
+  'Aluminum': { fair: 155, min: 140, max: 170, category: 'metal' },
+  'Aluminum Extrusion': { fair: 165, min: 150, max: 180, category: 'metal' },
+  'Aluminum Scrap': { fair: 145, min: 130, max: 160, category: 'metal' },
+  'Brass': { fair: 320, min: 300, max: 350, category: 'metal' },
+  'Brass Scrap': { fair: 310, min: 290, max: 340, category: 'metal' },
+  'Steel Scrap': { fair: 30, min: 25, max: 35, category: 'metal' },
+  'Iron Scrap': { fair: 28, min: 24, max: 32, category: 'metal' },
+  'Stainless Steel': { fair: 120, min: 100, max: 140, category: 'metal' },
+  'Lead': { fair: 150, min: 130, max: 170, category: 'metal' },
+  'Zinc': { fair: 180, min: 160, max: 200, category: 'metal' },
+  'HDPE': { fair: 33, min: 28, max: 38, category: 'plastic' },
+  'PET': { fair: 28, min: 24, max: 32, category: 'plastic' },
+  'PVC': { fair: 22, min: 18, max: 26, category: 'plastic' },
+  'PP': { fair: 25, min: 20, max: 30, category: 'plastic' },
+  'LDPE': { fair: 20, min: 16, max: 24, category: 'plastic' },
+  'PS': { fair: 18, min: 15, max: 22, category: 'plastic' },
+  'ABS': { fair: 45, min: 40, max: 50, category: 'plastic' },
+  'PET Bottles': { fair: 25, min: 20, max: 30, category: 'plastic' },
+  'HDPE Drums': { fair: 30, min: 25, max: 35, category: 'plastic' },
+  'Cardboard (OCC)': { fair: 18, min: 15, max: 22, category: 'paper' },
+  'Corrugated Cardboard': { fair: 17, min: 14, max: 20, category: 'paper' },
+  'Newspaper': { fair: 12, min: 10, max: 15, category: 'paper' },
+  'Office Paper': { fair: 15, min: 12, max: 18, category: 'paper' },
+  'Mixed Paper': { fair: 11, min: 8, max: 14, category: 'paper' },
+  'PCB Boards': { fair: 1250, min: 1100, max: 1400, category: 'ewaste' },
+  'Cables': { fair: 285, min: 250, max: 320, category: 'ewaste' },
+  'Batteries': { fair: 80, min: 60, max: 100, category: 'ewaste' },
+  'Screens/Monitors': { fair: 200, min: 150, max: 250, category: 'ewaste' },
+  'Mobile Phones': { fair: 500, min: 300, max: 700, category: 'ewaste' },
+  'Laptops': { fair: 1500, min: 1000, max: 2000, category: 'ewaste' },
+  'Computers': { fair: 800, min: 500, max: 1200, category: 'ewaste' },
+  'Clear Glass': { fair: 8, min: 6, max: 10, category: 'glass' },
+  'Green Glass': { fair: 6, min: 4, max: 8, category: 'glass' },
+  'Brown Glass': { fair: 6, min: 4, max: 8, category: 'glass' },
+  'Tyres': { fair: 15, min: 12, max: 18, category: 'rubber' },
+  'Conveyor Belts': { fair: 25, min: 20, max: 30, category: 'rubber' },
+  'Mixed Scrap': { fair: 25, min: 20, max: 30, category: 'mixed' },
+  'General Scrap': { fair: 22, min: 18, max: 26, category: 'mixed' },
 };
 
 export async function extractVoiceListing(
   transcript: string,
   _language: string
-): Promise<VoiceExtractionResult> {
+): Promise<{
+  materialType: string;
+  materialCategory: string;
+  quantityKg: number;
+  priceExpectedPerKg: number;
+  confidence: number;
+  rawTranscript: string;
+}> {
   const text = transcript.toLowerCase();
 
   // Try calling server endpoint if available
@@ -54,7 +140,7 @@ export async function extractVoiceListing(
     });
     if (res.ok) {
       const data = await res.json();
-      if (data && data.crop && data.quantityKg) {
+      if (data && data.materialType && data.quantityKg) {
         return data;
       }
     }
@@ -62,27 +148,28 @@ export async function extractVoiceListing(
     // Client-side rule-based fallback
   }
 
-  // 1. Detect crop
-  let detectedCrop = 'Tomato';
-  let detectedVariety = 'Abhinav Hybrid';
-  for (const [key, cropInfo] of Object.entries(CROP_DICTIONARY)) {
+  // 1. Detect material type
+  let detectedMaterial = 'Copper Wire';
+  let detectedCategory = 'metal';
+  for (const [key, matInfo] of Object.entries(MATERIAL_DICTIONARY)) {
     if (text.includes(key)) {
-      detectedCrop = cropInfo.standardName;
-      detectedVariety = cropInfo.defaultVariety;
+      detectedMaterial = matInfo.standardName;
+      detectedCategory = matInfo.category;
       break;
     }
   }
 
   // 2. Detect quantity
-  // Patterns: "2 quintal", "200 kg", "50 kilo", "5 ton", "do quintal", "das kilo", "pachas"
-  let quantityKg = 1000;
+  // Patterns: "500 kg", "500 kilo", "1 ton", "10 quintal", "500 kilo copper wire"
+  let quantityKg = 500;
   const numMatches = text.match(/(\d+(?:\.\d+)?)\s*(quintal|kuntal|qtl|kg|kilo|ton|tonne)?/i);
 
   // Word numerals in Hindi / Marathi / English
   const wordMap: Record<string, number> = {
-    one: 1, ek: 1, one_and_half: 1.5, dedh: 1.5, two: 2, do: 2, don: 2, render: 2,
+    one: 1, ek: 1, one_and_half: 1.5, dedh: 1.5, two: 2, do: 2, don: 2,
     three: 3, teen: 3, char: 4, four: 4, paanch: 5, pach: 5, five: 5,
-    ten: 10, das: 10, dah: 10, twenty: 20, bees: 20, vees: 20, fifty: 50, pachas: 50, pannas: 50,
+    ten: 10, das: 10, dah: 10, twenty: 20, bees: 20, vees: 20,
+    fifty: 50, pachas: 50, pannas: 50,
     hundred: 100, sau: 100, she: 100, do_sau: 200,
   };
 
@@ -94,7 +181,7 @@ export async function extractVoiceListing(
     } else if (unit.includes('ton')) {
       quantityKg = val * 1000;
     } else {
-      quantityKg = val >= 50 ? val : val * 100; // if small number like 2 without unit, usually quintals in Indian mandis
+      quantityKg = val >= 50 ? val : val * 100;
     }
   } else {
     // Check word numerals
@@ -115,41 +202,64 @@ export async function extractVoiceListing(
   }
 
   // 3. Detect expected price
-  // Patterns: "18 rupees", "18 rupaye", "saath sau rupaye", "₹18/kg", "18 per kg", "atharah rupaye"
-  let priceExpected = 18;
+  // Patterns: "620 rupees", "620 rupaye", "₹620/kg", "620 per kg"
+  let priceExpected = 620;
   const priceMatches = text.match(/(?:rupees?|rupaye?|rs\.?|₹|rate|bhav)?\s*(\d+(?:\.\d+)?)\s*(?:rupees?|rupaye?|rs\.?|₹|per\s*kg|\/kg|kilo)?/i);
 
   if (priceMatches && priceMatches[1]) {
     const val = parseFloat(priceMatches[1]);
-    if (val > 0 && val < 500) {
+    if (val > 0 && val < 5000) {
       priceExpected = val;
     }
-  } else if (text.includes('atharah') || text.includes('athra')) {
-    priceExpected = 18;
-  } else if (text.includes('bees') || text.includes('vees') || text.includes('twenty')) {
-    priceExpected = 20;
-  } else if (text.includes('chaubees') || text.includes('chovis') || text.includes('twenty four')) {
-    priceExpected = 24;
-  } else if (text.includes('chauda') || text.includes('fourteen')) {
-    priceExpected = 14;
+  } else {
+    // Check for word numerals in price
+    const priceWords: Record<string, number> = {
+      'atharah': 18, 'athra': 18, 'eighteen': 18,
+      'bees': 20, 'vees': 20, 'twenty': 20,
+      'chaubees': 24, 'chovis': 24, 'twenty four': 24,
+      'chauda': 14, 'fourteen': 14,
+      'tees': 30, 'thirty': 30,
+      'chalis': 40, 'forty': 40,
+      'pachas': 50, 'fifty': 50,
+      'saath': 60, 'sixty': 60,
+      'sattar': 70, 'seventy': 70,
+      'assi': 80, 'eighty': 80,
+      'nabbe': 90, 'ninety': 90,
+      'sau': 100, 'hundred': 100,
+      'do sau': 200, 'two hundred': 200,
+      'teen sau': 300, 'three hundred': 300,
+      'char sau': 400, 'four hundred': 400,
+      'paanch sau': 500, 'five hundred': 500,
+      'cheh sau': 600, 'six hundred': 600,
+      'saat sau': 700, 'seven hundred': 700,
+      'aath sau': 800, 'eight hundred': 800,
+      'nau sau': 900, 'nine hundred': 900,
+      'hazaar': 1000, 'thousand': 1000,
+    };
+    for (const [word, val] of Object.entries(priceWords)) {
+      if (text.includes(word)) {
+        priceExpected = val;
+        break;
+      }
+    }
   }
 
   return {
-    crop: detectedCrop,
-    variety: detectedVariety,
+    materialType: detectedMaterial,
+    materialCategory: detectedCategory,
     quantityKg: Math.max(50, Math.round(quantityKg)),
-    priceExpected: Math.max(5, Math.round(priceExpected * 10) / 10),
+    priceExpectedPerKg: Math.max(5, Math.round(priceExpected * 10) / 10),
     confidence: 94,
     rawTranscript: transcript,
   };
 }
 
-export function getAiPriceRecommendation(crop: string, _region: string = 'Nashik'): PriceBand {
-  const base = MANDI_BASELINES[crop] || {
-    fair: 20.0,
-    min: 17.0,
-    max: 23.0,
-    mandi: 'Regional District APMC',
+export function getAiPriceRecommendation(materialType: string, _region: string = 'Nashik'): PriceBand {
+  const base = SCRAP_PRICE_BASELINES[materialType] || {
+    fair: 100,
+    min: 80,
+    max: 120,
+    category: 'mixed',
   };
 
   return {
@@ -158,21 +268,20 @@ export function getAiPriceRecommendation(crop: string, _region: string = 'Nashik
     max: Math.round(base.max * 10) / 10,
     confidence: 93,
     historicalMandiAvg: Math.round((base.fair - 0.5) * 10) / 10,
-    trend: 'rising',
-    benchmarkMandi: base.mandi,
+    trend: 'stable',
+    benchmarkMandi: 'Local Scrap Market',
   };
 }
 
-export async function assessProduceQuality(
+export async function assessMaterialQuality(
   _imageDataUrl: string,
-  crop: string
+  materialType: string
 ): Promise<QualityAssessment> {
-  // MobileNetV2 CNN transfer learning simulated / API model
   try {
     const res = await fetch('/api/quality/assess', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ crop, image: _imageDataUrl }),
+      body: JSON.stringify({ materialType, image: _imageDataUrl }),
     });
     if (res.ok) {
       const data = await res.json();
@@ -182,194 +291,54 @@ export async function assessProduceQuality(
     // Client fallback
   }
 
-  // Deterministic high-quality classification for demo
-  const isTomato = crop.toLowerCase().includes('tomato');
-  const isOnion = crop.toLowerCase().includes('onion');
+  // Deterministic quality classification for demo
+  const isCopper = materialType.toLowerCase().includes('copper');
+  const isPCB = materialType.toLowerCase().includes('pcb');
+  const isPlastic = materialType.toLowerCase().includes('plastic') || materialType.toLowerCase().includes('pet') || materialType.toLowerCase().includes('hdpe');
 
-  if (isTomato) {
+  if (isCopper) {
     return {
       grade: 'A',
       confidence: 96,
-      colorUniformity: 93,
-      surfaceDefects: 4,
-      firmnessScore: 90,
-      freshnessLabel: 'Optimal Maturity Grade A',
-      notes: 'Deep carotenoid red coloration, uniform fruit caliber, skin integrity suitable for multi-day transit.',
+      colorUniformity: 95,
+      surfaceDefects: 2,
+      firmnessScore: 98,
+      freshnessLabel: 'Clean, uninsulated copper wire',
+      notes: '99.9% pure copper, no oxidation, ideal for direct smelting.',
     };
-  } else if (isOnion) {
+  }
+
+  if (isPCB) {
     return {
       grade: 'A',
-      confidence: 94,
-      colorUniformity: 91,
-      surfaceDefects: 5,
-      firmnessScore: 95,
-      freshnessLabel: 'Cured Warehouse Grade A',
-      notes: 'Dry outer papery skin intact, tight bulb neck, low moisture loss risk.',
+      confidence: 96,
+      colorUniformity: 98,
+      surfaceDefects: 1,
+      firmnessScore: 99,
+      freshnessLabel: 'Intact gold fingers, no component removal',
+      notes: 'Server motherboards, telecommunications grade, high precious metal content.',
+    };
+  }
+
+  if (isPlastic) {
+    return {
+      grade: 'B',
+      confidence: 90,
+      colorUniformity: 85,
+      surfaceDefects: 8,
+      firmnessScore: 92,
+      freshnessLabel: 'Cleaned, labels removed',
+      notes: 'Food-grade certified, triple rinsed.',
     };
   }
 
   return {
-    grade: 'A',
-    confidence: 92,
-    colorUniformity: 89,
-    surfaceDefects: 6,
-    firmnessScore: 88,
-    freshnessLabel: 'Fresh Farmgate Harvest',
-    notes: 'Meets FSSAI table and commercial processing quality benchmarks with minimal foreign matter.',
+    grade: 'B',
+    confidence: 88,
+    colorUniformity: 85,
+    surfaceDefects: 10,
+    firmnessScore: 85,
+    freshnessLabel: 'Standard scrap grade',
+    notes: 'Quality not yet assessed via CNN.',
   };
-}
-// Phase 12: Reputation API helpers
-
-export async function getReputationScore(userId: string): Promise<{
-  score: number; totalFulfilled: number; disputeCount: number; averageRating: number | null; tier: string;
-} | null> {
-  try {
-    const token = localStorage.getItem('vasundhara_token');
-    const res = await fetch(`/api/reputation/${userId}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (!res.ok) return null;
-    return await res.json();
-  } catch {
-    return null;
-  }
-}
-
-export async function postBuyerRating(
-  orderId: string,
-  targetUserId: string,
-  rating: number,
-  notes?: string
-): Promise<{ event: any; updatedScore: any } | null> {
-  try {
-    const token = localStorage.getItem('vasundhara_token');
-    const res = await fetch('/api/reputation/events', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ orderId, targetUserId, eventType: 'buyer_rating', scoreImpact: rating, notes }),
-    });
-    if (!res.ok) return null;
-    return await res.json();
-  } catch {
-    return null;
-  }
-}
-
-// Phase 13: Matching API helpers
-export async function getRankedListingsForBuyer(buyerId: string): Promise<Listing[]> {
-  try {
-    const token = localStorage.getItem('vasundhara_token');
-    const res = await fetch(`/api/matching/buyer/${buyerId}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (!res.ok) return [];
-    return await res.json();
-  } catch {
-    return [];
-  }
-}
-
-// Phase 14: Logistics Pooling & Route Optimization API helpers
-export async function getLogisticsPools(): Promise<{ pools: LogisticsPool[]; total: number }> {
-  try {
-    const token = localStorage.getItem('vasundhara_token');
-    const res = await fetch('/api/logistics/pools', {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (!res.ok) return { pools: [], total: 0 };
-    return await res.json();
-  } catch {
-    return { pools: [], total: 0 };
-  }
-}
-
-export async function createLogisticsPool(orderIds: string[]): Promise<LogisticsPool | null> {
-  try {
-    const token = localStorage.getItem('vasundhara_token');
-    const res = await fetch('/api/logistics/pools', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ orderIds }),
-    });
-    if (!res.ok) return null;
-    return await res.json();
-  } catch {
-    return null;
-  }
-}
-
-export async function autoCreateLogisticsPools(): Promise<{ pools: LogisticsPool[]; skipped: string[]; total: number } | null> {
-  try {
-    const token = localStorage.getItem('vasundhara_token');
-    const res = await fetch('/api/logistics/pools/auto', {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (!res.ok) return null;
-    return await res.json();
-  } catch {
-    return null;
-  }
-}
-
-export async function getPoolRoute(poolId: string): Promise<{
-  poolId: string;
-  routeStops: any[];
-  totalStops: number;
-  estimatedDistanceKm: number;
-  estimatedDurationMinutes: number;
-} | null> {
-  try {
-    const token = localStorage.getItem('vasundhara_token');
-    const res = await fetch(`/api/logistics/pools/${poolId}/route`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (!res.ok) return null;
-    return await res.json();
-  } catch {
-    return null;
-  }
-}
-
-export async function joinLogisticsPool(poolId: string): Promise<{ message: string; pool: LogisticsPool } | null> {
-  try {
-    const token = localStorage.getItem('vasundhara_token');
-    const res = await fetch(`/api/logistics/pools/${poolId}/join`, {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (!res.ok) return null;
-    return await res.json();
-  } catch {
-    return null;
-  }
-}
-
-export async function updatePoolStatusApi(poolId: string, status: 'assigned' | 'in_transit' | 'delivered'): Promise<LogisticsPool | null> {
-  try {
-    const token = localStorage.getItem('vasundhara_token');
-    const res = await fetch(`/api/logistics/pools/${poolId}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ status }),
-    });
-    if (!res.ok) return null;
-    return await res.json();
-  } catch {
-    return null;
-  }
-}
-
-export async function completePoolStop(poolId: string, stopId: string): Promise<LogisticsPool | null> {
-  try {
-    const token = localStorage.getItem('vasundhara_token');
-    const res = await fetch(`/api/logistics/pools/${poolId}/stops/${stopId}`, {
-      method: 'PATCH',
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (!res.ok) return null;
-    return await res.json();
-  } catch {
-    return null;
-  }
 }

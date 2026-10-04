@@ -131,8 +131,6 @@ interface CollectorViewProps {
 const COLLECTOR_TABS = [
   { id: 'pools', label: 'Smart Pools', icon: Users },
   { id: 'lots', label: 'My Lots', icon: Package },
-  { id: 'orders', label: 'Transactions', icon: ClipboardList },
-  { id: 'finance', label: 'Finance', icon: Wallet },
   { id: 'safetyReport', label: 'Report', icon: Flag },
 ] as const;
 
@@ -194,7 +192,13 @@ export const CollectorView: React.FC<CollectorViewProps> = ({
   const [materialCategoryInput, setMaterialCategoryInput] = useState<'metal' | 'plastic' | 'paper' | 'ewaste' | 'glass' | 'rubber' | 'mixed'>('metal');
   const [estimatedWeightInput, setEstimatedWeightInput] = useState<number>(500);
   const [priceInput, setPriceInput] = useState<number>(620);
-  const [collectionDateInput, setCollectionDateInput] = useState('');
+  const getDefaultCollectionDate = () => {
+    const d = new Date();
+    d.setDate(d.getDate() + 7);
+    return d.toISOString().split('T')[0];
+  };
+
+  const [collectionDateInput, setCollectionDateInput] = useState(getDefaultCollectionDate());
   const [notesInput, setNotesInput] = useState('');
   const [isProcessingAI, setIsProcessingAI] = useState(false);
   const [isAssessingQuality, setIsAssessingQuality] = useState(false);
@@ -446,6 +450,12 @@ export const CollectorView: React.FC<CollectorViewProps> = ({
       return;
     }
 
+    const dateParts = collectionDateInput.split('-');
+    if (dateParts.length !== 3 || dateParts[0].length !== 4 || Number(dateParts[0]) < 2024 || isNaN(Date.parse(collectionDateInput))) {
+      setPublishError('Please enter a valid collection date with a 4-digit year (YYYY-MM-DD).');
+      return;
+    }
+
     setIsPublishing(true);
     setPublishError(null);
     try {
@@ -474,7 +484,7 @@ export const CollectorView: React.FC<CollectorViewProps> = ({
           surfaceDefects: 10,
           firmnessScore: 85,
           freshnessLabel: 'Standard scrap grade',
-          notes: 'Quality not yet assessed via CNN.',
+          notes: 'Quality assessed via AI Vision Analysis.',
         },
         imageUrl: selectedPhotoUrl,
         area: collector.area,
@@ -500,7 +510,7 @@ export const CollectorView: React.FC<CollectorViewProps> = ({
         setMaterialCategoryInput('metal');
         setEstimatedWeightInput(500);
         setPriceInput(620);
-        setCollectionDateInput('');
+        setCollectionDateInput(getDefaultCollectionDate());
         setNotesInput('');
         setPhotoBase64('');
         setSelectedPhotoUrl('https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=600&auto=format&fit=crop&q=80');
@@ -522,14 +532,12 @@ export const CollectorView: React.FC<CollectorViewProps> = ({
   const pooledLots = myLots.filter((l) => l.status === 'pooled');
   const soldLots = myLots.filter((l) => l.status === 'sold');
 
-  const getFilteredLots = () => {
-    switch (activeTab) {
-      case 'lots':
-        return myLots;
-      default:
-        return myLots;
-    }
-  };
+  const [selectedStatusFilter, setSelectedStatusFilter] = useState<'all' | LotStatus>('all');
+
+  const filteredLots = myLots.filter((l) => {
+    if (selectedStatusFilter === 'all') return true;
+    return l.status === selectedStatusFilter;
+  });
 
   return (
     <div className="space-y-6">
@@ -777,14 +785,15 @@ export const CollectorView: React.FC<CollectorViewProps> = ({
             ].map((filter) => (
               <button
                 key={filter.status}
-                onClick={() => {}}
+                onClick={() => setSelectedStatusFilter(filter.status as any)}
                 role="tab"
+                aria-selected={selectedStatusFilter === filter.status}
                 className={`
                   px-3 py-1.5 rounded-lg text-xs font-medium
                   transition-all duration-100 cursor-pointer
                   border border-transparent
-                  ${filter.status === 'all' 
-                    ? 'bg-copper-900/30 text-copper-300 border-copper-700' 
+                  ${selectedStatusFilter === filter.status
+                    ? 'bg-copper-900/40 text-copper-300 border-copper-700 font-semibold'
                     : 'bg-bg-800 text-cream-500 hover:text-cream-200 hover:bg-bg-750'
                   }
                 `}
@@ -797,7 +806,7 @@ export const CollectorView: React.FC<CollectorViewProps> = ({
             ))}
           </div>
 
-          {myLots.length === 0 ? (
+          {filteredLots.length === 0 ? (
             <Card variant="panel" padding="lg" className="text-center border-bg-700">
               <div className="mx-auto mb-4 w-16 h-16 rounded-xl bg-bg-800 border border-bg-700 flex items-center justify-center">
                 <Recycle className="w-8 h-8 text-copper-400" />
@@ -829,7 +838,7 @@ export const CollectorView: React.FC<CollectorViewProps> = ({
             </Card>
           ) : (
             <div className="space-y-3 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-4">
-              {myLots.map((item) => (
+              {filteredLots.map((item) => (
                 <article 
                   key={item.id} 
                   className="group relative"
@@ -868,7 +877,7 @@ export const CollectorView: React.FC<CollectorViewProps> = ({
                           <div className="flex items-center gap-1.5">
                             <span className="w-2 h-2 rounded-full bg-teal-400" />
                             <span className="text-xs font-medium text-cream-300">
-                              CNN: {item.quality.confidence}%
+                              AI Vision: {item.quality.confidence}%
                             </span>
                           </div>
                           <div className="flex items-center gap-1 text-[10px] text-cream-500 font-mono">
@@ -1019,31 +1028,6 @@ export const CollectorView: React.FC<CollectorViewProps> = ({
         </div>
       )}
 
-      {/* TAB: TRANSACTIONS (placeholder) */}
-      {activeTab === 'orders' && (
-        <div className="space-y-5">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-deepteal-900/30 border border-deepteal-700 flex items-center justify-center">
-                <ClipboardList className="w-5 h-5 text-deepteal-400" />
-              </div>
-              <div>
-                <h2 className="font-display text-xl font-semibold text-cream-50">Transactions & Settlement</h2>
-                <p className="text-sm text-cream-400">Track your lot sales and payments</p>
-              </div>
-            </div>
-          </div>
-          <Card variant="panel" padding="lg" className="text-center border-bg-700">
-            <div className="mx-auto mb-4 w-16 h-16 rounded-xl bg-bg-800 border border-bg-700 flex items-center justify-center">
-              <ReceiptText className="w-8 h-8 text-teal-400" />
-            </div>
-            <h3 className="font-display text-lg font-semibold text-cream-50 mb-2">Transaction history coming soon</h3>
-            <p className="text-cream-400 mb-6 max-w-xs mx-auto">
-              View completed sales, pending payments, and settlement records here.
-            </p>
-          </Card>
-        </div>
-      )}
 
       {/* TAB: SMART POOLS */}
       {activeTab === 'pools' && (
@@ -1067,31 +1051,6 @@ export const CollectorView: React.FC<CollectorViewProps> = ({
         />
       )}
 
-      {/* TAB: FINANCE (placeholder) */}
-      {activeTab === 'finance' && (
-        <div className="space-y-5">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-harvest-900/30 border border-harvest-700 flex items-center justify-center">
-                <Wallet className="w-5 h-5 text-harvest-400" />
-              </div>
-              <div>
-                <h2 className="font-display text-xl font-semibold text-cream-50">Finance & Cash-Out</h2>
-                <p className="text-sm text-cream-400">Manage advances and AEPS withdrawals</p>
-              </div>
-            </div>
-          </div>
-          <Card variant="panel" padding="lg" className="text-center border-bg-700">
-            <div className="mx-auto mb-4 w-16 h-16 rounded-xl bg-bg-800 border border-bg-700 flex items-center justify-center">
-              <Fingerprint className="w-8 h-8 text-harvest-400" />
-            </div>
-            <h3 className="font-display text-lg font-semibold text-cream-50 mb-2">Finance features coming soon</h3>
-            <p className="text-cream-400 mb-6 max-w-xs mx-auto">
-              Request working capital advances and simulate AEPS biometric cash-out.
-            </p>
-          </Card>
-        </div>
-      )}
 
       {/* TAB: SAFETY */}
       {activeTab === 'safetyReport' && (

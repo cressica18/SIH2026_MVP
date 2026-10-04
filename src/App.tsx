@@ -1006,9 +1006,9 @@ return (
             <div className="flex items-center gap-4 text-[11px] text-cream-500">
               <span>Scrap Market Integration</span>
               <span className="text-cream-600">•</span>
-              <span>AI Quality Grading (CNN)</span>
+              <span>AI Quality Assessment</span>
               <span className="text-cream-600">•</span>
-              <span>AEPS Cash-Out</span>
+              <span>Smart Pooling Engine</span>
             </div>
           </div>
         </footer>

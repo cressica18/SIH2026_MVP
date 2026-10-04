@@ -460,7 +460,10 @@ export const RecyclerView: React.FC<RecyclerViewProps> = ({
                 <Card key={settlement.id} variant="panel" padding="md" className="border-bg-700 space-y-4">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-bg-700 pb-3">
                     <div>
-                      <p className="text-xs text-cream-500 uppercase font-mono">{settlement.id}</p>
+                      <div className="flex items-center gap-2">
+                        <p className="text-xs text-cream-500 uppercase font-mono">{settlement.id}</p>
+                        <Badge variant="default" size="xs">Historical Record</Badge>
+                      </div>
                       <h3 className="font-bold text-cream-100 text-lg">
                         Pool: {settlement.poolId}
                       </h3>
@@ -470,7 +473,7 @@ export const RecyclerView: React.FC<RecyclerViewProps> = ({
                     </div>
                     <div className="text-right">
                       <Badge variant={settlement.status === 'completed' ? 'success' : 'warning'} size="md">
-                        {settlement.status === 'completed' ? 'Handover Completed' : 'Pending Pickup'}
+                        {settlement.status === 'completed' ? 'Historical / Completed' : 'Pending Pickup'}
                       </Badge>
                       <p className="text-lg font-bold text-harvest-300 mt-1">₹{settlement.totalValue.toLocaleString()}</p>
                     </div>

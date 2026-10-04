@@ -116,7 +116,7 @@ export function createScrapLot(req: AuthRequest, res: Response): void {
       trend: 'stable',
       benchmarkMarket: `${collectorProfile.district} Scrap Market`,
     },
-    imageUrl: body.imageUrl || 'https://images.unsplash.com/photo-1618512496248-a07fe83aa8cb?w=600&auto=format&fit=crop&q=80',
+    imageUrl: body.imageUrl || 'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=600&auto=format&fit=crop&q=80',
     status: body.status || 'available',
     createdVia: body.createdVia || 'text',
     createdAt: new Date().toISOString(),

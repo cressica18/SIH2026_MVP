@@ -102,6 +102,7 @@ export const RecyclerView: React.FC<RecyclerViewProps> = ({
   const [selectedSettlement, setSelectedSettlement] = useState<SettlementRecord | null>(null);
   const [inputQrCode, setInputQrCode] = useState<string>('');
   const [isCompletingHandover, setIsCompletingHandover] = useState<boolean>(false);
+  const [handoverError, setHandoverError] = useState<string | null>(null);
 
   const myOffers = offers.filter(o => o.recyclerId === recycler.id);
   const mySettlements = settlements.filter(s => s.recyclerId === recycler.id);
@@ -149,6 +150,7 @@ export const RecyclerView: React.FC<RecyclerViewProps> = ({
   const handleHandoverSubmit = async () => {
     if (!selectedSettlement) return;
     setIsCompletingHandover(true);
+    setHandoverError(null);
     const success = await onCompleteHandover(selectedSettlement.id, inputQrCode || selectedSettlement.handoverRef);
     setIsCompletingHandover(false);
     if (success) {
@@ -156,7 +158,7 @@ export const RecyclerView: React.FC<RecyclerViewProps> = ({
       setInputQrCode('');
       onRefresh();
     } else {
-      alert('Failed to complete handover. Please check settlement ID.');
+      setHandoverError('Failed to complete handover. Please check settlement ID or network connection.');
     }
   };
 
@@ -582,7 +584,10 @@ export const RecyclerView: React.FC<RecyclerViewProps> = ({
       {selectedSettlement && (
         <Modal
           isOpen={!!selectedSettlement}
-          onClose={() => setSelectedSettlement(null)}
+          onClose={() => {
+            setSelectedSettlement(null);
+            setHandoverError(null);
+          }}
           title={`Complete Handover — Settlement ${selectedSettlement.id}`}
         >
           <div className="space-y-4 p-4">
@@ -601,8 +606,14 @@ export const RecyclerView: React.FC<RecyclerViewProps> = ({
               />
             </div>
 
+            {handoverError && (
+              <p className="text-xs text-copper-400 bg-copper-950/40 p-2 rounded border border-copper-800">
+                {handoverError}
+              </p>
+            )}
+
             <div className="flex gap-2 pt-2">
-              <Button variant="outline" className="flex-1" onClick={() => setSelectedSettlement(null)}>
+              <Button variant="outline" className="flex-1" onClick={() => { setSelectedSettlement(null); setHandoverError(null); }}>
                 Cancel
               </Button>
               <Button

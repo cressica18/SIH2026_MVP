@@ -222,7 +222,7 @@ export const I18N_STRINGS: Record<Language, Translations> = {
       status: 'Status',
       grade: 'Grade',
       confidence: 'Confidence',
-      liveMandiTrend: 'Live Mandi Benchmark',
+    liveMandiTrend: 'Live Scrap Market Benchmark',
     },
   },
   hi: {
@@ -332,7 +332,7 @@ export const I18N_STRINGS: Record<Language, Translations> = {
       status: 'स्थिति',
       grade: 'ग्रेड',
       confidence: 'सटीकता',
-      liveMandiTrend: 'लाइव मंडी भाव',
+      liveMandiTrend: 'लाइव स्क्रैप बाजार भाव',
     },
   },
   mr: {
@@ -442,12 +442,12 @@ export const I18N_STRINGS: Record<Language, Translations> = {
       status: 'स्थिती',
       grade: 'दर्जा',
       confidence: 'अचूकता',
-      liveMandiTrend: 'थेट बाजारभाव',
+      liveMandiTrend: 'थेट स्क्रैप बाजारभाव',
     },
   },
   te: {
-    appName: 'వసుంధర',
-    tagline: 'రైతు నుండి నేరుగా కొనుగోలుదారుకు డిజిటల్ మార్కెట్',
+    appName: 'కబడీవాలా కనెక్ట్',
+    tagline: 'ధృవీకరించబడిన స్మార్ట్ లాట్ పూల్ — SIH 26229',
     roles: {
       farmer: 'రైతు విభాగం',
       buyer: 'కొనుగోలుదారు',
@@ -555,7 +555,7 @@ export const I18N_STRINGS: Record<Language, Translations> = {
       status: 'స్థితి',
       grade: 'గ్రేడ్',
       confidence: 'ఖచ్చితత్వం',
-      liveMandiTrend: 'మండీ ధరలు',
+      liveMandiTrend: 'స్క్రాప్ మార్కెట్ ధరలు',
     },
   },
   pa: {
@@ -665,7 +665,7 @@ export const I18N_STRINGS: Record<Language, Translations> = {
       status: 'ਸਥਿਤੀ',
       grade: 'ਦਰਜਾ',
       confidence: 'ਸ਼ੁੱਧਤਾ',
-      liveMandiTrend: 'ਲਾਈਵ ਮੰਡੀ ਭਾਅ',
+      liveMandiTrend: 'ਲਾਈਵ ਸਕ੍ਰੈਪ ਮਾਰਕੀਟ ਭਾਅ',
     },
   },
 };

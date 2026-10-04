@@ -60,7 +60,7 @@ export function OnboardingScreen({ onComplete }: { onComplete: (profile: any) =>
     }
 
     try {
-      const token = localStorage.getItem('vasundhara_token');
+      const token = localStorage.getItem('kabadiwala_token');
       const res = await fetch('/api/users/profile', {
         method: 'PUT',
         headers: {

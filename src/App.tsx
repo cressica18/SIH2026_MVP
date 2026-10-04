@@ -122,7 +122,7 @@ export default function App() {
 
     async function fetchProfileAndListings() {
       try {
-        const token = localStorage.getItem('vasundhara_token');
+        const token = localStorage.getItem('kabadiwala_token');
         
         // Fetch Profile
         const res = await fetch('/api/users/profile', {
@@ -303,7 +303,7 @@ export default function App() {
 
   // Fetch notifications from backend with polling
   const fetchNotifications = useCallback(async () => {
-    const token = localStorage.getItem('vasundhara_token');
+    const token = localStorage.getItem('kabadiwala_token');
     if (!token) return;
     try {
       const res = await fetch('/api/notifications', {
@@ -329,7 +329,7 @@ export default function App() {
   // Add a new listing from farmer voice or manual input
   const handleAddListing = async (newListing: Listing): Promise<boolean> => {
     try {
-      const token = localStorage.getItem('vasundhara_token');
+      const token = localStorage.getItem('kabadiwala_token');
       const res = await fetch('/api/listings', {
         method: 'POST',
         headers: {
@@ -368,7 +368,7 @@ export default function App() {
   // Update listing status
   const handleUpdateListingStatus = async (id: string, status: string) => {
     try {
-      const token = localStorage.getItem('vasundhara_token');
+      const token = localStorage.getItem('kabadiwala_token');
       const res = await fetch(`/api/listings/${id}/status`, {
         method: 'PATCH',
         headers: {
@@ -389,7 +389,7 @@ export default function App() {
   // Add a new scrap lot from collector voice or manual input
   const handleAddScrapLot = async (newLot: ScrapLot): Promise<boolean> => {
     try {
-      const token = localStorage.getItem('vasundhara_token');
+      const token = localStorage.getItem('kabadiwala_token');
       const res = await fetch('/api/scrap-lots', {
         method: 'POST',
         headers: {
@@ -428,7 +428,7 @@ export default function App() {
   // Update scrap lot status
   const handleUpdateScrapLotStatus = async (id: string, status: string) => {
     try {
-      const token = localStorage.getItem('vasundhara_token');
+      const token = localStorage.getItem('kabadiwala_token');
       const res = await fetch(`/api/scrap-lots/${id}/status`, {
         method: 'PATCH',
         headers: {
@@ -449,7 +449,7 @@ export default function App() {
   // Buyer places an order — POST to backend, then update local state
   const handlePlaceOrder = async (newOrder: Order): Promise<boolean> => {
     try {
-      const token = localStorage.getItem('vasundhara_token');
+      const token = localStorage.getItem('kabadiwala_token');
       const res = await fetch('/api/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
@@ -505,7 +505,7 @@ export default function App() {
   // Update Order Status (Phase 11 State Machine)
   const handleUpdateOrderStatus = async (orderId: string, status: string) => {
     try {
-      const token = localStorage.getItem('vasundhara_token');
+      const token = localStorage.getItem('kabadiwala_token');
       const res = await fetch(`/api/orders/${orderId}/status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
@@ -525,7 +525,7 @@ export default function App() {
   // Buyer rates farmer fulfillment — Phase 12: persist to backend reputation service
   const handleRateFarmer = async (orderId: string, rating: number): Promise<boolean> => {
     try {
-      const token = localStorage.getItem('vasundhara_token');
+      const token = localStorage.getItem('kabadiwala_token');
       const order = orders.find((o) => o.id === orderId);
       if (!order) return false;
 
@@ -572,7 +572,7 @@ export default function App() {
     status: 'assigned' | 'in_transit' | 'delivered'
   ): Promise<boolean> => {
     try {
-      const token = localStorage.getItem('vasundhara_token');
+      const token = localStorage.getItem('kabadiwala_token');
       const res = await fetch(`/api/logistics/pools/${poolId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
@@ -587,7 +587,7 @@ export default function App() {
 
       if (status === 'in_transit' || status === 'delivered') {
         // Backend synced order statuses; refresh orders
-        const ordToken = localStorage.getItem('vasundhara_token');
+        const ordToken = localStorage.getItem('kabadiwala_token');
         const ordRes = await fetch('/api/orders', {
           headers: { Authorization: `Bearer ${ordToken}` },
         });
@@ -606,7 +606,7 @@ export default function App() {
   // Complete specific waypoint stop
   const handleCompleteStop = async (poolId: string, stopId: string): Promise<boolean> => {
     try {
-      const token = localStorage.getItem('vasundhara_token');
+      const token = localStorage.getItem('kabadiwala_token');
       const res = await fetch(`/api/logistics/pools/${poolId}/stops/${stopId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
@@ -620,7 +620,7 @@ export default function App() {
 
       // If this triggered delivery, refresh orders
       if (updatedPool.status === 'delivered') {
-        const ordToken = localStorage.getItem('vasundhara_token');
+        const ordToken = localStorage.getItem('kabadiwala_token');
         const ordRes = await fetch('/api/orders', {
           headers: { Authorization: `Bearer ${ordToken}` },
         });
@@ -638,7 +638,7 @@ export default function App() {
 
   const handleCreatePool = async (orderIds: string[]): Promise<boolean> => {
     try {
-      const token = localStorage.getItem('vasundhara_token');
+      const token = localStorage.getItem('kabadiwala_token');
       const res = await fetch('/api/logistics/pools', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
@@ -673,7 +673,7 @@ export default function App() {
     notes?: string;
   }): Promise<boolean> => {
     try {
-      const token = localStorage.getItem('vasundhara_token');
+      const token = localStorage.getItem('kabadiwala_token');
       const res = await fetch('/api/smart-pools/offers', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
@@ -695,7 +695,7 @@ export default function App() {
   // Complete a settlement handover
   const handleCompleteHandover = async (settlementId: string, qrCode?: string): Promise<boolean> => {
     try {
-      const token = localStorage.getItem('vasundhara_token');
+      const token = localStorage.getItem('kabadiwala_token');
       const res = await fetch('/api/smart-pools/settlements/complete', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
@@ -722,7 +722,7 @@ export default function App() {
     reportedEntityName: string;
   }): Promise<SafetyReport | null> => {
     try {
-      const token = localStorage.getItem('vasundhara_token');
+      const token = localStorage.getItem('kabadiwala_token');
       const res = await fetch('/api/reports', {
         method: 'POST',
         headers: {
@@ -771,7 +771,7 @@ export default function App() {
 
   const handleRequestAdvance = async (amount: number, purpose: string, simulateAeps: boolean): Promise<{ success: boolean; advance?: AdvanceRequest; error?: string }> => {
     try {
-      const token = localStorage.getItem('vasundhara_token');
+      const token = localStorage.getItem('kabadiwala_token');
       const res = await fetch('/api/finance/advances', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
@@ -805,7 +805,7 @@ export default function App() {
     resolutionNotes: string
   ): Promise<SafetyReport | null> => {
     try {
-      const token = localStorage.getItem('vasundhara_token');
+      const token = localStorage.getItem('kabadiwala_token');
       const res = await fetch(`/api/reports/admin/${reportId}`, {
         method: 'PATCH',
         headers: {
@@ -841,7 +841,7 @@ export default function App() {
     );
 
     try {
-      const token = localStorage.getItem('vasundhara_token');
+      const token = localStorage.getItem('kabadiwala_token');
       if (token) {
         await fetch(`/api/notifications/${notifId}/read`, {
           method: 'PATCH',
@@ -880,7 +880,7 @@ export default function App() {
     setNotifications((prev) => [notif, ...prev]);
 
     // Refresh advances from backend to ensure source-of-truth consistency
-    const token = localStorage.getItem('vasundhara_token');
+    const token = localStorage.getItem('kabadiwala_token');
     if (token) {
       try {
         const advRes = await fetch('/api/finance/advances', {
@@ -1016,7 +1016,7 @@ return (
             onCreateOffer={handleCreatePoolOffer}
             onCompleteHandover={handleCompleteHandover}
             onRefresh={async () => {
-              const token = localStorage.getItem('vasundhara_token');
+              const token = localStorage.getItem('kabadiwala_token');
               const [spRes, poRes, setRes] = await Promise.all([
                 fetch('/api/smart-pools', { headers: { Authorization: `Bearer ${token}` } }),
                 fetch('/api/smart-pools/offers', { headers: { Authorization: `Bearer ${token}` } }),
@@ -1077,7 +1077,7 @@ return (
         onSuccess={handleAepsSuccess}
       />
 
-      {/* Agmarknet Mandi Price Insights Modal */}
+      {/* Scrap Market Price Insights Modal */}
       <MarketInsightsModal
         isOpen={isMarketInsightsOpen}
         onClose={() => setIsMarketInsightsOpen(false)}

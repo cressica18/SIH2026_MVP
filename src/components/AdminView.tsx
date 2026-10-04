@@ -102,7 +102,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
               Kabadiwala Connect Administration & Safety Console
             </CardTitle>
             <CardDescription className="text-xs sm:text-sm text-sage-300 max-w-2xl leading-relaxed font-semibold">
-              Monitoring trade transparency, anonymous farmer protection against mandi cartels, and corridor logistics performance.
+              Monitoring trade transparency, anonymous collector protection against scrap cartels, and corridor logistics performance.
             </CardDescription>
           </div>
 
@@ -152,7 +152,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                 <span>Whistleblower & Exploitation Moderation Queue</span>
               </CardTitle>
               <CardDescription className="text-cream-400 font-medium">
-                Confidential reports submitted by farmers regarding mandi cartel price-fixing, broker extortion, or harassment.
+                Confidential reports submitted by collectors regarding scrap cartel price-fixing, broker extortion, or harassment.
               </CardDescription>
             </div>
             <span className="text-xs font-bold text-cream-300 bg-bg-750 px-3 py-1 rounded-full border border-bg-700 self-start sm:self-auto">
@@ -247,7 +247,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             <div className="metric-tile">
-              <p className="text-[10px] text-cream-500 font-bold uppercase tracking-widest mb-1">Total Farmgate GMV</p>
+              <p className="text-[10px] text-cream-500 font-bold uppercase tracking-widest mb-1">Total Scrap GMV</p>
               <p className="text-xl font-display font-bold text-cream-50 flex items-center gap-1.5">
                 <IndianRupee className="w-4 h-4 text-forest-400" />
                 <span>₹38.4 L</span>
@@ -259,24 +259,24 @@ export const AdminView: React.FC<AdminViewProps> = ({
             </div>
 
             <div className="metric-tile">
-              <p className="text-[10px] text-cream-500 font-bold uppercase tracking-widest mb-1">Farmgate Price Premium</p>
+              <p className="text-[10px] text-cream-500 font-bold uppercase tracking-widest mb-1">Collector Price Premium</p>
               <p className="text-xl font-display font-bold text-forest-300 flex items-center gap-1.5">
                 <TrendingUp className="w-4 h-4 text-forest-400" />
                 <span>+22.4%</span>
               </p>
               <p className="text-[11px] text-cream-500 font-medium mt-1.5">
-                Above local arhat middlemen rates
+                Above local yard middleman rates
               </p>
             </div>
 
             <div className="metric-tile">
-              <p className="text-[10px] text-cream-500 font-bold uppercase tracking-widest mb-1">Verified Farmers</p>
+              <p className="text-[10px] text-cream-500 font-bold uppercase tracking-widest mb-1">Verified Collectors</p>
               <p className="text-xl font-display font-bold text-cream-50 flex items-center gap-1.5">
                 <Users className="w-4 h-4 text-deepteal-400" />
                 <span>1,248</span>
               </p>
               <p className="text-[11px] text-cream-500 font-medium mt-1.5">
-                Across 4 horticulture districts
+                Across 4 industrial waste districts
               </p>
             </div>
 

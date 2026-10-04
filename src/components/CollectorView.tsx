@@ -228,7 +228,7 @@ export const CollectorView: React.FC<CollectorViewProps> = ({
   const fetchSmartPools = async () => {
     setIsLoadingPools(true);
     try {
-      const token = localStorage.getItem('vasundhara_token');
+      const token = localStorage.getItem('kabadiwala_token');
       const res = await fetch('/api/smart-pools/collector/my-pools', {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -245,7 +245,7 @@ export const CollectorView: React.FC<CollectorViewProps> = ({
 
   const fetchPoolOffers = async (poolId: string) => {
     try {
-      const token = localStorage.getItem('vasundhara_token');
+      const token = localStorage.getItem('kabadiwala_token');
       const res = await fetch(`/api/smart-pools/${poolId}/offers`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -260,7 +260,7 @@ export const CollectorView: React.FC<CollectorViewProps> = ({
 
   const handleJoinPool = async (lot: ScrapLot) => {
     try {
-      const token = localStorage.getItem('vasundhara_token');
+      const token = localStorage.getItem('kabadiwala_token');
       const res = await fetch('/api/smart-pools/join', {
         method: 'POST',
         headers: {
@@ -280,7 +280,7 @@ export const CollectorView: React.FC<CollectorViewProps> = ({
 
   const handleCreatePool = async (lot: ScrapLot) => {
     try {
-      const token = localStorage.getItem('vasundhara_token');
+      const token = localStorage.getItem('kabadiwala_token');
       const res = await fetch('/api/smart-pools/create-from-lot', {
         method: 'POST',
         headers: {
@@ -304,7 +304,7 @@ export const CollectorView: React.FC<CollectorViewProps> = ({
 
   const handleRespondToOffer = async (offerId: string, action: 'accept' | 'reject') => {
     try {
-      const token = localStorage.getItem('vasundhara_token');
+      const token = localStorage.getItem('kabadiwala_token');
       const res = await fetch('/api/smart-pools/offers/respond', {
         method: 'POST',
         headers: {
@@ -326,7 +326,7 @@ export const CollectorView: React.FC<CollectorViewProps> = ({
 
   const handleLeavePool = async (poolId: string, lotId: string) => {
     try {
-      const token = localStorage.getItem('vasundhara_token');
+      const token = localStorage.getItem('kabadiwala_token');
       const res = await fetch('/api/smart-pools/leave', {
         method: 'POST',
         headers: {
@@ -428,9 +428,9 @@ export const CollectorView: React.FC<CollectorViewProps> = ({
           fair: price,
           max: Math.round(price * 1.15),
           confidence: 90,
-          historicalMandiAvg: Math.round(price * 0.95),
+          historicalMarketAvg: Math.round(price * 0.95),
           trend: 'stable',
-          benchmarkMandi: `${collector.district} Scrap Market`,
+          benchmarkMarket: `${collector.district} Scrap Market`,
         },
         quality: qualityGrade || {
           grade: 'B',
@@ -1499,7 +1499,7 @@ function CreateLotModal({
               </div>
             </div>
             <p className="text-xs text-cream-500 mt-2 text-center">
-              Benchmark: {aiPriceBand.benchmarkMandi} · Trend: {aiPriceBand.trend}
+              Benchmark: {aiPriceBand.benchmarkMarket} · Trend: {aiPriceBand.trend}
             </p>
           </Card>
         )}
@@ -1846,7 +1846,7 @@ function SmartPoolsTab({
                             const myMember = pool.members.find(m => m.anonCollectorId === collector.anonCollectorId);
                             if (myMember) {
                               fetch(`/api/smart-pools/${pool.id}/offers`, {
-                                headers: { Authorization: `Bearer ${localStorage.getItem('vasundhara_token')}` },
+                                headers: { Authorization: `Bearer ${localStorage.getItem('kabadiwala_token')}` },
                               }).then(r => r.json()).then(data => {
                                 if (data.offers && data.offers.length > 0) {
                                   alert(`${data.offers.length} offer(s) received. Check backend for details.`);

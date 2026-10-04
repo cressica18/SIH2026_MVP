@@ -72,7 +72,7 @@ export const MarketInsightsModal: React.FC<MarketInsightsModalProps> = ({
             </div>
             <div>
               <h3 className="text-base sm:text-lg font-black text-cream-50">
-                Agmarknet Mandi Price Intelligence
+                Scrap Market Price Intelligence
               </h3>
               <p className="text-xs text-forest-300 font-semibold">
                 Live Mandi trends, arrival volumes & AI price forecasting
@@ -246,7 +246,7 @@ export const MarketInsightsModal: React.FC<MarketInsightsModalProps> = ({
           <div className="p-4 bg-forest-900/30 border border-forest-700 rounded-2xl space-y-2">
             <div className="flex items-center gap-1.5 text-xs font-bold text-forest-100">
               <Sparkles className="w-4 h-4 text-harvest-400" />
-              <span>AI Market Narrative (Grounded in Agmarknet Data)</span>
+              <span>AI Market Narrative (Grounded in Scrap Market Data)</span>
             </div>
             <p className="text-xs sm:text-sm text-cream-300 leading-relaxed font-medium">
               {currentInsight.aiSummary}

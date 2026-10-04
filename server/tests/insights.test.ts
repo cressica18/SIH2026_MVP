@@ -27,9 +27,9 @@ describe('Phase 17: AI-Driven Market Insights', () => {
 
   describe('Insight Service — unit tests', () => {
     it('buildDashboard should return DashboardData with all required fields', () => {
-      const dashboard = buildDashboard('Maharashtra', 'Tomato');
+      const dashboard = buildDashboard('Maharashtra', 'Copper Wire');
       expect(dashboard).toHaveProperty('region', 'Maharashtra');
-      expect(dashboard).toHaveProperty('crop', 'Tomato');
+      expect(dashboard).toHaveProperty('crop', 'Copper Wire');
       expect(dashboard).toHaveProperty('avgPriceSeries');
       expect(Array.isArray(dashboard.avgPriceSeries)).toBe(true);
       expect(dashboard.avgPriceSeries.length).toBeGreaterThan(0);
@@ -45,42 +45,42 @@ describe('Phase 17: AI-Driven Market Insights', () => {
     });
 
     it('buildDashboard should compute trend correctly from price history', () => {
-      const rising = buildDashboard('Maharashtra', 'Tomato');
+      const rising = buildDashboard('Maharashtra', 'Copper Wire');
       expect(rising.trend).toBe('rising');
 
-      const stable = buildDashboard('Punjab', 'Potato');
+      const stable = buildDashboard('Pune', 'HDPE Plastic');
       expect(stable.trend).toBe('stable');
     });
 
     it('buildDashboard should compute volatility index correctly', () => {
-      const tomatoDashboard = buildDashboard('Maharashtra', 'Tomato');
-      expect(tomatoDashboard.avgPriceSeries.length).toBeGreaterThan(0);
+      const copperDashboard = buildDashboard('Maharashtra', 'Copper Wire');
+      expect(copperDashboard.avgPriceSeries.length).toBeGreaterThan(0);
       expect(['Low', 'Moderate', 'High']).toContain(
-        tomatoDashboard.avgPriceSeries.length > 0 ? 
-          (tomatoDashboard.avgPriceSeries.length > 5 ? 'Moderate' : 'Low') : 'Low'
+        copperDashboard.avgPriceSeries.length > 0 ?
+          (copperDashboard.avgPriceSeries.length > 5 ? 'Moderate' : 'Low') : 'Low'
       );
     });
 
     it('getDashboardForCrop should return data for specific crop', () => {
-      const dashboard = getDashboardForCrop('Onion', 'Karnataka');
-      expect(dashboard.crop).toBe('Onion');
+      const dashboard = getDashboardForCrop('Aluminum Extrusion', 'Karnataka');
+      expect(dashboard.crop).toBe('Aluminum Extrusion');
       expect(dashboard.region).toBe('Karnataka');
     });
 
     it('getAllCropsDashboard should return array for all crops', () => {
       const dashboards = getAllCropsDashboard('Maharashtra');
       expect(Array.isArray(dashboards)).toBe(true);
-      expect(dashboards.length).toBe(7); // 7 crops
+      expect(dashboards.length).toBe(7); // 7 materials
       const crops = dashboards.map(d => d.crop);
-      expect(crops).toContain('Tomato');
-      expect(crops).toContain('Onion');
-      expect(crops).toContain('Potato');
+      expect(crops).toContain('Copper Wire');
+      expect(crops).toContain('Aluminum Extrusion');
+      expect(crops).toContain('E-Waste');
     });
 
     it('summaryText should be coherent and mention key metrics', () => {
-      const dashboard = buildDashboard('Maharashtra', 'Tomato');
+      const dashboard = buildDashboard('Maharashtra', 'Copper Wire');
       const summary = dashboard.summaryText;
-      expect(summary).toContain('Tomato');
+      expect(summary).toContain('Copper Wire');
       expect(summary).toContain('Maharashtra');
       expect(summary).toContain('%');
       expect(summary).toContain('₹');
@@ -97,8 +97,8 @@ describe('Phase 17: AI-Driven Market Insights', () => {
     });
 
     it('buildDashboard should be deterministic for same inputs', () => {
-      const d1 = buildDashboard('Maharashtra', 'Tomato');
-      const d2 = buildDashboard('Maharashtra', 'Tomato');
+      const d1 = buildDashboard('Maharashtra', 'Copper Wire');
+      const d2 = buildDashboard('Maharashtra', 'Copper Wire');
       expect(d1.trend).toBe(d2.trend);
       expect(d1.summaryText).toBe(d2.summaryText);
       expect(d1.crop).toBe(d2.crop);
@@ -107,9 +107,9 @@ describe('Phase 17: AI-Driven Market Insights', () => {
 
     it('detectTrend should correctly classify rising/stable/falling', () => {
       // Tested indirectly via buildDashboard which uses detectTrend internally
-      const rising = buildDashboard('Maharashtra', 'Tomato');
+      const rising = buildDashboard('Maharashtra', 'Copper Wire');
       expect(rising.trend).toBe('rising');
-      const stable = buildDashboard('Punjab', 'Potato');
+      const stable = buildDashboard('Pune', 'HDPE Plastic');
       expect(stable.trend).toBe('stable');
     });
   });
@@ -130,9 +130,9 @@ describe('Phase 17: AI-Driven Market Insights', () => {
 
     it('should filter by crop when ?crop= query param provided', async () => {
       const res = await request(app)
-        .get('/api/insights/dashboard?crop=Onion');
+        .get('/api/insights/dashboard?crop=Aluminum%20Extrusion');
       expect(res.status).toBe(200);
-      expect(res.body.crop).toBe('Onion');
+      expect(res.body.crop).toBe('Aluminum Extrusion');
       expect(res.body.avgPriceSeries.length).toBeGreaterThan(0);
     });
 
@@ -145,9 +145,9 @@ describe('Phase 17: AI-Driven Market Insights', () => {
 
     it('should respect both crop and region filters', async () => {
       const res = await request(app)
-        .get('/api/insights/dashboard?crop=Tomato&region=Maharashtra');
+        .get('/api/insights/dashboard?crop=Copper%20Wire&region=Maharashtra');
       expect(res.status).toBe(200);
-      expect(res.body.crop).toBe('Tomato');
+      expect(res.body.crop).toBe('Copper Wire');
       expect(res.body.region).toBe('Maharashtra');
     });
 
@@ -161,7 +161,7 @@ describe('Phase 17: AI-Driven Market Insights', () => {
 
     it('avgPriceSeries should have correct structure', async () => {
       const res = await request(app)
-        .get('/api/insights/dashboard?crop=Tomato');
+        .get('/api/insights/dashboard?crop=Copper%20Wire');
       expect(res.status).toBe(200);
       const series = res.body.avgPriceSeries;
       expect(Array.isArray(series)).toBe(true);
@@ -177,20 +177,20 @@ describe('Phase 17: AI-Driven Market Insights', () => {
 
     it('should include all 7 known crops in history', async () => {
       const res = await request(app)
-        .get('/api/insights/dashboard?crop=Soybean');
+        .get('/api/insights/dashboard?crop=E-Waste');
       expect(res.status).toBe(200);
-      expect(res.body.crop).toBe('Soybean');
+      expect(res.body.crop).toBe('E-Waste');
       expect(res.body.avgPriceSeries.length).toBeGreaterThan(0);
     });
 
     it('summaryText should change when underlying data changes (crop filter)', async () => {
       const res1 = await request(app)
-        .get('/api/insights/dashboard?crop=Tomato');
+        .get('/api/insights/dashboard?crop=Copper%20Wire');
       const res2 = await request(app)
-        .get('/api/insights/dashboard?crop=Potato');
+        .get('/api/insights/dashboard?crop=HDPE%20Plastic');
       expect(res1.body.summaryText).not.toBe(res2.body.summaryText);
-      expect(res1.body.summaryText).toContain('Tomato');
-      expect(res2.body.summaryText).toContain('Potato');
+      expect(res1.body.summaryText).toContain('Copper Wire');
+      expect(res2.body.summaryText).toContain('HDPE Plastic');
     });
 
     it('generatedAt should be valid ISO timestamp', async () => {
@@ -240,7 +240,7 @@ describe('Phase 17: AI-Driven Market Insights', () => {
   describe('Data aggregation from listings and orders', () => {
     it('should reflect active listings in topDemandCrops when orders exist', async () => {
       const res = await request(app)
-        .get('/api/insights/dashboard?crop=Tomato');
+        .get('/api/insights/dashboard?crop=Copper%20Wire');
       expect(res.status).toBe(200);
       expect(res.body.topDemandCrops.length).toBeGreaterThanOrEqual(0);
     });
@@ -263,15 +263,15 @@ describe('Phase 17: AI-Driven Market Insights', () => {
     });
 
     it('trend detection should match seeded price history', async () => {
-      // Tomato history shows rising trend
-      const tomatoRes = await request(app)
-        .get('/api/insights/dashboard?crop=Tomato');
-      expect(tomatoRes.body.trend).toBe('rising');
+      // Copper Wire history shows rising trend
+      const copperRes = await request(app)
+        .get('/api/insights/dashboard?crop=Copper%20Wire');
+      expect(copperRes.body.trend).toBe('rising');
 
-      // Potato history shows stable trend
-      const potatoRes = await request(app)
-        .get('/api/insights/dashboard?crop=Potato');
-      expect(potatoRes.body.trend).toBe('stable');
+      // HDPE Plastic history shows stable trend
+      const hdpeRes = await request(app)
+        .get('/api/insights/dashboard?crop=HDPE%20Plastic');
+      expect(hdpeRes.body.trend).toBe('stable');
     });
   });
 
@@ -294,7 +294,7 @@ describe('Phase 17: AI-Driven Market Insights', () => {
 
     it('forecastNextWeek should be reasonable', async () => {
       const res = await request(app)
-        .get('/api/insights/dashboard?crop=Tomato');
+        .get('/api/insights/dashboard?crop=Copper%20Wire');
       expect(res.status).toBe(200);
       // Forecast should be close to current price
       const lastPrice = res.body.avgPriceSeries[res.body.avgPriceSeries.length - 1].price;
@@ -305,10 +305,10 @@ describe('Phase 17: AI-Driven Market Insights', () => {
 
     it('should work with authenticated requests too', async () => {
       const res = await request(app)
-        .get('/api/insights/dashboard?crop=Tomato')
+        .get('/api/insights/dashboard?crop=Copper%20Wire')
         .set('Authorization', `Bearer ${buyerToken}`);
       expect(res.status).toBe(200);
-      expect(res.body.crop).toBe('Tomato');
+      expect(res.body.crop).toBe('Copper Wire');
     });
   });
 
@@ -317,10 +317,10 @@ describe('Phase 17: AI-Driven Market Insights', () => {
   describe('AI Summary — deterministic fallback', () => {
     it('should produce summary without external AI API call', async () => {
       const res = await request(app)
-        .get('/api/insights/dashboard?crop=Tomato');
+        .get('/api/insights/dashboard?crop=Copper%20Wire');
       expect(res.status).toBe(200);
       // Summary is generated deterministically from aggregated data
-      expect(res.body.summaryText).toContain('Tomato');
+      expect(res.body.summaryText).toContain('Copper Wire');
       expect(res.body.dataSource).toBe('aggregated_mvp_data');
     });
 
@@ -331,9 +331,9 @@ describe('Phase 17: AI-Driven Market Insights', () => {
     });
 
     it('summary should be different for different crops', async () => {
-      const crops = ['Tomato', 'Onion', 'Potato', 'Soybean'];
+      const crops = ['Copper Wire', 'Aluminum Extrusion', 'HDPE Plastic', 'E-Waste'];
       const summaries = await Promise.all(
-        crops.map(c => request(app).get(`/api/insights/dashboard?crop=${c}`))
+        crops.map(c => request(app).get(`/api/insights/dashboard?crop=${encodeURIComponent(c)}`))
       );
       const texts = summaries.map(r => r.body.summaryText);
       // All should be unique
@@ -346,7 +346,7 @@ describe('Phase 17: AI-Driven Market Insights', () => {
 
     it('summary should mention trend direction', async () => {
       const res = await request(app)
-        .get('/api/insights/dashboard?crop=Tomato');
+        .get('/api/insights/dashboard?crop=Copper%20Wire');
       expect(res.status).toBe(200);
       const summary = res.body.summaryText.toLowerCase();
       expect(summary).toMatch(/rising|appreciating|declining|falling|steady|stable|holding/);

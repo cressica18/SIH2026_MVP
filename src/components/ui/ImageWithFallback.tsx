@@ -27,7 +27,7 @@ export const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
         <span className="text-xs font-semibold text-neutral-800 text-center line-clamp-1">
           {fallbackTitle || alt}
         </span>
-        <span className="text-[10px] text-neutral-500 font-medium">Kisan Setu Verified Lot</span>
+        <span className="text-[10px] text-neutral-500 font-medium">Kabadiwala Connect Verified Lot</span>
       </div>
     );
   }

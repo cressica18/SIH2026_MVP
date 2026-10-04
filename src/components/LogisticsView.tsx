@@ -147,7 +147,7 @@ export const LogisticsView: React.FC<LogisticsViewProps> = ({
                 <span>Unassigned Confirmed Orders in Corridor</span>
               </CardTitle>
               <CardDescription className="text-cream-400 font-medium">
-                Select multiple farmgate harvest orders to cluster into a high-efficiency vehicle pickup route.
+                Select multiple scrap lot orders to cluster into a high-efficiency vehicle pickup route.
               </CardDescription>
             </div>
             <Button

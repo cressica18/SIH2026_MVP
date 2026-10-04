@@ -147,7 +147,7 @@ export const I18N_STRINGS: Record<Language, Translations> = {
       cropName: 'Crop & Variety',
       quantity: 'Quantity (kg / quintal)',
       expectedPrice: 'Expected Price (₹/kg)',
-      aiPriceBand: 'AI Market Price Band (Agmarknet Mandi Model)',
+      aiPriceBand: 'AI Market Price Band (Scrap Market Model)',
       aiQualityScan: 'AI Produce Quality Scan (CNN Classifier)',
       publishAnon: 'Publish Anonymously to Marketplace',
       anonShieldNotice: 'Your name, village, and phone remain 100% confidential until you confirm a matching buyer order.',
@@ -180,7 +180,7 @@ export const I18N_STRINGS: Record<Language, Translations> = {
     buyer: {
       marketplace: 'Direct Farm Marketplace',
       recommendedForYou: 'AI-Recommended For Your Demand',
-      allListings: 'All Active Farmgate Batches',
+      allListings: 'All Active Direct Batches',
       filterByCrop: 'Filter by Crop',
       qualityGrade: 'Quality Grade',
       reputation: 'Seller Trust Score',
@@ -189,7 +189,7 @@ export const I18N_STRINGS: Record<Language, Translations> = {
       identityLockNotice: 'Seller identity and contact details will be automatically revealed immediately upon order confirmation.',
     },
     logistics: {
-      pooledPickups: 'Pooled Farmgate Pickups',
+      pooledPickups: 'Pooled Direct Pickups',
       clusterTitle: 'Nearby Order Cluster & Route Solver',
       routeSequence: 'Optimized Multi-Stop Route',
       assignVehicle: 'Assign Vehicle & Driver',

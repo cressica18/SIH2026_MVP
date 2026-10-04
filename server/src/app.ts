@@ -45,7 +45,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Health check
 app.get('/api/health', (_req: Request, res: Response) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString(), service: 'Vasundhara API' });
+  res.json({ status: 'ok', timestamp: new Date().toISOString(), service: 'Kabadiwala Connect API' });
 });
 
 // Routes

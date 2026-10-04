@@ -267,7 +267,7 @@ export const CollectorView: React.FC<CollectorViewProps> = ({
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ poolId: lot.id, lotId: lot.id }), // This will be fixed to find compatible pool
+        body: JSON.stringify({ poolId: lot.id, lotId: lot.id }),
       });
       if (res.ok) {
         await fetchSmartPools();
@@ -293,9 +293,34 @@ export const CollectorView: React.FC<CollectorViewProps> = ({
         const pool = await res.json();
         setSmartPools(prev => [pool, ...prev]);
         setActiveTab('pools');
+      } else {
+        const err = await res.json();
+        alert(err.error || 'Could not create pool');
       }
     } catch (err) {
       console.error('Failed to create pool', err);
+    }
+  };
+
+  const handleRespondToOffer = async (offerId: string, action: 'accept' | 'reject') => {
+    try {
+      const token = localStorage.getItem('vasundhara_token');
+      const res = await fetch('/api/smart-pools/offers/respond', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ offerId, action }),
+      });
+      if (res.ok) {
+        await fetchSmartPools();
+        if (selectedPool) {
+          await fetchPoolOffers(selectedPool.id);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to respond to offer', err);
     }
   };
 
@@ -996,7 +1021,11 @@ export const CollectorView: React.FC<CollectorViewProps> = ({
           onCreatePool={handleCreatePool}
           onJoinPool={handleJoinPool}
           onLeavePool={handleLeavePool}
-          onViewPoolDetail={(pool) => { setSelectedPool(pool); setShowPoolDetail(true); }}
+          onViewPoolDetail={async (pool) => {
+            setSelectedPool(pool);
+            await fetchPoolOffers(pool.id);
+            setShowPoolDetail(true);
+          }}
           onRefresh={fetchSmartPools}
           setActiveTab={setActiveTab}
         />
@@ -1052,6 +1081,137 @@ export const CollectorView: React.FC<CollectorViewProps> = ({
             </p>
           </Card>
         </div>
+      )}
+
+      {/* POOL DETAIL & OFFERS MODAL */}
+      {selectedPool && (
+        <Modal
+          isOpen={showPoolDetail}
+          onClose={() => setShowPoolDetail(false)}
+          size="lg"
+          title={`Smart Pool ${selectedPool.id} — ${selectedPool.materialType}`}
+        >
+          <div className="space-y-6 p-4 sm:p-6 max-h-[80vh] overflow-y-auto">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+              <div className="p-3 bg-bg-750 rounded-lg border border-bg-700">
+                <p className="text-[10px] text-cream-500 uppercase">Status</p>
+                <p className="font-bold text-copper-300 capitalize">{selectedPool.status}</p>
+              </div>
+              <div className="p-3 bg-bg-750 rounded-lg border border-bg-700">
+                <p className="text-[10px] text-cream-500 uppercase">Members</p>
+                <p className="font-bold text-cream-100">{selectedPool.members.length}</p>
+              </div>
+              <div className="p-3 bg-bg-750 rounded-lg border border-bg-700">
+                <p className="text-[10px] text-cream-500 uppercase">Total Weight</p>
+                <p className="font-bold text-cream-100">{selectedPool.totalWeightKg} kg</p>
+              </div>
+              <div className="p-3 bg-bg-750 rounded-lg border border-bg-700">
+                <p className="text-[10px] text-cream-500 uppercase">Avg Price</p>
+                <p className="font-bold text-harvest-300">₹{selectedPool.avgPricePerKg}/kg</p>
+              </div>
+            </div>
+
+            {/* Handover & Settlement section if confirmed */}
+            {selectedPool.status === 'confirmed' && (
+              <Card variant="panel" padding="md" className="border-success-700 bg-success-950/20">
+                <div className="flex items-center gap-2 mb-2">
+                  <CheckCircle className="w-5 h-5 text-success-400" />
+                  <h4 className="font-display font-semibold text-cream-50">Match Confirmed with Recycler</h4>
+                </div>
+                <p className="text-sm text-cream-300 mb-3">
+                  Recycler: <span className="font-semibold text-harvest-300">{selectedPool.recyclerName}</span> @ ₹{selectedPool.agreedPricePerKg}/kg
+                </p>
+                <div className="p-3 bg-bg-900 rounded-lg border border-bg-700 flex flex-col sm:flex-row items-center justify-between gap-3">
+                  <div>
+                    <p className="text-xs text-cream-500 uppercase font-mono">Handover Reference Code</p>
+                    <p className="text-xl font-bold font-mono text-copper-300">{selectedPool.handoverRef || 'KCP-1-AB3F-XYZ7'}</p>
+                  </div>
+                  <Badge variant="success" size="md" className="gap-1">
+                    <QrCode className="w-4 h-4" /> Ready for Pickup
+                  </Badge>
+                </div>
+              </Card>
+            )}
+
+            {/* Offers List */}
+            <div className="space-y-3">
+              <h4 className="font-display font-semibold text-cream-50 flex items-center justify-between">
+                <span>Received Recycler Offers ({poolOffers.length})</span>
+                <Button variant="ghost" size="xs" onClick={() => fetchPoolOffers(selectedPool.id)} className="gap-1 text-copper-300">
+                  <RotateCcw className="w-3.5 h-3.5" /> Refresh
+                </Button>
+              </h4>
+
+              {poolOffers.length === 0 ? (
+                <p className="text-sm text-cream-500 italic py-4 text-center bg-bg-800 rounded-lg">
+                  No offers received from recyclers yet.
+                </p>
+              ) : (
+                <div className="space-y-3">
+                  {poolOffers.map(offer => (
+                    <div key={offer.id} className="p-4 bg-bg-800 rounded-xl border border-bg-700 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-semibold text-cream-100">{offer.recyclerName}</p>
+                          <p className="text-xs text-cream-500">{offer.createdAt}</p>
+                        </div>
+                        <Badge variant={offer.status === 'accepted' ? 'success' : offer.status === 'rejected' ? 'danger' : 'warning'}>
+                          {offer.status}
+                        </Badge>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2 text-sm bg-bg-850 p-2.5 rounded-lg">
+                        <div>
+                          <span className="text-xs text-cream-500 block">Offered Rate</span>
+                          <span className="font-bold text-harvest-300">₹{offer.offeredPricePerKg}/kg</span>
+                        </div>
+                        <div>
+                          <span className="text-xs text-cream-500 block">Total Lot Value</span>
+                          <span className="font-bold text-cream-100">₹{offer.totalValue.toLocaleString()}</span>
+                        </div>
+                      </div>
+
+                      {offer.notes && (
+                        <p className="text-xs text-cream-400 italic bg-bg-850 p-2 rounded">
+                          "{offer.notes}"
+                        </p>
+                      )}
+
+                      {offer.status === 'pending' && (
+                        <div className="flex gap-2 pt-1">
+                          <Button
+                            variant="copper"
+                            size="sm"
+                            className="flex-1 gap-1"
+                            onClick={() => handleRespondToOffer(offer.id, 'accept')}
+                          >
+                            <CheckCircle className="w-4 h-4" />
+                            <span>Accept Offer</span>
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="flex-1 gap-1"
+                            onClick={() => handleRespondToOffer(offer.id, 'reject')}
+                          >
+                            <X className="w-4 h-4" />
+                            <span>Reject</span>
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="pt-4 border-t border-bg-700">
+              <Button variant="outline" onClick={() => setShowPoolDetail(false)} className="w-full">
+                Close
+              </Button>
+            </div>
+          </div>
+        </Modal>
       )}
 
       {/* CREATE LOT MODAL */}

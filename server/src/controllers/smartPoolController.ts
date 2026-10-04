@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { store } from '../data/store.js';
 import { SmartPool, SmartPoolMember, PoolOffer, OfferStatus, SettlementRecord } from '../types.js';
 import { AuthRequest } from '../middleware/auth.js';
-import { getAnonIdentity, getCollectorProfile } from './usersController.js';
+import { getAnonIdentity, getCollectorProfile, getRecyclerProfile } from './usersController.js';
 import { findCompatibleLots, createSmartPool, openPoolForBidding, matchPoolWithRecycler, generateHandoverRef } from '../lib/smartPool.js';
 
 function scrubSmartPool(pool: SmartPool): SmartPool {
@@ -326,7 +326,7 @@ export function createPoolOffer(req: AuthRequest, res: Response): void {
   }
 
   // Check if recycler accepts this material
-  const recyclerProfile = store.recyclerProfiles?.get(user.userId);
+  const recyclerProfile = store.recyclerProfiles?.get(user.userId) || getRecyclerProfile(user.userId);
   if (recyclerProfile && !recyclerProfile.acceptedMaterials.includes(pool.materialCategory)) {
     res.status(400).json({ error: 'Your facility does not accept this material category' });
     return;
@@ -408,6 +408,9 @@ export function respondToOffer(req: AuthRequest, res: Response): void {
       pool.agreedPricePerKg = offer.offeredPricePerKg;
       pool.totalValue = offer.totalValue;
 
+      const handoverRef = generateHandoverRef(pool.id);
+      pool.handoverRef = handoverRef;
+
       // Create settlement record
       const settlement: SettlementRecord = {
         id: `settlement_${Date.now()}`,
@@ -428,7 +431,7 @@ export function respondToOffer(req: AuthRequest, res: Response): void {
           status: 'pending',
         })),
         status: 'pending',
-        handoverRef: generateHandoverRef(pool.id),
+        handoverRef,
         createdAt: new Date().toISOString(),
         paymentMethod: 'upi',
       };

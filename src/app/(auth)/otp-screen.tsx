@@ -282,32 +282,39 @@ export const OtpScreen: React.FC<OtpScreenProps> = ({
 
   const DEMO_ROLES: { role: UserRole; label: string; color: string; hoverBg: string; iconColor: string }[] = [
     {
+      role: 'collector',
+      label: 'Kabadiwala / Collector',
+      color: 'text-copper-300',
+      hoverBg: 'hover:bg-copper-900/40 hover:border-copper-700',
+      iconColor: 'text-copper-400',
+    },
+    {
+      role: 'recycler',
+      label: 'Authorized Recycler',
+      color: 'text-emerald-300',
+      hoverBg: 'hover:bg-emerald-900/40 hover:border-emerald-700',
+      iconColor: 'text-emerald-400',
+    },
+    {
       role: 'farmer',
-      label: 'Farmer Portal',
+      label: 'Farmer (Legacy)',
       color: 'text-botanical-300',
       hoverBg: 'hover:bg-botanical-900/40 hover:border-botanical-700',
       iconColor: 'text-botanical-400',
     },
     {
       role: 'buyer',
-      label: 'Buyer / Processor',
+      label: 'Buyer / Processor (Legacy)',
       color: 'text-deepteal-300',
       hoverBg: 'hover:bg-deepteal-900/40 hover:border-deepteal-700',
       iconColor: 'text-deepteal-400',
     },
     {
       role: 'logistics',
-      label: 'Logistics Network',
+      label: 'Logistics (Legacy)',
       color: 'text-ochre-300',
       hoverBg: 'hover:bg-ochre-900/40 hover:border-ochre-700',
       iconColor: 'text-ochre-400',
-    },
-    {
-      role: 'collector',
-      label: 'Kabadiwala / Collector',
-      color: 'text-copper-300',
-      hoverBg: 'hover:bg-copper-900/40 hover:border-copper-700',
-      iconColor: 'text-copper-400',
     },
     {
       role: 'admin',
@@ -382,7 +389,7 @@ export const OtpScreen: React.FC<OtpScreenProps> = ({
 
               <div>
                 <h1 className="font-display text-lg font-semibold text-cream-50 tracking-tight leading-tight">
-                  Vasundhara / वसुंधरा
+                  Kabadiwala Connect / कबाड़ीवाला कनेक्ट
                 </h1>
                 <p className="text-xs text-forest-300 font-medium mt-0.5 tracking-wide">
                   {t.appName} — {t.tagline}

@@ -693,7 +693,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
           setRatingError(null);
         }}
         title="Rate Farmer Fulfillment"
-        description="Your rating updates the farmer's transparent trust reputation score on Vasundhara."
+        description="Your rating updates the seller's transparent trust reputation score on Kabadiwala Connect."
         size="sm"
       >
         <div className="space-y-4 text-center">

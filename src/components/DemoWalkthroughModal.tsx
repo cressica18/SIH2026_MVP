@@ -46,58 +46,58 @@ export const DemoWalkthroughModal: React.FC<DemoWalkthroughModalProps> = ({
 
   if (!isOpen) return null;
 
-  const steps: DemoStep[] = [
+const steps: DemoStep[] = [
     {
       stepNumber: 1,
-      title: 'Farmer Voice-First Listing & AI Quality/Price Bands',
-      role: 'farmer',
-      tabName: 'listings',
-      icon: <Mic className="w-6 h-6 text-forest-400" />,
+      title: 'Kabadiwala Voice-First Scrap Lot & AI Quality/Price Bands',
+      role: 'collector',
+      tabName: 'lots',
+      icon: <Mic className="w-6 h-6 text-copper-400" />,
       narrative:
-        'Farmer taps the microphone and speaks naturally in their regional language (e.g., "do quintal tamatar, atharah rupaye kilo"). The platform transcribes speech, extracts structured harvest entities, computes an AI Price Band grounded in Agmarknet Mandi data, and runs a MobileNet CNN quality classifier on produce photos.',
+        'Collector taps the microphone and speaks naturally in their regional language (e.g., "500 kg copper wire, 620 rupees per kg"). The platform transcribes speech, extracts structured scrap entities (material, weight, category), computes an AI Price Band grounded in Scrap Market data, and runs a Material CNN quality classifier on scrap photos.',
       keyInnovations: [
         'Web Speech API STT with 5 regional languages (Hindi, Marathi, Telugu, Punjabi, English)',
-        'Rule-based & AI slot-filling entity extractor for crop, weight, and expected price',
-        'AI Price Band [Min – Fair – Max] benchmarked against APMC historical trends',
-        'Produce CNN Quality Classifier (Grade A/B/C + confidence + firmness check)',
+        'Rule-based & AI slot-filling entity extractor for material, weight, category, and expected price',
+        'AI Price Band [Min – Fair – Max] benchmarked against Scrap Market historical trends',
+        'Material CNN Quality Classifier (Grade A/B/C + confidence + purity/firmness check)',
       ],
-      actionLabel: 'Launch Farmer Voice Listing Screen',
+      actionLabel: 'Launch Collector Voice Lot Screen',
     },
     {
       stepNumber: 2,
-      title: 'Buyer Discovery & Anonymized Seller Protection',
-      role: 'buyer',
-      tabName: 'marketplace',
-      icon: <ShieldCheck className="w-6 h-6 text-teal-400" />,
+      title: 'Recycler Discovery & Anonymous Collector Protection',
+      role: 'recycler',
+      tabName: 'pools',
+      icon: <ShieldCheck className="w-6 h-6 text-emerald-400" />,
       narrative:
-        'A food processor or retail buyer explores active harvest lots. The seller is masked with an anonymous ID (e.g. FARM-88214) to prevent cartel intimidation and local price collusion. An explainable multi-factor AI matching engine highlights "Recommended for You" listings.',
+        'An authorized recycler explores active scrap lots. The collector is masked with an anonymous ID (e.g. KABAD-55219) to prevent price collusion and middleman exploitation. An explainable multi-factor AI matching engine highlights "Recommended for You" pools.',
       keyInnovations: [
-        'Anonymous Seller Protection: Real names, villages, and phone numbers are completely hidden',
-        'Multi-factor AI Matching Score based on price fit, quality grade, distance, and trust',
-        'Visual badges for Grade A quality, APMC comparison, and seller reputation rating',
+        'Anonymous Collector Protection: Real names, areas, and phone numbers are completely hidden',
+        'Multi-factor AI Matching Score based on material fit, quality grade, distance, and trust',
+        'Visual badges for Grade A purity, price benchmark, and collector reputation rating',
       ],
-      actionLabel: 'Browse Buyer Marketplace & Matches',
+      actionLabel: 'Browse Recycler Marketplace & Smart Pools',
     },
     {
       stepNumber: 3,
-      title: 'Order Placement & Identity Reveal on Commit',
-      role: 'buyer',
-      tabName: 'orders',
-      icon: <FileCheck className="w-6 h-6 text-indigo-400" />,
+      title: 'Smart Pool Formation & Verified Bidding',
+      role: 'collector',
+      tabName: 'pools',
+      icon: <FileCheck className="w-6 h-6 text-copper-400" />,
       narrative:
-        'Buyer commits to procurement by placing an order. The transaction enters a strict state machine (pending → matched → confirmed). The Identity Reveal mechanism unlocks exactly when both parties confirm, releasing contact and location details for seamless delivery logistics.',
+        'Collector joins compatible lots into a Smart Pool or creates a new one. The pool is verified, opened for bidding, and authorized recyclers place competitive offers. The collector can accept the best offer or hold for better terms.',
       keyInnovations: [
-        'State machine integrity: pending → confirmed → in_transit → delivered → settled',
-        'Cryptographic Identity Reveal: Contact details only unlock on mutual commitment',
+        'Smart Pool integrity: compatible lots by material, location, and pickup window',
+        'Verified Bidding: Only authorized recyclers can bid on verified pools',
         'Eliminates pre-deal poaching and prevents middlemen from intercepting the trade',
       ],
-      actionLabel: 'Inspect Order Tracker & Identity Reveal',
+      actionLabel: 'Inspect Smart Pool & Offers',
     },
     {
       stepNumber: 4,
-      title: 'Logistics Pooling & Route Optimization',
-      role: 'logistics',
-      tabName: 'pools',
+      title: 'Settlement & QR/Reference Handover',
+      role: 'recycler',
+      tabName: 'settlements',
       icon: <Truck className="w-6 h-6 text-harvest-400" />,
       narrative:
         'Confirmed orders within the same geographic district (e.g. Nashik-Pimpalgaon to Pune corridor) automatically cluster into a shared vehicle pool. Capacitated VRP sequencing schedules multi-stop pickups, saving 34% in freight fuel and reducing transit spoilage.',
@@ -175,7 +175,7 @@ export const DemoWalkthroughModal: React.FC<DemoWalkthroughModalProps> = ({
                 SIH 2026 Judge Demonstration Guide
               </h3>
               <p className="text-xs text-forest-300 font-semibold">
-                End-to-End Story: 7 Phases of Vasundhara
+                End-to-End Story: 7 Phases of Kabadiwala Connect
               </p>
             </div>
           </div>

@@ -1238,7 +1238,7 @@ export const SEED_SAFETY_REPORTS: SafetyReport[] = [
     category: 'Underpricing & Cartel',
     description: 'Local middleman cartel colluded to offer ₹8/kg for export quality tomatoes when digital Mandi average was ₹18/kg. Threatened to block unloading at yard.',
     status: 'reviewing',
-    resolutionNotes: 'Assigned to Agricultural Marketing Board representative. Seller shifted listing to direct buyer on Vasundhara platform.',
+    resolutionNotes: 'Assigned to Scrap Market Oversight representative. Seller shifted listing to direct buyer on Kabadiwala Connect platform.',
     createdAt: '2026-09-16 09:30 AM',
   },
   {
@@ -1250,7 +1250,7 @@ export const SEED_SAFETY_REPORTS: SafetyReport[] = [
     category: 'Broker Exploitation',
     description: 'Demanded additional ₹2000 cash gate surcharge beyond agreed freight contract during vehicle arrival.',
     status: 'resolved',
-    resolutionNotes: 'Transport agent blacklisted from Vasundhara carrier network. Verified carrier assigned.',
+    resolutionNotes: 'Transport agent blacklisted from Kabadiwala Connect carrier network. Verified carrier assigned.',
     createdAt: '2026-09-14 04:15 PM',
   },
 ];

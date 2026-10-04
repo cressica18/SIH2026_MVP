@@ -48,36 +48,8 @@ interface RoleConfig {
 }
 
 const ROLE_CONFIG: Record<Role, RoleConfig> = {
-  farmer: {
-    label: 'Farmer',
-    icon: <Leaf className="w-3.5 h-3.5" />,
-    activeClass: 'bg-gradient-to-br from-forest-700 to-botanical-600 text-cream-50 shadow-[0_2px_10px_-2px_rgb(19_115_68_/_0.55)] border-transparent',
-    hoverClass: 'hover:bg-forest-900/30 hover:text-forest-300',
-    textClass: 'text-cream-400',
-  },
-  buyer: {
-    label: 'Buyer',
-    icon: <ShoppingCart className="w-3.5 h-3.5" />,
-    activeClass: 'bg-gradient-to-br from-deepteal-700 to-deepteal-500 text-cream-50 shadow-[0_2px_10px_-2px_rgb(18_137_117_/_0.55)] border-transparent',
-    hoverClass: 'hover:bg-deepteal-900/30 hover:text-deepteal-300',
-    textClass: 'text-cream-400',
-  },
-  logistics: {
-    label: 'Logistics',
-    icon: <Truck className="w-3.5 h-3.5" />,
-    activeClass: 'bg-gradient-to-br from-olive-800 to-ochre-700 text-cream-50 shadow-[0_2px_10px_-2px_rgb(173_152_18_/_0.5)] border-transparent',
-    hoverClass: 'hover:bg-olive-900/30 hover:text-olive-300',
-    textClass: 'text-cream-400',
-  },
-  admin: {
-    label: 'Admin',
-    icon: <ShieldCheck className="w-3.5 h-3.5" />,
-    activeClass: 'bg-gradient-to-br from-sage-700 to-sage-500 text-cream-50 shadow-[0_2px_10px_-2px_rgb(109_196_143_/_0.45)] border-transparent',
-    hoverClass: 'hover:bg-sage-900/30 hover:text-sage-300',
-    textClass: 'text-cream-400',
-  },
   collector: {
-    label: 'Collector',
+    label: 'Kabadiwala',
     icon: <Recycle className="w-3.5 h-3.5" />,
     activeClass: 'bg-gradient-to-br from-copper-700 to-copper-500 text-cream-50 shadow-[0_2px_10px_-2px_rgb(184_98_40_/_0.55)] border-transparent',
     hoverClass: 'hover:bg-copper-900/30 hover:text-copper-300',
@@ -88,6 +60,34 @@ const ROLE_CONFIG: Record<Role, RoleConfig> = {
     icon: <Factory className="w-3.5 h-3.5" />,
     activeClass: 'bg-gradient-to-br from-emerald-700 to-emerald-500 text-cream-50 shadow-[0_2px_10px_-2px_rgb(16_185_129_/_0.55)] border-transparent',
     hoverClass: 'hover:bg-emerald-900/30 hover:text-emerald-300',
+    textClass: 'text-cream-400',
+  },
+  farmer: {
+    label: 'Farmer (Legacy)',
+    icon: <Leaf className="w-3.5 h-3.5" />,
+    activeClass: 'bg-gradient-to-br from-forest-700 to-botanical-600 text-cream-50 shadow-[0_2px_10px_-2px_rgb(19_115_68_/_0.55)] border-transparent',
+    hoverClass: 'hover:bg-forest-900/30 hover:text-forest-300',
+    textClass: 'text-cream-400',
+  },
+  buyer: {
+    label: 'Buyer (Legacy)',
+    icon: <ShoppingCart className="w-3.5 h-3.5" />,
+    activeClass: 'bg-gradient-to-br from-deepteal-700 to-deepteal-500 text-cream-50 shadow-[0_2px_10px_-2px_rgb(18_137_117_/_0.55)] border-transparent',
+    hoverClass: 'hover:bg-deepteal-900/30 hover:text-deepteal-300',
+    textClass: 'text-cream-400',
+  },
+  logistics: {
+    label: 'Logistics (Legacy)',
+    icon: <Truck className="w-3.5 h-3.5" />,
+    activeClass: 'bg-gradient-to-br from-olive-800 to-ochre-700 text-cream-50 shadow-[0_2px_10px_-2px_rgb(173_152_18_/_0.5)] border-transparent',
+    hoverClass: 'hover:bg-olive-900/30 hover:text-olive-300',
+    textClass: 'text-cream-400',
+  },
+  admin: {
+    label: 'Admin',
+    icon: <ShieldCheck className="w-3.5 h-3.5" />,
+    activeClass: 'bg-gradient-to-br from-sage-700 to-sage-500 text-cream-50 shadow-[0_2px_10px_-2px_rgb(109_196_143_/_0.45)] border-transparent',
+    hoverClass: 'hover:bg-sage-900/30 hover:text-sage-300',
     textClass: 'text-cream-400',
   },
 };

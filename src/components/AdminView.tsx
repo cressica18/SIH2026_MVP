@@ -99,7 +99,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
               </Badge>
             </div>
             <CardTitle className="text-xl sm:text-2xl font-black text-cream-50 tracking-tight">
-              Vasundhara Administration & Safety Console
+              Kabadiwala Connect Administration & Safety Console
             </CardTitle>
             <CardDescription className="text-xs sm:text-sm text-sage-300 max-w-2xl leading-relaxed font-semibold">
               Monitoring trade transparency, anonymous farmer protection against mandi cartels, and corridor logistics performance.

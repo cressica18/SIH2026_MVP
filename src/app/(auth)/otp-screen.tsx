@@ -148,15 +148,6 @@ const AtmosphericBackground = React.memo(() => {
   );
 });
 
-// SVG Farmer icon (professional, not emoji)
-const FarmerIcon = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M8 10v5" /><circle cx="8" cy="7" r="2.5" />
-    <path d="M3 10c0-2.8 2.2-5 5-5s5 2.2 5 5" />
-    <path d="M1 15c.5-2 3-4 7-4s6.5 2 7 4" />
-  </svg>
-);
-
 export const OtpScreen: React.FC<OtpScreenProps> = ({
   initialLanguage = 'en',
   onSuccess,
@@ -214,9 +205,10 @@ export const OtpScreen: React.FC<OtpScreenProps> = ({
     try {
       const result = await loginWithOtp(trimmedPhone);
       setShowOtpInput(true);
-      if (result.demoMode) {
-        setOtp('123456');
-        setDevOtpHint('Auto-filled test OTP 123456');
+      const otpToFill = result.devOtp || (result.demoMode ? '123456' : '');
+      if (otpToFill) {
+        setOtp(otpToFill);
+        setDevOtpHint(`Auto-filled demo OTP ${otpToFill}`);
       } else {
         setOtp('');
         setDevOtpHint('Enter the 6-digit OTP sent to your phone');
@@ -236,17 +228,28 @@ export const OtpScreen: React.FC<OtpScreenProps> = ({
       setPhone(demoPhone);
       const result = await loginWithOtp(demoPhone);
       setShowOtpInput(true);
-      if (result.demoMode) {
-        setOtp('123456');
-        setDevOtpHint('Auto-filled test OTP 123456');
+
+      const otpToUse = result.devOtp || '123456';
+      setOtp(otpToUse);
+      setDevOtpHint(`Auto-filled demo OTP ${otpToUse}`);
+
+      // Auto verify OTP for seamless demo experience
+      setIsVerifying(true);
+      const verifyResult = await verifyOtp(demoPhone, otpToUse, result.otpChallenge);
+      if (verifyResult.success && verifyResult.role) {
+        if (onSuccess) {
+          onSuccess(verifyResult.role);
+        } else {
+          window.location.href = rolePath(verifyResult.role);
+        }
       } else {
-        setOtp('');
-        setDevOtpHint('Enter the 6-digit OTP sent to your phone');
+        setError('Auto verification failed. Please click Verify.');
       }
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Quick login failed');
     } finally {
       setIsSending(false);
+      setIsVerifying(false);
     }
   };
 

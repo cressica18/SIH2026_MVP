@@ -136,23 +136,12 @@ export const Navbar: React.FC<NavbarProps> = ({
             <div
               className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl shrink-0 flex items-center justify-center overflow-hidden relative"
               style={{
-                background: 'linear-gradient(135deg, #0d5430 0%, #137344 50%, #1d7d3c 100%)',
-                boxShadow: '0 2px 10px -2px rgba(19,115,68,0.5), inset 0 1px 0 rgba(255,255,255,0.09)',
+                background: 'linear-gradient(135deg, #8a431d 0%, #a65e32 50%, #b56a3a 100%)',
+                boxShadow: '0 2px 10px -2px rgba(166,94,50,0.55), inset 0 1px 0 rgba(255,255,255,0.15)',
               }}
             >
-              <div className="absolute inset-0 bg-gradient-to-b from-white/[0.07] to-transparent" />
-              <svg
-                viewBox="0 0 20 20"
-                className="w-5 h-5 text-cream-50 relative"
-                fill="none" stroke="currentColor"
-                strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
-              >
-                <path d="M10 18v-8" />
-                <path d="M10 10C10 7 13 4.5 16.5 4.5c0 3.5-2.5 5.5-6.5 5.5z" />
-                <path d="M10 10C10 7 7 4.5 3.5 4.5c0 3.5 2.5 5.5 6.5 5.5z" />
-                <path d="M4 18c.4-2.5 2.5-4.5 6-4.5" />
-                <path d="M16 18c-.4-2.5-2.5-4.5-6-4.5" />
-              </svg>
+              <div className="absolute inset-0 bg-gradient-to-b from-white/[0.12] to-transparent" />
+              <Recycle className="w-5 h-5 text-cream-50 relative" />
             </div>
 
             <div className="min-w-0 hidden sm:block">

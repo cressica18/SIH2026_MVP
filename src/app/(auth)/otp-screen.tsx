@@ -359,19 +359,12 @@ export const OtpScreen: React.FC<OtpScreenProps> = ({
               <div
                 className="w-11 h-11 rounded-xl shrink-0 flex items-center justify-center relative overflow-hidden"
                 style={{
-                  background: 'linear-gradient(135deg, #0d5430 0%, #137344 50%, #1d7d3c 100%)',
-                  boxShadow: '0 4px 14px -4px rgba(19 115 68 / 0.5), inset 0 1px 0 rgba(255 255 255 / 0.1)',
+                  background: 'linear-gradient(135deg, #8a431d 0%, #a65e32 50%, #b56a3a 100%)',
+                  boxShadow: '0 4px 14px -4px rgba(166, 94, 50, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.15)',
                 }}
               >
-                <div className="absolute inset-0 bg-gradient-to-b from-white/[0.08] to-transparent" />
-                <svg viewBox="0 0 24 24" className="w-6 h-6 text-cream-50 relative" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  {/* Seedling / leaf geometric icon */}
-                  <path d="M12 22V12" />
-                  <path d="M12 12C12 8 15 5 19 5c0 4-3 7-7 7z" />
-                  <path d="M12 12C12 8 9 5 5 5c0 4 3 7 7 7z" />
-                  <path d="M5 22c.5-3 3-6 7-6" />
-                  <path d="M19 22c-.5-3-3-6-7-6" />
-                </svg>
+                <div className="absolute inset-0 bg-gradient-to-b from-white/[0.12] to-transparent" />
+                <Recycle className="w-6 h-6 text-cream-50 relative" />
               </div>
 
               <div>

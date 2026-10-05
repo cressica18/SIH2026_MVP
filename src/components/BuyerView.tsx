@@ -433,7 +433,7 @@ export const BuyerView: React.FC<BuyerViewProps> = ({
                           <span className="font-bold text-cream-100">{item.quantityKg} kg</span>
                         </div>
                         <div className="flex items-center justify-between text-cream-300">
-                          <span className="font-medium">AI Mandi Fair Price:</span>
+                          <span className="font-medium">AI Fair Scrap Price:</span>
                           <span className="font-bold text-forest-300">₹{item.priceAi.fair}/kg</span>
                         </div>
                         <div className="flex items-center justify-between text-cream-300">

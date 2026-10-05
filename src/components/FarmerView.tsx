@@ -160,7 +160,7 @@ const DEMO_PHOTOS: Record<string, { url: string; label: string }[]> = {
 };
 
 const SAFETY_CATEGORIES = [
-  { value: 'Underpricing & Cartel', label: 'Mandi Cartel Underpricing / Collusion' },
+  { value: 'Underpricing & Cartel', label: 'Scrap Cartel Underpricing / Collusion' },
   { value: 'Broker Exploitation', label: 'Sub-broker Extortion or Unauthorized Deductions' },
   { value: 'Harassment', label: 'Verbal or Physical Harassment of Farmer' },
   { value: 'Payment Default', label: 'Delayed or Bounced Payment by Trader' },
@@ -1501,7 +1501,7 @@ function SafetyTab({
         category: safetyCategory,
         description: safetyDescription,
         isAnonymous: safetyAnonymous,
-        reportedEntityName: safetyEntity || 'Local Mandi Intermediary',
+        reportedEntityName: safetyEntity || 'Local Scrap Yard Intermediary',
       });
 
       if (created) {
@@ -1578,7 +1578,7 @@ function SafetyTab({
             <Textarea
               rows={4}
               required
-              placeholder="Provide brief details. E.g. They insisted on offering ₹8/kg when official mandi price was ₹18/kg and threatened to turn away vehicles."
+              placeholder="Provide brief details. E.g. They insisted on offering ₹8/kg when official scrap market price was ₹18/kg and threatened to turn away vehicles."
               value={safetyDescription}
               onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setSafetyDescription(e.target.value)}
             />

@@ -110,7 +110,7 @@ export interface Translations {
     status: string;
     grade: string;
     confidence: string;
-    liveMandiTrend: string;
+    liveScrapMarketTrend: string;
   };
 }
 
@@ -175,7 +175,7 @@ export const I18N_STRINGS: Record<Language, Translations> = {
       reportConcern: 'Report Exploitation / Harassment (Safe & Anonymous)',
     },
     buyer: {
-      marketplace: 'Direct Farm Marketplace',
+      marketplace: 'Direct Scrap Marketplace',
       recommendedForYou: 'AI-Recommended For Your Demand',
       allListings: 'All Active Direct Batches',
       filterByCrop: 'Filter by Crop',
@@ -205,8 +205,8 @@ export const I18N_STRINGS: Record<Language, Translations> = {
     },
     safety: {
       title: 'Report a Concern & Cartel Whistleblower',
-      subheading: 'Women-centric, exploitation-free protection for vulnerable farming communities.',
-      guarantee: 'Zero Personal Data Logged. Your phone number, IP address, and identity are never shared with intermediaries or local mandis.',
+      subheading: 'Exploitation-free protection for vulnerable informal scrap collectors and workers.',
+      guarantee: 'Zero Personal Data Logged. Your phone number, IP address, and identity are never shared with intermediaries or local scrap yards.',
       categoryLabel: 'Issue Category',
       descLabel: 'Describe the middleman / pricing issue',
       submitAnon: 'Submit 100% Anonymously',
@@ -222,7 +222,7 @@ export const I18N_STRINGS: Record<Language, Translations> = {
       status: 'Status',
       grade: 'Grade',
       confidence: 'Confidence',
-    liveMandiTrend: 'Live Scrap Market Benchmark',
+      liveScrapMarketTrend: 'Live Scrap Market Benchmark',
     },
   },
   hi: {
@@ -332,7 +332,7 @@ export const I18N_STRINGS: Record<Language, Translations> = {
       status: 'स्थिति',
       grade: 'ग्रेड',
       confidence: 'सटीकता',
-      liveMandiTrend: 'लाइव स्क्रैप बाजार भाव',
+      liveScrapMarketTrend: 'लाइव स्क्रैप बाजार भाव',
     },
   },
   mr: {
@@ -442,7 +442,7 @@ export const I18N_STRINGS: Record<Language, Translations> = {
       status: 'स्थिती',
       grade: 'दर्जा',
       confidence: 'अचूकता',
-      liveMandiTrend: 'थेट स्क्रैप बाजारभाव',
+      liveScrapMarketTrend: 'थेट स्क्रैप बाजारभाव',
     },
   },
   te: {
@@ -555,7 +555,7 @@ export const I18N_STRINGS: Record<Language, Translations> = {
       status: 'స్థితి',
       grade: 'గ్రేడ్',
       confidence: 'ఖచ్చితత్వం',
-      liveMandiTrend: 'స్క్రాప్ మార్కెట్ ధరలు',
+      liveScrapMarketTrend: 'స్క్రాప్ మార్కెట్ ధరలు',
     },
   },
   pa: {
@@ -665,7 +665,7 @@ export const I18N_STRINGS: Record<Language, Translations> = {
       status: 'ਸਥਿਤੀ',
       grade: 'ਦਰਜਾ',
       confidence: 'ਸ਼ੁੱਧਤਾ',
-      liveMandiTrend: 'ਲਾਈਵ ਸਕ੍ਰੈਪ ਮਾਰਕੀਟ ਭਾਅ',
+      liveScrapMarketTrend: 'ਲਾਈਵ ਸਕ੍ਰੈਪ ਮਾਰਕੀਟ ਭਾਅ',
     },
   },
 };

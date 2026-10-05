@@ -14,7 +14,7 @@ Set these in your Vercel project settings (Settings → Environment Variables):
 ### Required for CORS & Frontend
 | Variable | Description | Example |
 |----------|-------------|---------|
-| `FRONTEND_URL` | Your production frontend URL | `https://your-app.vercel.app` |
+| `FRONTEND_URL` | Your production frontend URL | `https://kabadiwala2026.vercel.app` |
 
 ### Demo Mode (Optional - for SIH Demo)
 | Variable | Description | Example |
@@ -42,7 +42,7 @@ Set these in your Vercel project settings (Settings → Environment Variables):
 JWT_SECRET=your-64-character-random-string-here
 JWT_REFRESH_SECRET=another-64-character-random-string
 OTP_CHALLENGE_SECRET=another-64-character-random-string
-FRONTEND_URL=https://your-app.vercel.app
+FRONTEND_URL=https://kabadiwala2026.vercel.app
 DEMO_MODE=true
 ```
 

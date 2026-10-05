@@ -1,5 +1,5 @@
 import { Response } from 'express';
-import { SEED_FARMERS, SEED_BUYERS, SEED_LOGISTICS, SEED_COLLECTORS, SEED_RECYCLERS } from '../data/seedData.js';
+import { SEED_COLLECTORS, SEED_RECYCLERS } from '../data/seedData.js';
 import {
   generateAccessToken,
   generateRefreshToken,
@@ -13,7 +13,6 @@ function generateOtp(): string {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-// Check if demo mode is explicitly enabled
 const isDemoMode = process.env.DEMO_MODE === 'true';
 
 export function sendOtp(req: AuthRequest, res: Response): void {
@@ -26,13 +25,9 @@ export function sendOtp(req: AuthRequest, res: Response): void {
     return;
   }
 
-  // In test environment, use fixed OTP; in demo mode, use fixed demo OTP; otherwise generate random
   const otp = process.env.NODE_ENV === 'test' ? '123456' : isDemoMode ? '123456' : generateOtp();
-
-  // Create stateless challenge token containing phone, otp, expiry, and nonce
   const otpChallenge = generateOtpChallenge({ phone, otp });
 
-  // Dev mode: log OTP to console
   console.log(`[OTP] Phone: ${phone} | OTP: ${otp} | Expires: ${new Date(Date.now() + 5 * 60 * 1000).toISOString()}`);
 
   res.json({
@@ -61,26 +56,22 @@ export function verifyOtp(req: AuthRequest, res: Response): void {
     return;
   }
 
-  // Verify the stateless challenge token
   const challenge = verifyOtpChallenge(otpChallenge);
   if (!challenge) {
     res.status(400).json({ error: 'Invalid or expired OTP challenge. Request a new OTP.' });
     return;
   }
 
-  // Check phone binding
   if (challenge.phone !== phone) {
     res.status(400).json({ error: 'OTP challenge does not match this phone number.' });
     return;
   }
 
-  // Check expiry
   if (Date.now() > challenge.exp) {
     res.status(400).json({ error: 'OTP has expired. Request a new one.' });
     return;
   }
 
-  // Check OTP (allow test OTP in test env, demo OTP in demo mode)
   const isTestOtp = process.env.NODE_ENV === 'test' && otp === '123456';
   const isDemoOtp = isDemoMode && otp === '123456';
   if (challenge.otp !== otp && !isTestOtp && !isDemoOtp) {
@@ -88,11 +79,9 @@ export function verifyOtp(req: AuthRequest, res: Response): void {
     return;
   }
 
-  // OTP verified — find user in seed data
-  const allUsers = [...SEED_FARMERS, ...SEED_BUYERS, ...SEED_LOGISTICS, ...SEED_COLLECTORS, ...SEED_RECYCLERS];
+  const allUsers = [...SEED_COLLECTORS, ...SEED_RECYCLERS];
   const foundUser = allUsers.find((u) => u.phone === phone);
 
-  // Admin phone special case
   const ADMIN_PHONE = '+91 99999 99999';
   if (phone === ADMIN_PHONE) {
     const accessToken = generateAccessToken({ userId: 'admin_1', phone, role: 'admin' });
@@ -106,14 +95,13 @@ export function verifyOtp(req: AuthRequest, res: Response): void {
   }
 
   if (!foundUser) {
-    // Phone not in seed data — register as new farmer
     const newId = `user_${Date.now()}`;
-    const accessToken = generateAccessToken({ userId: newId, phone, role: 'farmer' });
-    const refreshToken = generateRefreshToken({ userId: newId, phone, role: 'farmer' });
+    const accessToken = generateAccessToken({ userId: newId, phone, role: 'collector' });
+    const refreshToken = generateRefreshToken({ userId: newId, phone, role: 'collector' });
     res.status(201).json({
       message: 'Phone verified. New user registered.',
       tokens: { accessToken, refreshToken },
-      user: { id: newId, phone, role: 'farmer', name: phone },
+      user: { id: newId, phone, role: 'collector', name: phone },
     });
     return;
   }
@@ -136,8 +124,7 @@ export function getMe(req: AuthRequest, res: Response): void {
     return;
   }
 
-  // Find full profile from seed data
-  const allUsers = [...SEED_FARMERS, ...SEED_BUYERS, ...SEED_LOGISTICS, ...SEED_COLLECTORS, ...SEED_RECYCLERS];
+  const allUsers = [...SEED_COLLECTORS, ...SEED_RECYCLERS];
   const profile = allUsers.find((u) => u.id === user.userId || u.phone === user.phone);
 
   if (profile) {

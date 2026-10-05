@@ -1,4 +1,4 @@
-# ♻️ Kabadiwala Connect
+# Kabadiwala Connect
 
 ### Verified Smart Lot Pooling for India's Informal Recycling Network
 
@@ -12,9 +12,9 @@
 
 ---
 
-## 📋 Executive Summary & Problem Statement
+## Executive Summary & Problem Statement
 
-India’s informal waste collection ecosystem powers over 70% of the nation’s recycling. Millions of independent **Kabadiwalas (Collectors)** collect small batches of scrap daily—copper wire, aluminum extrusions, HDPE plastics, e-waste, corrugated cardboard, and glass. However, the market remains highly fragmented and plagued by structural inefficiencies:
+India's informal waste collection ecosystem powers over 70% of the nation's recycling. Millions of independent **Kabadiwalas (Collectors)** collect small batches of scrap daily—copper wire, aluminum extrusions, HDPE plastics, e-waste, corrugated cardboard, and glass. However, the market remains highly fragmented and plagued by structural inefficiencies:
 
 1. **Price Opacity & Middleman Exploitation:** Intermediaries and local yard cartels buy scrap at heavily suppressed rates from individual collectors, keeping profit margins opaquely high.
 2. **Low-Volume Fragmentation:** Industrial recycling plants require multi-ton, single-category lots (e.g., 2,000+ kg of Grade A copper) to operate efficiently. Individual collectors cannot access industrial pricing because their daily lots average only 50–500 kg.
@@ -25,21 +25,21 @@ India’s informal waste collection ecosystem powers over 70% of the nation’s 
 
 ---
 
-## ✨ Why Kabadiwala Connect? (Key Differentiators)
+## Key Differentiators
 
-- **♻️ Smart Lot Pooling Engine:** Dynamically aggregates small individual scrap lots into category-wise, multi-ton Smart Pools meeting industrial plant entry thresholds.
-- **🛡️ Anonymous Seller Identity (`KABAD-XXXXX`):** Masks collector names, exact phone numbers, and precise locations until an offer is accepted, preventing pre-deal cartel collusion.
-- **🔍 AI-Assisted Quality Assessment:** Provides objective CNN material quality grading (Grade A/B/C, purity %, surface defect %, firmness) with confidence scoring.
-- **📊 Evidence-Based Price Bands:** Generates fair market price bands [Min – Fair – Max] benchmarked against regional scrap market trends.
-- **💼 Verified Bidding & Offer Lifecycle:** Authorized recyclers submit formal, legally binding price-per-kg offers with transport and pickup terms.
-- **🚚 Logistics-Aware Aggregation:** Clusters confirmed orders using DBSCAN-inspired geo-proximity and capacitated Vehicle Routing Problem (VRP) stop sequencing.
-- **📲 Voice-First Regional Input:** Web Speech API voice capture in 5 regional languages (Hindi, Marathi, Telugu, Punjabi, English) for low-tech literacy accessibility.
-- **🔐 Whistleblower & Anti-Cartel Reporting:** Dedicated safe portal for reporting cartel price-fixing or harassment with zero personally identifiable information (PII) stored.
-- **💳 Digital Settlement & AEPS Simulator:** QR/reference code verification at handover with simulated Aadhaar Enabled Payment System (AEPS) biometric cash-out for working capital advances.
+- **Smart Lot Pooling Engine:** Dynamically aggregates small individual scrap lots into category-wise, multi-ton Smart Pools meeting industrial plant entry thresholds.
+- **Anonymous Seller Identity (`KABAD-XXXXX`):** Masks collector names, exact phone numbers, and precise locations until an offer is accepted, preventing pre-deal cartel collusion.
+- **AI-Assisted Quality Assessment:** Provides objective CNN material quality grading (Grade A/B/C, purity %, surface defect %, firmness) with confidence scoring.
+- **Evidence-Based Price Bands:** Generates fair market price bands [Min – Fair – Max] benchmarked against regional scrap market trends.
+- **Verified Bidding & Offer Lifecycle:** Authorized recyclers submit formal, legally binding price-per-kg offers with transport and pickup terms.
+- **Logistics-Aware Aggregation:** Clusters confirmed orders using DBSCAN-inspired geo-proximity and capacitated Vehicle Routing Problem (VRP) stop sequencing.
+- **Voice-First Regional Input:** Web Speech API voice capture in 5 regional languages (Hindi, Marathi, Telugu, Punjabi, English) for low-tech literacy accessibility.
+- **Whistleblower & Anti-Cartel Reporting:** Dedicated safe portal for reporting cartel price-fixing or harassment with zero personally identifiable information (PII) stored.
+- **Digital Settlement & AEPS Simulator:** QR/reference code verification at handover with simulated Aadhaar Enabled Payment System (AEPS) biometric cash-out for working capital advances.
 
 ---
 
-## 📐 System Architecture
+## System Architecture
 
 ```mermaid
 graph TD
@@ -92,7 +92,7 @@ graph TD
 
 ---
 
-## 🔄 Primary User Workflow
+## Primary User Workflow
 
 ```mermaid
 flowchart TD
@@ -116,7 +116,7 @@ flowchart TD
 
 ---
 
-## 🗄️ Domain & Data Model
+## Domain & Data Model
 
 ```mermaid
 erDiagram
@@ -185,26 +185,26 @@ erDiagram
 
 ---
 
-## 📊 Role / Feature Matrix
+## Role / Feature Matrix
 
 | Capability | Kabadiwala (Collector) | Authorized Recycler | Admin & Safety |
 | :--- | :---: | :---: | :---: |
-| Voice & Manual Lot Creation | ✅ | — | — |
-| Material Quality Assessment (CNN) | ✅ | View | — |
-| AI Price Band Benchmarking | ✅ | View | — |
-| Anonymous Identity Protection | ✅ (`KABAD-XXXXX`) | View Masked | View |
-| Join / Form Smart Pools | ✅ | View | — |
-| Browse Verified Smart Pools | — | ✅ | — |
-| Submit Price Offers / Bids | — | ✅ | — |
-| Accept / Reject Recycler Offers | ✅ | — | — |
-| Handover QR & Reference Verification | ✅ | ✅ | — |
-| AEPS Biometric Cash-Out Simulation | ✅ | — | — |
-| Whistleblower / Cartel Reporting | ✅ | ✅ | Review Queue |
-| Safety Report Triaging & Resolution | — | — | ✅ |
+| Voice & Manual Lot Creation | Yes | — | — |
+| Material Quality Assessment (CNN) | Yes | View | — |
+| AI Price Band Benchmarking | Yes | View | — |
+| Anonymous Identity Protection | Yes (`KABAD-XXXXX`) | View Masked | View |
+| Join / Form Smart Pools | Yes | View | — |
+| Browse Verified Smart Pools | — | Yes | — |
+| Submit Price Offers / Bids | — | Yes | — |
+| Accept / Reject Recycler Offers | Yes | — | — |
+| Handover QR & Reference Verification | Yes | Yes | — |
+| AEPS Biometric Cash-Out Simulation | Yes | — | — |
+| Whistleblower / Cartel Reporting | Yes | Yes | Review Queue |
+| Safety Report Triaging & Resolution | — | — | Yes |
 
 ---
 
-## ⚙️ How Smart Pooling Works
+## How Smart Pooling Works
 
 1. **Lot Creation:** An informal collector registers a scrap lot (e.g., 500 kg of bright copper wire) via voice command or web form.
 2. **Quality & Price Banding:** The backend runs a MobileNet-based vision quality classifier (Grade A/B/C, purity, defect %) and returns an evidence-based market price band [Min – Fair – Max].
@@ -218,7 +218,7 @@ erDiagram
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Layer | Technology | Purpose |
 | :--- | :--- | :--- |
@@ -235,7 +235,7 @@ erDiagram
 
 ---
 
-## 💡 Technical Highlights
+## Technical Highlights
 
 - **Role-Based Access Control (RBAC):** Express middleware (`requireRole`, `requireAnyRole`) enforces strict endpoint permissions for collectors, recyclers, and admins.
 - **Anonymous Identity Reveal Rules:** Collector contact details (`name`, `phone`, `area`) are scrubbed from public endpoints and revealed **only after an offer is accepted**.
@@ -245,7 +245,7 @@ erDiagram
 
 ---
 
-## 🔄 State Machine Diagram
+## State Machine Diagram
 
 ```mermaid
 stateDiagram-v2
@@ -272,7 +272,7 @@ stateDiagram-v2
 
 ---
 
-## 🎭 Demonstration Scenario (SIH Evaluation)
+## Demonstration Scenario (SIH Evaluation)
 
 > **Scenario:** A small Kabadiwala in Nashik collects 500 kg of bright copper wire and records it via Hindi voice command. The platform classifies it as **Grade A (94% purity)** with an AI Fair Price of **₹620/kg**.
 >
@@ -284,7 +284,7 @@ stateDiagram-v2
 
 ---
 
-## 🚀 Quick Start & Setup
+## Quick Start & Setup
 
 ### Prerequisites
 - Node.js 18+
@@ -310,7 +310,7 @@ npm run dev           # Frontend Vite client at http://localhost:3000
 
 ---
 
-## 🔌 API Overview
+## API Overview
 
 ### Authentication
 - `POST /api/auth/otp/send` — Request secure 6-digit OTP challenge
@@ -337,7 +337,7 @@ npm run dev           # Frontend Vite client at http://localhost:3000
 
 ---
 
-## 🔒 Security & Privacy
+## Security & Privacy
 
 - **Anonymous Identifiers:** All public listings use synthetic IDs (`KABAD-XXXXX`).
 - **PII Scrubbing:** Collector real names, phone numbers, and exact street addresses are stripped from public responses.
@@ -346,7 +346,7 @@ npm run dev           # Frontend Vite client at http://localhost:3000
 
 ---
 
-## 🎯 Current Limitations & Future Scope
+## Current Limitations & Future Scope
 
 ### Current MVP Implementation
 - In-memory transactional data store initialized with realistic seed records.
@@ -361,7 +361,7 @@ npm run dev           # Frontend Vite client at http://localhost:3000
 
 ---
 
-## 🔑 Demo Credentials (DEMO_MODE=true)
+## Demo Credentials (DEMO_MODE=true)
 
 When running in demo mode (`DEMO_MODE=true` in `.env`), any valid Indian phone number can be authenticated using:
 
@@ -370,16 +370,16 @@ Fixed Demo OTP: 123456
 ```
 
 ### Pre-configured Seed Users
-- **Kabadiwala (Collector):** Phone `+91 97654 33210` (Ramesh Patil)
+- **Kabadiwala (Collector):** Phone `+91 97654 33210` (Rajesh Kabadi)
 - **Authorized Recycler:** Phone `+91 98123 45678` (EcoRecycle India)
 - **Admin & Safety:** Phone `+91 99999 99999` (System Moderator)
 
 ---
 
-## 🧪 Testing & Verification
+## Testing & Verification
 
 ```bash
-# Run Vitest API & Unit Test Suite (340+ passing tests)
+# Run Vitest API & Unit Test Suite
 npm test
 
 # Run TypeScript Linting
@@ -392,7 +392,7 @@ npm run build
 
 ---
 
-## 🚢 Deployment Architecture
+## Deployment Architecture
 
 ```
 Browser Client
@@ -407,7 +407,7 @@ Configured via `vercel.json` and `api/index.ts` for unified full-stack Vercel se
 
 ---
 
-## ⚖️ Technical Honesty Notice
+## Technical Honesty Notice
 
 Kabadiwala Connect explicitly distinguishes between currently operational code and simulated MVP features:
 - **OPERATIONAL:** React 19 frontend UI, Express API routes, JWT authentication, Smart Pooling logic, Offer lifecycle, Order state transitions, VRP route stop sequencing, Whistleblower reporting queue, Vitest test suite.

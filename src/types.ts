@@ -1,4 +1,4 @@
-export type Role = 'farmer' | 'buyer' | 'logistics' | 'admin' | 'collector' | 'recycler';
+export type Role = 'collector' | 'recycler' | 'admin';
 
 export type Language = 'en' | 'hi' | 'mr' | 'te' | 'pa';
 
@@ -9,21 +9,6 @@ export interface UserProfile {
   role: Role;
   language: Language;
   createdAt: string;
-}
-
-export interface FarmerProfile extends UserProfile {
-  role: 'farmer';
-  anonSellerId: string;
-  village: string;
-  district: string;
-  state: string;
-  lat: number;
-  lng: number;
-  landSizeAcres: number;
-  primaryCrops: string[];
-  reputationScore: number;
-  totalOrdersFulfilled: number;
-  disputeCount: number;
 }
 
 export interface CollectorProfile extends UserProfile {
@@ -42,15 +27,6 @@ export interface CollectorProfile extends UserProfile {
   collectionRadiusKm: number;
 }
 
-export interface BuyerProfile extends UserProfile {
-  role: 'buyer';
-  buyerType: 'consumer' | 'retailer' | 'processor' | 'fpo';
-  businessName: string;
-  district: string;
-  state: string;
-  verified: boolean;
-}
-
 export interface RecyclerProfile extends UserProfile {
   role: 'recycler';
   businessName: string;
@@ -63,18 +39,6 @@ export interface RecyclerProfile extends UserProfile {
   capacityKgPerDay: number;
   verified: boolean;
   reputationScore: number;
-}
-
-export interface LogisticsProfile extends UserProfile {
-  role: 'logistics';
-  vehicleType: 'Tata Ace (1 Ton)' | 'Bolero Pickup (1.5 Ton)' | 'Eicher 14ft (3.5 Ton)';
-  capacityKg: number;
-  serviceRadiusKm: number;
-  district: string;
-  state: string;
-  lat: number;
-  lng: number;
-  activeDeliveries: number;
 }
 
 export type QualityGrade = 'A' | 'B' | 'C';

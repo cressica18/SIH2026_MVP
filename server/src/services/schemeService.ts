@@ -1,106 +1,64 @@
 /**
- * Scheme Service — Phase 15: Government Scheme Awareness
+ * Scheme Service — Government & Compliance Schemes
  *
  * Implements deterministic, rule-based eligibility matching of government
- * schemes to a farmer's profile. No LLM or external API required.
- *
- * Matching rules (documented):
- * 1. State eligibility: scheme.eligibleStates includes farmer.state OR 'All India'
- * 2. Crop eligibility: scheme.eligibleCrops includes any of farmer.primaryCrops OR 'All Crops'
- * 3. Land size (if scheme has maxLandAcreage): farmer.landSizeAcres <= maxLandAcreage
- * 4. Land size (if scheme has minLandAcreage): farmer.landSizeAcres >= minLandAcreage
- *
- * Each matched scheme receives an eligibilityReason string explaining why it matched.
- * Results are ranked: crop-specific matches first, then state-specific, then universal.
+ * schemes and compliance subsidies to a collector's profile.
  */
 
-import { SEED_GOV_SCHEMES } from '../data/seedData.js';
-import { SEED_FARMERS } from '../data/seedData.js';
-import { GovScheme, FarmerProfile } from '@shared/types.ts';
+import { SEED_GOV_SCHEMES, SEED_COLLECTORS } from '../data/seedData.js';
+import { GovScheme, CollectorProfile } from '../types.js';
 
 export interface MatchedScheme extends GovScheme {
   eligibilityReason: string;
-  relevanceScore: number; // higher = more specific/relevant
+  relevanceScore: number;
 }
 
-/**
- * Determines if a scheme is eligible for a given farmer profile and
- * produces an explanation string.
- */
 export function checkEligibility(
   scheme: GovScheme,
-  farmer: FarmerProfile
+  collector: CollectorProfile
 ): { eligible: boolean; reason: string; score: number } {
   const reasons: string[] = [];
   let score = 0;
 
-  // Rule 1: State eligibility
   const stateMatch =
     scheme.eligibleStates.includes('All India') ||
-    scheme.eligibleStates.includes(farmer.state);
+    scheme.eligibleStates.includes(collector.state);
 
   if (!stateMatch) {
     return {
       eligible: false,
-      reason: `Not available in ${farmer.state}`,
+      reason: `Not available in ${collector.state}`,
       score: 0,
     };
   }
 
-  if (scheme.eligibleStates.includes(farmer.state)) {
-    reasons.push(`Available in ${farmer.state}`);
-    score += 20; // state-specific match is more relevant
+  if (scheme.eligibleStates.includes(collector.state)) {
+    reasons.push(`Available in ${collector.state}`);
+    score += 20;
   } else {
     reasons.push('Available across India');
   }
 
-  // Rule 2: Crop eligibility
-  const hasCropMatch =
+  const hasMaterialMatch =
     scheme.eligibleCrops.includes('All Crops') ||
-    farmer.primaryCrops.some((crop) => scheme.eligibleCrops.includes(crop));
+    collector.primaryMaterials.some((m: string) => scheme.eligibleCrops.includes(m));
 
-  if (!hasCropMatch) {
+  if (!hasMaterialMatch) {
     return {
       eligible: false,
-      reason: `Not applicable for your crops (${farmer.primaryCrops.join(', ')})`,
+      reason: `Not applicable for your materials (${collector.primaryMaterials.join(', ')})`,
       score: 0,
     };
   }
 
   if (!scheme.eligibleCrops.includes('All Crops')) {
-    const matchedCrops = farmer.primaryCrops.filter((c) =>
-      scheme.eligibleCrops.includes(c)
+    const matched = collector.primaryMaterials.filter((m: string) =>
+      scheme.eligibleCrops.includes(m)
     );
-    reasons.push(`Covers your crop${matchedCrops.length > 1 ? 's' : ''}: ${matchedCrops.join(', ')}`);
-    score += 30; // crop-specific match is highly relevant
+    reasons.push(`Covers material${matched.length > 1 ? 's' : ''}: ${matched.join(', ')}`);
+    score += 30;
   } else {
-    reasons.push('Applicable to all crops');
-  }
-
-  // Rule 3: Land size upper bound
-  if (scheme.maxLandAcreage !== undefined) {
-    if (farmer.landSizeAcres > scheme.maxLandAcreage) {
-      return {
-        eligible: false,
-        reason: `Your land (${farmer.landSizeAcres} acres) exceeds scheme limit of ${scheme.maxLandAcreage} acres`,
-        score: 0,
-      };
-    }
-    reasons.push(`Eligible: ${farmer.landSizeAcres} acres ≤ ${scheme.maxLandAcreage} acre limit`);
-    score += 10;
-  }
-
-  // Rule 4: Land size lower bound
-  if (scheme.minLandAcreage !== undefined) {
-    if (farmer.landSizeAcres < scheme.minLandAcreage) {
-      return {
-        eligible: false,
-        reason: `Your land (${farmer.landSizeAcres} acres) is below minimum ${scheme.minLandAcreage} acres`,
-        score: 0,
-      };
-    }
-    reasons.push(`Land holding meets ${scheme.minLandAcreage} acre minimum`);
-    score += 5;
+    reasons.push('Applicable to all recycling categories');
   }
 
   return {
@@ -110,12 +68,8 @@ export function checkEligibility(
   };
 }
 
-/**
- * Returns schemes matched and ranked for a given farmer.
- * Rankings: higher relevance score first (crop+state specific > crop only > universal).
- */
 export function matchSchemes(
-  farmer: FarmerProfile,
+  collector: CollectorProfile,
   categoryFilter?: string
 ): MatchedScheme[] {
   const schemesToCheck = categoryFilter
@@ -127,7 +81,7 @@ export function matchSchemes(
   const matched: MatchedScheme[] = [];
 
   for (const scheme of schemesToCheck) {
-    const { eligible, reason, score } = checkEligibility(scheme, farmer);
+    const { eligible, reason, score } = checkEligibility(scheme, collector);
     if (eligible) {
       matched.push({
         ...scheme,
@@ -137,23 +91,18 @@ export function matchSchemes(
     }
   }
 
-  // Sort by relevance score descending — most specific/relevant first
   matched.sort((a, b) => b.relevanceScore - a.relevanceScore);
 
   return matched;
 }
 
-/**
- * Looks up a farmer by ID from seed data and runs matchSchemes.
- * Throws descriptive errors for unknown farmer IDs.
- */
 export function matchSchemesForFarmer(
-  farmerId: string,
+  collectorId: string,
   categoryFilter?: string
 ): MatchedScheme[] {
-  const farmer = SEED_FARMERS.find((f) => f.id === farmerId);
-  if (!farmer) {
-    throw new Error(`Farmer ${farmerId} not found`);
+  const collector = SEED_COLLECTORS.find((c) => c.id === collectorId);
+  if (!collector) {
+    throw new Error(`Collector ${collectorId} not found`);
   }
-  return matchSchemes(farmer, categoryFilter);
+  return matchSchemes(collector, categoryFilter);
 }

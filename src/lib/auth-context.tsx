@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 
 // Types for auth state
-export type UserRole = 'farmer' | 'buyer' | 'logistics' | 'admin' | 'collector' | 'recycler';
+export type UserRole = 'collector' | 'recycler' | 'admin';
 
 export interface User {
   id: string;
@@ -13,12 +13,9 @@ export interface User {
 
 // Demo phone numbers for each role (from seed data)
 export const DEMO_PHONES: Record<UserRole, string> = {
-  farmer: '+91 98231 44521',
-  buyer: '+91 99801 88301',
-  logistics: '+91 98224 55198',
-  admin: '+91 99999 99999',
   collector: '+91 97654 33210',
   recycler: '+91 98123 45678',
+  admin: '+91 99999 99999',
 };
 
 export interface AuthContextType {
@@ -71,7 +68,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const payload = decodeJwt(token);
       if (payload && payload.exp && (payload.exp as number) * 1000 > Date.now()) {
         // Validate that the role is a valid UserRole
-        const validRoles: UserRole[] = ['farmer', 'buyer', 'logistics', 'admin', 'collector', 'recycler'];
+        const validRoles: UserRole[] = ['collector', 'recycler', 'admin'];
         if (validRoles.includes(payload.role as UserRole)) {
           setUser({
             id: payload.userId as string,

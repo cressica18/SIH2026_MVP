@@ -1,24 +1,17 @@
 import { Router } from 'express';
-import { 
-  getNotifications, 
-  getUnreadNotificationCount, 
-  markNotificationReadController, 
-  createNotificationAdmin 
+import {
+  getNotifications,
+  getUnreadNotificationCount,
+  markNotificationReadController,
+  createNotificationAdmin,
 } from '../controllers/notificationController.js';
 import { requireRole } from '../middleware/auth.js';
 
 const router = Router();
 
-// GET /api/notifications — Get notifications for current user (auth required)
-router.get('/', requireRole('farmer', 'buyer', 'logistics', 'collector', 'recycler', 'admin'), getNotifications);
-
-// GET /api/notifications/unread-count — Get unread count for current user
-router.get('/unread-count', requireRole('farmer', 'buyer', 'logistics', 'collector', 'recycler', 'admin'), getUnreadNotificationCount);
-
-// PATCH /api/notifications/:id/read — Mark notification as read (auth required)
-router.patch('/:id/read', requireRole('farmer', 'buyer', 'logistics', 'collector', 'recycler', 'admin'), markNotificationReadController);
-
-// POST /api/notifications/admin — Admin create notification
+router.get('/', requireRole('collector', 'recycler', 'admin'), getNotifications);
+router.get('/unread-count', requireRole('collector', 'recycler', 'admin'), getUnreadNotificationCount);
+router.patch('/:id/read', requireRole('collector', 'recycler', 'admin'), markNotificationReadController);
 router.post('/admin', requireRole('admin'), createNotificationAdmin);
 
 export default router;

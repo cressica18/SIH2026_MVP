@@ -1,14 +1,14 @@
 import { Response } from 'express';
 import { AuthRequest } from '../middleware/auth.js';
 import { store } from '../data/store.js';
-import { AdvanceRequest, RiskAssessment } from '../types.js';
-import { getFarmerProfile } from './usersController.js';
+import { AdvanceRequest } from '../types.js';
+import { getCollectorProfile } from './usersController.js';
 import { assessRisk } from '../services/riskService.js';
 import { notifyAdvanceDisbursed } from '../services/notificationService.js';
 
 export function getRiskProfile(req: AuthRequest, res: Response): void {
   const { farmerId } = req.params;
-  
+
   if (req.user!.role !== 'admin' && req.user!.userId !== farmerId) {
     res.status(403).json({ error: 'Unauthorized to view this risk profile' });
     return;
@@ -17,8 +17,8 @@ export function getRiskProfile(req: AuthRequest, res: Response): void {
   try {
     const risk = assessRisk(farmerId);
     res.json(risk);
-  } catch (error) {
-    res.status(404).json({ error: 'Farmer not found' });
+  } catch {
+    res.status(404).json({ error: 'Collector not found' });
   }
 }
 
@@ -27,18 +27,18 @@ export function getAdvances(req: AuthRequest, res: Response): void {
     res.json({ advances: store.advances });
     return;
   }
-  
+
   const userAdvances = store.advances.filter(a => a.farmerId === req.user!.userId);
   res.json({ advances: userAdvances });
 }
 
 export function requestAdvance(req: AuthRequest, res: Response): void {
-  if (req.user!.role !== 'farmer') {
-    res.status(403).json({ error: 'Only farmers can request advances' });
+  if (req.user!.role !== 'collector') {
+    res.status(403).json({ error: 'Only collectors can request advances' });
     return;
   }
 
-  const { amountRequested, purpose, simulateAeps } = req.body;
+  const { amountRequested, purpose } = req.body;
   const amount = Number(amountRequested);
 
   if (amountRequested === undefined || amountRequested === null || isNaN(amount) || amount <= 0 || !Number.isFinite(amount)) {
@@ -51,15 +51,14 @@ export function requestAdvance(req: AuthRequest, res: Response): void {
     return;
   }
 
-  const profile = getFarmerProfile(req.user!.userId);
+  const profile = getCollectorProfile(req.user!.userId);
   if (!profile) {
-    res.status(404).json({ error: 'Farmer profile not found' });
+    res.status(404).json({ error: 'Collector profile not found' });
     return;
   }
 
   const risk = assessRisk(req.user!.userId);
 
-  // Calculate sum of active advances (requested or disbursed) for this farmer
   const existingActiveAdvancesTotal = store.advances
     .filter(a => a.farmerId === req.user!.userId && (a.status === 'requested' || a.status === 'disbursed'))
     .reduce((sum, a) => sum + a.amountRequested, 0);
@@ -67,7 +66,7 @@ export function requestAdvance(req: AuthRequest, res: Response): void {
   const remainingEligible = Math.max(0, risk.eligibleAdvanceAmount - existingActiveAdvancesTotal);
 
   if (amountRequested > remainingEligible) {
-    res.status(400).json({ 
+    res.status(400).json({
       error: `Requested amount exceeds eligible advance limit of ₹${remainingEligible.toLocaleString('en-IN')}`,
       eligibleAdvanceAmount: risk.eligibleAdvanceAmount,
       remainingEligible
@@ -89,13 +88,13 @@ export function requestAdvance(req: AuthRequest, res: Response): void {
 }
 
 export function simulateAepsCashout(req: AuthRequest, res: Response): void {
-  if (req.user!.role !== 'farmer') {
-    res.status(403).json({ error: 'Only farmers can simulate AEPS cash-out' });
+  if (req.user!.role !== 'collector') {
+    res.status(403).json({ error: 'Only collectors can simulate AEPS cash-out' });
     return;
   }
 
   const { advanceId, aadhaarLast4 } = req.body;
-  
+
   if (!advanceId || typeof advanceId !== 'string' || advanceId.trim().length === 0) {
     res.status(400).json({ error: 'advanceId is required and must be a non-empty string' });
     return;
@@ -118,9 +117,9 @@ export function simulateAepsCashout(req: AuthRequest, res: Response): void {
     return;
   }
 
-  const profile = getFarmerProfile(req.user!.userId);
+  const profile = getCollectorProfile(req.user!.userId);
   if (!profile) {
-    res.status(404).json({ error: 'Farmer profile not found' });
+    res.status(404).json({ error: 'Collector profile not found' });
     return;
   }
 
@@ -131,7 +130,6 @@ export function simulateAepsCashout(req: AuthRequest, res: Response): void {
   advance.aepsTxnRef = aepsTxnRef;
   advance.disbursedAt = disbursedAt;
 
-  // Send notification for advance disbursement
   notifyAdvanceDisbursed(req.user!.userId, advance.amountRequested, aepsTxnRef);
 
   res.json({

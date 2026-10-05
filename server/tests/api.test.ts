@@ -51,6 +51,16 @@ describe('Kabadiwala Connect API', () => {
       expect(res.body).toHaveProperty('otpChallenge');
     });
 
+    it('should allow CORS for production origin https://kabadiwala2026.vercel.app', async () => {
+      const res = await request(server)
+        .post('/api/auth/otp/send')
+        .set('Origin', 'https://kabadiwala2026.vercel.app')
+        .send({ phone: '+91 97654 33210' });
+      expect(res.status).toBe(200);
+      expect(res.headers['access-control-allow-origin']).toBe('https://kabadiwala2026.vercel.app');
+      expect(res.body).toHaveProperty('otpChallenge');
+    });
+
     it('should reject invalid phone numbers', async () => {
       const res = await request(server)
         .post('/api/auth/otp/send')

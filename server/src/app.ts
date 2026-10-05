@@ -25,17 +25,27 @@ dotenv.config();
 const app = express();
 
 // Middleware
-const allowedOrigins = [
+const envOrigins = [
+  ...(process.env.FRONTEND_URL ? process.env.FRONTEND_URL.split(',') : []),
+  ...(process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : []),
+].map((o) => o.trim()).filter(Boolean);
+
+const defaultAllowedOrigins = [
   'http://localhost:3000',
-  process.env.FRONTEND_URL,
-].filter(Boolean);
+  'http://localhost:5173',
+  'http://127.0.0.1:3000',
+  'http://127.0.0.1:5173',
+  'https://kabadiwala2026.vercel.app',
+];
+
+const allowedOrigins = Array.from(new Set([...defaultAllowedOrigins, ...envOrigins]));
 
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
+    if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
       callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS'));
+      callback(null, false);
     }
   },
   credentials: true,

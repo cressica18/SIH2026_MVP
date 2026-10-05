@@ -13,7 +13,11 @@ function generateOtp(): string {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-const isDemoMode = process.env.DEMO_MODE === 'true';
+function getIsDemoMode(): boolean {
+  return process.env.DEMO_MODE !== 'false';
+}
+
+const DEMO_PHONES = ['+91 97654 33210', '+91 98123 45678', '+91 99999 99999'];
 
 export function sendOtp(req: AuthRequest, res: Response): void {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -25,7 +29,8 @@ export function sendOtp(req: AuthRequest, res: Response): void {
     return;
   }
 
-  const otp = process.env.NODE_ENV === 'test' ? '123456' : isDemoMode ? '123456' : generateOtp();
+  const isDemo = getIsDemoMode() || DEMO_PHONES.includes(phone);
+  const otp = process.env.NODE_ENV === 'test' ? '123456' : isDemo ? '123456' : generateOtp();
   const otpChallenge = generateOtpChallenge({ phone, otp });
 
   console.log(`[OTP] Phone: ${phone} | OTP: ${otp} | Expires: ${new Date(Date.now() + 5 * 60 * 1000).toISOString()}`);
@@ -34,8 +39,8 @@ export function sendOtp(req: AuthRequest, res: Response): void {
     message: 'OTP sent successfully',
     phone,
     otpChallenge,
-    demoMode: isDemoMode,
-    devOtp: isDemoMode || process.env.NODE_ENV !== 'production' ? otp : undefined,
+    demoMode: isDemo,
+    devOtp: isDemo ? otp : (process.env.NODE_ENV !== 'production' ? otp : undefined),
   });
 }
 
@@ -72,8 +77,9 @@ export function verifyOtp(req: AuthRequest, res: Response): void {
     return;
   }
 
+  const isDemo = getIsDemoMode() || DEMO_PHONES.includes(phone);
   const isTestOtp = process.env.NODE_ENV === 'test' && otp === '123456';
-  const isDemoOtp = isDemoMode && otp === '123456';
+  const isDemoOtp = isDemo && otp === '123456';
   if (challenge.otp !== otp && !isTestOtp && !isDemoOtp) {
     res.status(400).json({ error: 'Invalid OTP. Please try again.' });
     return;

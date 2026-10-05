@@ -171,9 +171,6 @@ export const OtpScreen: React.FC<OtpScreenProps> = ({
       if (demoMode) {
         setOtp('123456');
         setDevOtpHint('Auto-filled test OTP 123456');
-      } else {
-        setOtp('');
-        setDevOtpHint('');
       }
     }
   }, [pendingPhone, demoMode]);
@@ -209,6 +206,18 @@ export const OtpScreen: React.FC<OtpScreenProps> = ({
       if (otpToFill) {
         setOtp(otpToFill);
         setDevOtpHint(`Auto-filled demo OTP ${otpToFill}`);
+        if (result.demoMode || result.devOtp) {
+          setIsVerifying(true);
+          const verifyResult = await verifyOtp(trimmedPhone, otpToFill, result.otpChallenge);
+          if (verifyResult.success && verifyResult.role) {
+            if (onSuccess) {
+              onSuccess(verifyResult.role);
+            } else {
+              window.location.href = rolePath(verifyResult.role);
+            }
+            return;
+          }
+        }
       } else {
         setOtp('');
         setDevOtpHint('Enter the 6-digit OTP sent to your phone');
@@ -217,6 +226,7 @@ export const OtpScreen: React.FC<OtpScreenProps> = ({
       setError(e instanceof Error ? e.message : 'Failed to send OTP. Check server.');
     } finally {
       setIsSending(false);
+      setIsVerifying(false);
     }
   };
 
@@ -242,8 +252,6 @@ export const OtpScreen: React.FC<OtpScreenProps> = ({
         } else {
           window.location.href = rolePath(verifyResult.role);
         }
-      } else {
-        setError('Auto verification failed. Please click Verify.');
       }
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Quick login failed');

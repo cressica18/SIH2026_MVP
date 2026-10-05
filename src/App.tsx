@@ -2,14 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import {
   Role,
   Language,
-  Listing,
-  Order,
-  LogisticsPool,
   SafetyReport,
   AppNotification,
-  FarmerProfile,
-  BuyerProfile,
-  LogisticsProfile,
   CollectorProfile,
   RecyclerProfile,
   ScrapLot,
@@ -17,30 +11,11 @@ import {
   PoolOffer,
   SettlementRecord,
   GovScheme,
-  AdvanceRequest,
-  RiskAssessment,
 } from './types';
 import {
-  SEED_FARMERS,
-  SEED_BUYERS,
-  SEED_LOGISTICS,
-  SEED_COLLECTORS,
-  SEED_RECYCLERS,
-  SEED_LISTINGS,
-  SEED_ORDERS,
-  SEED_LOGISTICS_POOLS,
-  SEED_GOV_SCHEMES,
   SEED_NOTIFICATIONS,
-  SEED_RISK_ASSESSMENTS,
-  SEED_SCRAP_LOTS,
-  SEED_SMART_POOLS,
-  SEED_POOL_OFFERS,
-  SEED_SETTLEMENTS,
 } from './data/seedData';
 import { Navbar } from './components/Navbar';
-import { FarmerView } from './components/FarmerView';
-import { BuyerView } from './components/BuyerView';
-import { LogisticsView } from './components/LogisticsView';
 import { AdminView } from './components/AdminView';
 import { CollectorView } from './components/CollectorView';
 import { RecyclerView } from './components/RecyclerView';
@@ -58,9 +33,6 @@ export default function App() {
   // Global State
   const [currentRole, setCurrentRole] = useState<Role>('collector');
   const [currentLanguage, setCurrentLanguage] = useState<Language>('en');
-  const [farmerSubTab, setFarmerSubTab] = useState<string>('listings');
-  const [buyerSubTab, setBuyerSubTab] = useState<string>('marketplace');
-  const [logisticsSubTab, setLogisticsSubTab] = useState<string>('pools');
   const [adminSubTab, setAdminSubTab] = useState<string>('reports');
   const [collectorSubTab, setCollectorSubTab] = useState<string>('pools');
   const [recyclerSubTab, setRecyclerSubTab] = useState<string>('pools');
@@ -69,43 +41,27 @@ export default function App() {
   const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
   const [isAepsModalOpen, setIsAepsModalOpen] = useState(false);
   const [isMarketInsightsOpen, setIsMarketInsightsOpen] = useState(false);
-  const [aepsWithdrawAmount, setAepsWithdrawAmount] = useState<number>(20000);
-  const [aepsAdvanceId, setAepsAdvanceId] = useState<string | undefined>(undefined);
 
   // Core Data Collections
-  const [listings, setListings] = useState<Listing[]>([]);
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [pools, setPools] = useState<LogisticsPool[]>([]);
   const [reports, setReports] = useState<SafetyReport[]>([]);
   const [notifications, setNotifications] = useState<AppNotification[]>(SEED_NOTIFICATIONS);
   const [schemes, setSchemes] = useState<GovScheme[]>([]);
-  const [advances, setAdvances] = useState<AdvanceRequest[]>([]);
   const [scrapLots, setScrapLots] = useState<ScrapLot[]>([]);
   const [smartPools, setSmartPools] = useState<SmartPool[]>([]);
   const [poolOffers, setPoolOffers] = useState<PoolOffer[]>([]);
   const [settlements, setSettlements] = useState<SettlementRecord[]>([]);
 
-  // Dynamic Farmer / Risk / Buyer / Collector / Recycler State
-  const [farmer, setFarmer] = useState<FarmerProfile | null>(null);
-  const [buyer, setBuyer] = useState<BuyerProfile | null>(null);
-  const [logistics, setLogistics] = useState<LogisticsProfile | null>(null);
+  // Dynamic Collector / Recycler State
   const [collector, setCollector] = useState<CollectorProfile | null>(null);
   const [recycler, setRecycler] = useState<RecyclerProfile | null>(null);
-  const [riskAssessment, setRiskAssessment] = useState<RiskAssessment | null>(null);
 
   // Fetch profile on auth
   useEffect(() => {
     if (!isAuthenticated || !user) {
-      setFarmer(null);
-      setBuyer(null);
-      setLogistics(null);
-      setRiskAssessment(null);
-      setListings([]);
-      setOrders([]);
-      setPools([]);
+      setCollector(null);
+      setRecycler(null);
       setReports([]);
       setSchemes([]);
-      setAdvances([]);
       setNotifications([]);
       return;
     }
@@ -113,75 +69,37 @@ export default function App() {
     setIsProfileLoading(true);
 
     // Reset profiles and notifications for previous roles to avoid stale data
-    setFarmer(null);
-    setBuyer(null);
-    setLogistics(null);
     setCollector(null);
-    setRiskAssessment(null);
+    setRecycler(null);
     setNotifications([]);
 
-    async function fetchProfileAndListings() {
+    async function fetchProfileAndData() {
       try {
         const token = localStorage.getItem('kabadiwala_token');
-        
+
         // Fetch Profile
         const res = await fetch('/api/users/profile', {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (res.ok) {
           const data = await res.json();
-          if (user?.role === 'farmer') setFarmer(data.profile);
-          else if (user?.role === 'buyer') setBuyer(data.profile);
-          else if (user?.role === 'logistics') setLogistics(data.profile);
-          else if (user?.role === 'collector') setCollector(data.profile);
+          if (user?.role === 'collector') setCollector(data.profile);
           else if (user?.role === 'recycler') setRecycler(data.profile);
         } else if (res.status === 404) {
-          // Profile needs to be created
-          if (user?.role === 'farmer') setFarmer(null);
-          else if (user?.role === 'buyer') setBuyer(null);
-          else if (user?.role === 'logistics') setLogistics(null);
-          else if (user?.role === 'collector') setCollector(null);
+          if (user?.role === 'collector') setCollector(null);
           else if (user?.role === 'recycler') setRecycler(null);
         }
 
-        // Fetch Listings
-        if (user?.role === 'buyer') {
-          const matchRes = await fetch(`/api/matching/buyer/${user.id}`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          if (matchRes.ok) {
-            setListings(await matchRes.json());
-          } else {
-            // fallback
-            const listingsRes = await fetch('/api/listings', {
-              headers: { Authorization: `Bearer ${token}` },
-            });
-            if (listingsRes.ok) {
-              const listingsData = await listingsRes.json();
-              setListings(listingsData.listings);
-            }
-          }
-        } else {
-          // public / other roles
-          const listingsRes = await fetch('/api/listings', {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          if (listingsRes.ok) {
-            const listingsData = await listingsRes.json();
-            setListings(listingsData.listings);
-          }
-        }
-
-        // Fetch Scrap Lots (for collector and public viewing)
+        // Fetch Scrap Lots
         const scrapLotsRes = await fetch('/api/scrap-lots', {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (scrapLotsRes.ok) {
           const scrapLotsData = await scrapLotsRes.json();
-          setScrapLots(scrapLotsData.lots);
+          setScrapLots(scrapLotsData.lots || []);
         }
 
-        // Fetch Smart Pools (for collector and recycler)
+        // Fetch Smart Pools
         const smartPoolsRes = await fetch('/api/smart-pools', {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -208,46 +126,6 @@ export default function App() {
           setSettlements(settlementsData.settlements || []);
         }
 
-        // Fetch role-scoped orders
-        const ordersRes = await fetch('/api/orders', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (ordersRes.ok) {
-          const ordersData = await ordersRes.json();
-          setOrders(ordersData.orders);
-        }
-
-        // Fetch logistics pools (public)
-        const poolsRes = await fetch('/api/logistics/pools');
-        if (poolsRes.ok) {
-          const poolsData = await poolsRes.json();
-          setPools(poolsData.pools);
-        }
-
-        // Fetch schemes — personalized match for farmers, public list for others
-        if (user?.role === 'farmer' && user?.id) {
-          const schemesRes = await fetch(`/api/schemes/match/${user.id}`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          if (schemesRes.ok) {
-            const schemesData = await schemesRes.json();
-            setSchemes(schemesData.schemes);
-          } else {
-            // Fallback to public list if match endpoint fails
-            const fallbackRes = await fetch('/api/schemes');
-            if (fallbackRes.ok) {
-              const fallbackData = await fallbackRes.json();
-              setSchemes(fallbackData.schemes);
-            }
-          }
-        } else {
-          const schemesRes = await fetch('/api/schemes');
-          if (schemesRes.ok) {
-            const schemesData = await schemesRes.json();
-            setSchemes(schemesData.schemes);
-          }
-        }
-
         // Fetch safety reports for admin
         if (user?.role === 'admin') {
           const reportsRes = await fetch('/api/reports/admin', {
@@ -255,41 +133,7 @@ export default function App() {
           });
           if (reportsRes.ok) {
             const reportsData = await reportsRes.json();
-            setReports(reportsData.reports);
-          }
-        }
-
-
-        // Fetch finance/risk data if applicable
-        if (user?.role === 'farmer' || user?.role === 'admin') {
-          // Fetch advances
-          const advancesRes = await fetch('/api/finance/advances', {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          if (advancesRes.ok) {
-            const advData = await advancesRes.json();
-            setAdvances(advData.advances);
-          }
-
-          // Fetch risk profile (for farmer view)
-          if (user?.role === 'farmer') {
-            const riskRes = await fetch(`/api/finance/risk/${user.id}`, {
-              headers: { Authorization: `Bearer ${token}` },
-            });
-            if (riskRes.ok) {
-              setRiskAssessment(await riskRes.json());
-            }
-
-            // Phase 12: Fetch live reputation score from reputation service
-            const repRes = await fetch(`/api/reputation/${user.id}`, {
-              headers: { Authorization: `Bearer ${token}` },
-            });
-            if (repRes.ok) {
-              const repData = await repRes.json();
-              setFarmer((prev) =>
-                prev ? { ...prev, reputationScore: repData.score } : prev
-              );
-            }
+            setReports(reportsData.reports || []);
           }
         }
       } catch (err) {
@@ -298,7 +142,7 @@ export default function App() {
         setIsProfileLoading(false);
       }
     }
-    fetchProfileAndListings();
+    fetchProfileAndData();
   }, [isAuthenticated, user]);
 
   // Fetch notifications from backend with polling
@@ -311,7 +155,7 @@ export default function App() {
       });
       if (res.ok) {
         const data = await res.json();
-        setNotifications(data.notifications);
+        setNotifications(data.notifications || []);
       }
     } catch (err) {
       console.error('Failed to fetch notifications', err);
@@ -321,70 +165,10 @@ export default function App() {
   // Poll for notifications every 30 seconds
   useEffect(() => {
     if (!isAuthenticated || !user) return;
-    fetchNotifications(); // Initial fetch
+    fetchNotifications();
     const interval = setInterval(fetchNotifications, 30000);
     return () => clearInterval(interval);
   }, [isAuthenticated, user, fetchNotifications]);
-
-  // Add a new listing from farmer voice or manual input
-  const handleAddListing = async (newListing: Listing): Promise<boolean> => {
-    try {
-      const token = localStorage.getItem('kabadiwala_token');
-      const res = await fetch('/api/listings', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify(newListing)
-      });
-      
-      if (res.ok) {
-        const createdListing = await res.json();
-        setListings((prev) => [createdListing, ...prev]);
-
-        // Push system notification
-        const notif: AppNotification = {
-          id: `notif_${Date.now()}`,
-          title: 'New Harvest Batch Listed',
-          message: `Batch ${createdListing.crop} (${createdListing.quantityKg} kg) is active under ${createdListing.anonSellerId}.`,
-          timestamp: 'Just now',
-          read: false,
-          roleTarget: 'buyer',
-          type: 'order',
-        };
-        setNotifications((prev) => [notif, ...prev]);
-        return true;
-      } else {
-        console.error('Failed to create listing', await res.text());
-        return false;
-      }
-    } catch (err) {
-      console.error('Failed to create listing', err);
-      return false;
-    }
-  };
-
-  // Update listing status
-  const handleUpdateListingStatus = async (id: string, status: string) => {
-    try {
-      const token = localStorage.getItem('kabadiwala_token');
-      const res = await fetch(`/api/listings/${id}/status`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({ status })
-      });
-      if (res.ok) {
-        const updated = await res.json();
-        setListings((prev) => prev.map((l) => (l.id === id ? updated : l)));
-      }
-    } catch (err) {
-      console.error('Failed to update listing status', err);
-    }
-  };
 
   // Add a new scrap lot from collector voice or manual input
   const handleAddScrapLot = async (newLot: ScrapLot): Promise<boolean> => {
@@ -394,24 +178,23 @@ export default function App() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(newLot)
+        body: JSON.stringify(newLot),
       });
-      
+
       if (res.ok) {
         const createdLot = await res.json();
         setScrapLots((prev) => [createdLot, ...prev]);
 
-        // Push system notification
         const notif: AppNotification = {
           id: `notif_${Date.now()}`,
           title: 'New Scrap Lot Listed',
           message: `Lot ${createdLot.materialType} (${createdLot.estimatedWeightKg} kg) is active under ${createdLot.anonCollectorId}.`,
           timestamp: 'Just now',
           read: false,
-          roleTarget: 'buyer',
-          type: 'order',
+          roleTarget: 'recycler',
+          type: 'match',
         };
         setNotifications((prev) => [notif, ...prev]);
         return true;
@@ -433,9 +216,9 @@ export default function App() {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ status })
+        body: JSON.stringify({ status }),
       });
       if (res.ok) {
         const updated = await res.json();
@@ -443,226 +226,6 @@ export default function App() {
       }
     } catch (err) {
       console.error('Failed to update scrap lot status', err);
-    }
-  };
-
-  // Buyer places an order — POST to backend, then update local state
-  const handlePlaceOrder = async (newOrder: Order): Promise<boolean> => {
-    try {
-      const token = localStorage.getItem('kabadiwala_token');
-      const res = await fetch('/api/orders', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify(newOrder),
-      });
-      if (!res.ok) {
-        console.error('Failed to create order', await res.text());
-        return false;
-      }
-      const createdOrder: Order = await res.json();
-      setOrders((prev) => [createdOrder, ...prev]);
-
-      // Update listing availability in local state (backend already reduced qty)
-      setListings((prev) =>
-        prev.map((l) =>
-          l.id === createdOrder.listingId
-            ? {
-                ...l,
-                quantityKg: Math.max(0, l.quantityKg - createdOrder.quantityKg),
-                status: l.quantityKg - createdOrder.quantityKg <= 0 ? 'matched' : 'active',
-              }
-            : l
-        )
-      );
-
-      // Notifications
-      const notifFarmer: AppNotification = {
-        id: `notif_${Date.now()}_1`,
-        title: 'Order Confirmed: Identity Revealed',
-        message: `Buyer ${createdOrder.buyerName} committed to order #${createdOrder.id}. Contact unlocked: ${createdOrder.buyerPhone}.`,
-        timestamp: 'Just now',
-        read: false,
-        roleTarget: 'farmer',
-        type: 'reveal',
-      };
-      const notifLogistics: AppNotification = {
-        id: `notif_${Date.now()}_2`,
-        title: 'New Pickup Corridor Added',
-        message: `Order #${createdOrder.id} ready for pooling in ${createdOrder.sellerDistrict} corridor.`,
-        timestamp: 'Just now',
-        read: false,
-        roleTarget: 'logistics',
-        type: 'logistics',
-      };
-      setNotifications((prev) => [notifFarmer, notifLogistics, ...prev]);
-      return true;
-    } catch (err) {
-      console.error('Failed to place order', err);
-      return false;
-    }
-  };
-
-  // Update Order Status (Phase 11 State Machine)
-  const handleUpdateOrderStatus = async (orderId: string, status: string) => {
-    try {
-      const token = localStorage.getItem('kabadiwala_token');
-      const res = await fetch(`/api/orders/${orderId}/status`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ status }),
-      });
-      if (!res.ok) {
-        console.error('Failed to update order status', await res.text());
-        return;
-      }
-      const updatedOrder = await res.json();
-      setOrders((prev) => prev.map((ord) => (ord.id === orderId ? updatedOrder : ord)));
-    } catch (err) {
-      console.error('Failed to update order status', err);
-    }
-  };
-
-  // Buyer rates farmer fulfillment — Phase 12: persist to backend reputation service
-  const handleRateFarmer = async (orderId: string, rating: number): Promise<boolean> => {
-    try {
-      const token = localStorage.getItem('kabadiwala_token');
-      const order = orders.find((o) => o.id === orderId);
-      if (!order) return false;
-
-      const res = await fetch('/api/reputation/events', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({
-          orderId,
-          targetUserId: order.anonSellerId, // backend resolves via SEED_FARMERS
-          eventType: 'buyer_rating',
-          scoreImpact: rating,
-          notes: `Buyer rating for order ${orderId}`,
-        }),
-      });
-
-      if (res.ok) {
-        const { updatedScore } = await res.json();
-        // Update local order state ONLY on API success
-        setOrders((prev) =>
-          prev.map((ord) => (ord.id === orderId ? { ...ord, buyerRating: rating } : ord))
-        );
-
-        // Update local farmer reputation score if we have a farmer view loaded
-        if (farmer && updatedScore) {
-          setFarmer((prev) =>
-            prev ? { ...prev, reputationScore: updatedScore.score } : prev
-          );
-        }
-        return true;
-      } else {
-        console.warn('Failed to post reputation event', await res.text());
-        return false;
-      }
-    } catch (err) {
-      console.error('Failed to post reputation event', err);
-      return false;
-    }
-  };
-
-
-  // Logistics carrier status updates — PATCH backend pool then update local state
-  const handleUpdatePoolStatus = async (
-    poolId: string,
-    status: 'assigned' | 'in_transit' | 'delivered'
-  ): Promise<boolean> => {
-    try {
-      const token = localStorage.getItem('kabadiwala_token');
-      const res = await fetch(`/api/logistics/pools/${poolId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ status }),
-      });
-      if (!res.ok) {
-        console.error('Failed to update pool status', await res.text());
-        return false;
-      }
-      const updatedPool = await res.json();
-      setPools((prev) => prev.map((p) => (p.id === poolId ? updatedPool : p)));
-
-      if (status === 'in_transit' || status === 'delivered') {
-        // Backend synced order statuses; refresh orders
-        const ordToken = localStorage.getItem('kabadiwala_token');
-        const ordRes = await fetch('/api/orders', {
-          headers: { Authorization: `Bearer ${ordToken}` },
-        });
-        if (ordRes.ok) {
-          const ordData = await ordRes.json();
-          setOrders(ordData.orders);
-        }
-      }
-      return true;
-    } catch (err) {
-      console.error('Failed to update pool status', err);
-      return false;
-    }
-  };
-
-  // Complete specific waypoint stop
-  const handleCompleteStop = async (poolId: string, stopId: string): Promise<boolean> => {
-    try {
-      const token = localStorage.getItem('kabadiwala_token');
-      const res = await fetch(`/api/logistics/pools/${poolId}/stops/${stopId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-      });
-      if (!res.ok) {
-        console.error('Failed to update stop status', await res.text());
-        return false;
-      }
-      const updatedPool = await res.json();
-      setPools((prev) => prev.map((p) => (p.id === poolId ? updatedPool : p)));
-
-      // If this triggered delivery, refresh orders
-      if (updatedPool.status === 'delivered') {
-        const ordToken = localStorage.getItem('kabadiwala_token');
-        const ordRes = await fetch('/api/orders', {
-          headers: { Authorization: `Bearer ${ordToken}` },
-        });
-        if (ordRes.ok) {
-          const ordData = await ordRes.json();
-          setOrders(ordData.orders);
-        }
-      }
-      return true;
-    } catch (err) {
-      console.error('Failed to update stop status', err);
-      return false;
-    }
-  };
-
-  const handleCreatePool = async (orderIds: string[]): Promise<boolean> => {
-    try {
-      const token = localStorage.getItem('kabadiwala_token');
-      const res = await fetch('/api/logistics/pools', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ orderIds }),
-      });
-      if (!res.ok) {
-        console.error('Failed to create pool', await res.text());
-        return false;
-      }
-      const newPool = await res.json();
-      setPools((prev) => [...prev, newPool]);
-      
-      // Refresh orders since their poolId/status changed
-      const ordRes = await fetch('/api/orders', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (ordRes.ok) {
-        const ordData = await ordRes.json();
-        setOrders(ordData.orders);
-      }
-      return true;
-    } catch (err) {
-      console.error('Failed to create pool', err);
-      return false;
     }
   };
 
@@ -714,91 +277,7 @@ export default function App() {
     }
   };
 
-  // Whistleblower Safety Report submission — persists to backend via POST /api/reports
-  const handleSubmitSafetyReport = async (rep: {
-    category: string;
-    description: string;
-    isAnonymous: boolean;
-    reportedEntityName: string;
-  }): Promise<SafetyReport | null> => {
-    try {
-      const token = localStorage.getItem('kabadiwala_token');
-      const res = await fetch('/api/reports', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          category: rep.category,
-          description: rep.description,
-          isAnonymous: rep.isAnonymous,
-          reportedEntityName: rep.reportedEntityName,
-        }),
-      });
-
-      if (!res.ok) {
-        console.error('Failed to submit safety report', await res.text());
-        return null;
-      }
-
-      const data = await res.json();
-      const created: SafetyReport = data.report;
-
-      // Backend is the single source of truth — use the persisted report returned by POST
-      setReports((prev) => [created, ...prev]);
-
-      // Alert the Admin moderation queue (backend also persists a notification)
-      const notifAdmin: AppNotification = {
-        id: `notif_${Date.now()}`,
-        title: rep.isAnonymous ? 'New Anonymous Safety Report' : 'New Safety Report',
-        message: `Report filed regarding ${rep.reportedEntityName} (${rep.category}). ${
-          rep.isAnonymous ? 'Anonymous submission.' : ''
-        }`,
-        timestamp: 'Just now',
-        read: false,
-        roleTarget: 'admin',
-        type: 'safety',
-      };
-      setNotifications((prev) => [notifAdmin, ...prev]);
-
-      return created;
-    } catch (err) {
-      console.error('Failed to submit safety report', err);
-      return null;
-    }
-  };
-
-  const handleRequestAdvance = async (amount: number, purpose: string, simulateAeps: boolean): Promise<{ success: boolean; advance?: AdvanceRequest; error?: string }> => {
-    try {
-      const token = localStorage.getItem('kabadiwala_token');
-      const res = await fetch('/api/finance/advances', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ amountRequested: amount, purpose, simulateAeps })
-      });
-      if (res.ok) {
-        const adv = await res.json();
-        setAdvances((prev) => [adv, ...prev]);
-        if (simulateAeps) {
-          setAepsWithdrawAmount(amount);
-          setAepsAdvanceId(adv.id);
-          setIsAepsModalOpen(true);
-        }
-        return { success: true, advance: adv };
-      } else {
-        const errJson = await res.json().catch(() => null);
-        const errText = errJson?.error || 'Failed to request advance';
-        console.error('Failed to request advance', errText);
-        return { success: false, error: errText };
-      }
-    } catch (err: any) {
-      console.error('Error requesting advance', err);
-      return { success: false, error: err.message || 'Network error requesting advance' };
-    }
-  };
-
-  // Admin updates report status — persisted to backend via PATCH /api/reports/admin/:id
+  // Admin updates report status
   const handleUpdateReportStatus = async (
     reportId: string,
     status: 'open' | 'reviewing' | 'resolved',
@@ -823,7 +302,6 @@ export default function App() {
       const data = await res.json();
       const updated: SafetyReport = data.report;
 
-      // Backend is the single source of truth — reflect the persisted, updated report
       setReports((prev) =>
         prev.map((r) => (r.id === reportId ? { ...updated } : r))
       );
@@ -853,53 +331,17 @@ export default function App() {
     }
   };
 
-  // Jump to step from 7-Step Demo Story Modal
+  // Jump to step from Demo Story Modal
   const handleJumpToStep = async (role: Role, tabName?: string) => {
-    if (role === 'farmer' && tabName) setFarmerSubTab(tabName);
-    if (role === 'buyer' && tabName) setBuyerSubTab(tabName);
-    if (role === 'logistics' && tabName) setLogisticsSubTab(tabName);
     if (role === 'admin' && tabName) setAdminSubTab(tabName);
+    if (role === 'collector' && tabName) setCollectorSubTab(tabName);
+    if (role === 'recycler' && tabName) setRecyclerSubTab(tabName);
 
     if (user?.role !== role) {
       await switchRole(role);
     } else {
       setCurrentRole(role);
     }
-  };
-
-  const handleAepsSuccess = async (amount: number, txnRef: string) => {
-    const notif: AppNotification = {
-      id: `notif_${Date.now()}`,
-      title: 'AEPS Cash-Out Disbursed',
-      message: `₹${amount.toLocaleString('en-IN')} withdrawn via Bank Mitra (Ref: ${txnRef}).`,
-      timestamp: 'Just now',
-      read: false,
-      roleTarget: 'farmer',
-      type: 'finance',
-    };
-    setNotifications((prev) => [notif, ...prev]);
-
-    // Refresh advances from backend to ensure source-of-truth consistency
-    const token = localStorage.getItem('kabadiwala_token');
-    if (token) {
-      try {
-        const advRes = await fetch('/api/finance/advances', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (advRes.ok) {
-          const advData = await advRes.json();
-          setAdvances(advData.advances);
-        }
-      } catch (err) {
-        console.error('Failed to refresh advances', err);
-      }
-    }
-  };
-
-  const handleOpenAepsModalWithAmount = (amount: number, advanceId?: string) => {
-    setAepsWithdrawAmount(amount);
-    if (advanceId) setAepsAdvanceId(advanceId);
-    setIsAepsModalOpen(true);
   };
 
   if (isAuthLoading || isProfileLoading) {
@@ -915,42 +357,33 @@ export default function App() {
   }
 
   const needsOnboarding =
-      (currentRole === 'farmer' && !farmer) ||
-      (currentRole === 'buyer' && !buyer) ||
-      (currentRole === 'logistics' && !logistics) ||
-      (currentRole === 'collector' && !collector) ||
-      (currentRole === 'recycler' && !recycler);
+    (currentRole === 'collector' && !collector) ||
+    (currentRole === 'recycler' && !recycler);
 
-    if (needsOnboarding) {
-      return (
-        <OnboardingScreen
-          onComplete={(profile: any) => {
-            if (currentRole === 'farmer') setFarmer(profile);
-            else if (currentRole === 'buyer') setBuyer(profile);
-            else if (currentRole === 'logistics') setLogistics(profile);
-            else if (currentRole === 'collector') setCollector(profile);
-            else if (currentRole === 'recycler') setRecycler(profile);
-          }}
-        />
-      );
-    }
+  if (needsOnboarding) {
+    return (
+      <OnboardingScreen
+        onComplete={(profile: any) => {
+          if (currentRole === 'collector') setCollector(profile);
+          else if (currentRole === 'recycler') setRecycler(profile);
+        }}
+      />
+    );
+  }
 
-return (
-      <div className="min-h-screen bg-bg-900 text-cream-100 font-sans flex flex-col selection:bg-harvest-500 selection:text-bg-950">
-       
-        {/* Top Navigation Bar */}
-        <Navbar
-          currentRole={currentRole}
-          currentLanguage={currentLanguage}
-          onLanguageChange={setCurrentLanguage}
-          onOpenDemoGuide={() => setIsDemoModalOpen(true)}
-          onOpenInsights={() => setIsMarketInsightsOpen(true)}
-          notifications={notifications}
-          onMarkNotificationRead={handleMarkNotificationAsRead}
-        />
+  return (
+    <div className="min-h-screen bg-bg-900 text-cream-100 font-sans flex flex-col selection:bg-harvest-500 selection:text-bg-950">
+      <Navbar
+        currentRole={currentRole}
+        currentLanguage={currentLanguage}
+        onLanguageChange={setCurrentLanguage}
+        onOpenDemoGuide={() => setIsDemoModalOpen(true)}
+        onOpenInsights={() => setIsMarketInsightsOpen(true)}
+        notifications={notifications}
+        onMarkNotificationRead={handleMarkNotificationAsRead}
+      />
 
-       {/* Main Viewport */}
-       <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+      <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
         {currentRole === 'collector' && collector && (
           <CollectorView
             collector={collector}
@@ -997,48 +430,39 @@ return (
         )}
       </main>
 
-{/* Footer */}
-       <footer className="bg-bg-850 border-t border-bg-700 py-6 px-4 text-center text-xs text-cream-400">
-          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
-            <p className="font-semibold text-cream-100">
-              Kabadiwala Connect (कबाड़ीवाला कनेक्ट) • Verified Smart Lot Pool • SIH 26229 • Clean & Green Technology
-            </p>
-            <div className="flex items-center gap-4 text-[11px] text-cream-500">
-              <span>Scrap Market Integration</span>
-              <span className="text-cream-600">•</span>
-              <span>AI Quality Assessment</span>
-              <span className="text-cream-600">•</span>
-              <span>Smart Pooling Engine</span>
-            </div>
+      <footer className="bg-bg-850 border-t border-bg-700 py-6 px-4 text-center text-xs text-cream-400">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+          <p className="font-semibold text-cream-100">
+            Kabadiwala Connect • Verified Smart Lot Pool • SIH 26229 • Clean & Green Technology
+          </p>
+          <div className="flex items-center gap-4 text-[11px] text-cream-500">
+            <span>Scrap Market Integration</span>
+            <span className="text-cream-600">•</span>
+            <span>AI Quality Assessment</span>
+            <span className="text-cream-600">•</span>
+            <span>Smart Pooling Engine</span>
           </div>
-        </footer>
+        </div>
+      </footer>
 
-      {/* 7-Step Evaluation Demo Walkthrough Modal */}
       <DemoWalkthroughModal
         isOpen={isDemoModalOpen}
         onClose={() => setIsDemoModalOpen(false)}
         onJumpToStep={handleJumpToStep}
       />
 
-      {/* Simulated AEPS Biometric Cash-Out Modal */}
       <AepsModal
         isOpen={isAepsModalOpen}
-        onClose={() => {
-          setIsAepsModalOpen(false);
-          setAepsAdvanceId(undefined);
-        }}
-        farmerName={farmer?.name || 'Farmer'}
-        defaultAmount={aepsWithdrawAmount}
-        advanceId={aepsAdvanceId}
-        onSuccess={handleAepsSuccess}
+        onClose={() => setIsAepsModalOpen(false)}
+        farmerName="Collector"
+        defaultAmount={20000}
+        onSuccess={() => {}}
       />
 
-      {/* Scrap Market Price Insights Modal */}
       <MarketInsightsModal
         isOpen={isMarketInsightsOpen}
         onClose={() => setIsMarketInsightsOpen(false)}
       />
-
     </div>
   );
 }

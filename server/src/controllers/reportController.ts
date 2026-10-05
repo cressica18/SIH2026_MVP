@@ -1,8 +1,8 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { AuthRequest } from '../middleware/auth.js';
 import { createReport, getAllReports, updateReportStatus } from '../services/reportService.js';
 import { notifyReportCreated, notifyReportStatusChanged } from '../services/notificationService.js';
-import { SEED_FARMERS } from '../data/seedData.js';
+import { SEED_COLLECTORS } from '../data/seedData.js';
 
 export async function createSafetyReport(req: AuthRequest, res: Response): Promise<void> {
   try {
@@ -12,14 +12,14 @@ export async function createSafetyReport(req: AuthRequest, res: Response): Promi
       return;
     }
 
-    if (user.role !== 'farmer') {
-      res.status(403).json({ error: 'Only farmers can submit safety reports' });
+    if (user.role !== 'collector') {
+      res.status(403).json({ error: 'Only collectors can submit safety reports' });
       return;
     }
 
     const { category, description, isAnonymous, reportedEntityName, relatedOrderId } = req.body;
 
-    const farmer = SEED_FARMERS.find((f) => f.id === user.userId);
+    const collector = SEED_COLLECTORS.find((c) => c.id === user.userId);
     const input = {
       category,
       description,
@@ -27,19 +27,17 @@ export async function createSafetyReport(req: AuthRequest, res: Response): Promi
       reportedEntityName,
       relatedOrderId,
       reporterUserId: isAnonymous ? undefined : user.userId,
-      reporterName: isAnonymous ? undefined : (farmer?.name ?? user.userId),
+      reporterName: isAnonymous ? undefined : (collector?.name ?? user.userId),
     };
 
     const { report } = createReport(input);
 
-    // Send notification for new report
     notifyReportCreated(report);
 
-    // Don't expose internal reporterUserId in response for anonymous reports
     const responseReport = {
       ...report,
       reporterUserId: report.isAnonymous ? undefined : report.reporterUserId,
-      reporterName: report.isAnonymous ? 'Anonymous Farmer' : report.reporterName,
+      reporterName: report.isAnonymous ? 'Anonymous Collector' : report.reporterName,
     };
 
     res.status(201).json({ report: responseReport });
@@ -51,7 +49,6 @@ export async function createSafetyReport(req: AuthRequest, res: Response): Promi
 export async function getAdminReports(_req: AuthRequest, res: Response): Promise<void> {
   try {
     const reports = getAllReports();
-    // For admin view, we can include all fields
     res.json({ reports, total: reports.length });
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch reports', details: String(error) });
@@ -80,7 +77,6 @@ export async function updateReportStatusAdmin(req: AuthRequest, res: Response): 
       return;
     }
 
-    // Send notification for status change
     notifyReportStatusChanged(updated, status, resolutionNotes);
 
     res.json({ report: updated });

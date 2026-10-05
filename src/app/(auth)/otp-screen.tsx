@@ -196,8 +196,6 @@ export const OtpScreen: React.FC<OtpScreenProps> = ({
     switch (role) {
       case 'collector': return '/collector';
       case 'recycler': return '/recycler';
-      case 'buyer': return '/buyer';
-      case 'logistics': return '/logistics';
       case 'admin': return '/admin';
       default: return '/collector';
     }
@@ -307,9 +305,6 @@ export const OtpScreen: React.FC<OtpScreenProps> = ({
   ];
 
   const ROLE_ICONS: Record<UserRole, React.ReactNode> = {
-    farmer: <Leaf className="w-3.5 h-3.5" />,
-    buyer: <ShoppingCart className="w-3.5 h-3.5" />,
-    logistics: <Truck className="w-3.5 h-3.5" />,
     collector: <Recycle className="w-3.5 h-3.5" />,
     recycler: <Factory className="w-3.5 h-3.5" />,
     admin: <ShieldCheck className="w-3.5 h-3.5" />,

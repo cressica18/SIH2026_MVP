@@ -1,13 +1,10 @@
 import { Router } from 'express';
-import { requireRole } from '../middleware/auth.js';
 import { getReputation, postReputationEvent } from '../controllers/reputationController.js';
+import { requireRole } from '../middleware/auth.js';
 
 const router = Router();
 
-// GET /api/reputation/:userId — Public (any authenticated user)
-router.get('/:userId', requireRole('farmer', 'buyer', 'logistics', 'collector', 'recycler', 'admin'), getReputation);
-
-// POST /api/reputation/events — Buyer rates farmer post-settlement (or collector/recycler ratings)
-router.post('/events', requireRole('buyer', 'farmer', 'collector', 'recycler', 'admin'), postReputationEvent);
+router.get('/:userId', requireRole('collector', 'recycler', 'admin'), getReputation);
+router.post('/events', requireRole('collector', 'recycler', 'admin'), postReputationEvent);
 
 export default router;

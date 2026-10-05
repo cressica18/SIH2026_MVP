@@ -74,8 +74,8 @@ interface StopWithCoords {
  * 3. Visit remaining unvisited pickups greedily (nearest unvisited pickup first).
  * 4. After all pickups done, visit dropoffs in the order their pickups were visited.
  *
- * This is a valid capacitated VRP simplification for multi-order agricultural
- * last-mile logistics where all goods must be collected before delivery.
+ * This is a valid capacitated VRP simplification for multi-order scrap pickup
+ * logistics where all goods must be collected before delivery.
  */
 export function optimizeRoute(stopsWithCoords: StopWithCoords[]): RouteStop[] {
   const pickups = stopsWithCoords.filter(s => s.stop.stopType === 'pickup');

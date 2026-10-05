@@ -24,8 +24,8 @@ export interface AuthContextType {
   isLoading: boolean;
   pendingPhone: string | null;
   demoMode: boolean;
-  loginWithOtp: (phone: string) => Promise<{ demoMode: boolean }>;
-  verifyOtp: (phone: string, otp: string) => Promise<{ success: boolean; role?: UserRole }>;
+  loginWithOtp: (phone: string) => Promise<{ demoMode: boolean; devOtp?: string; otpChallenge?: string }>;
+  verifyOtp: (phone: string, otp: string, challengeOverride?: string) => Promise<{ success: boolean; role?: UserRole }>;
   logout: () => void;
   refreshToken: () => Promise<void>;
   switchRole: (role: UserRole) => Promise<void>;
@@ -94,7 +94,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   // Step 1: Request OTP to be sent to phone
-  const loginWithOtp = async (phone: string): Promise<{ demoMode: boolean }> => {
+  const loginWithOtp = async (phone: string): Promise<{ demoMode: boolean; devOtp?: string; otpChallenge?: string }> => {
     // Reset pending phone from any previous attempt
     setPendingPhone(null);
     setPendingOtpChallenge(null);
@@ -117,15 +117,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setPendingOtpChallenge(data.otpChallenge);
     setDemoMode(data.demoMode === true);
 
-    return { demoMode: data.demoMode === true };
+    return { demoMode: data.demoMode === true, devOtp: data.devOtp, otpChallenge: data.otpChallenge };
   };
 
   // Step 2: Submit OTP for verification — returns success + role for redirect
   const verifyOtp = async (
     phone: string,
-    otp: string
+    otp: string,
+    challengeOverride?: string
   ): Promise<{ success: boolean; role?: UserRole }> => {
-    const otpChallenge = pendingOtpChallenge;
+    const otpChallenge = challengeOverride || pendingOtpChallenge;
     if (!otpChallenge) {
       return { success: false };
     }
